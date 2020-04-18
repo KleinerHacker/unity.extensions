@@ -1,4 +1,4 @@
-﻿namespace PcSoft.UI._90_Scripts
+﻿namespace PcSoft.ExtendedUI._90_Scripts
 {
     internal static class ExtendedUIConstants
     {

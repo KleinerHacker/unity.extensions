@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.EventSystems;
 
-namespace PcSoft.UI._90_Scripts.Components.UI.Window
+namespace PcSoft.ExtendedUI._90_Scripts.Components.UI.Window
 {
     [AddComponentMenu(ExtendedUIConstants.Menus.Components.Ui.WindowMenu + "/Dialog")]
     [DisallowMultipleComponent]

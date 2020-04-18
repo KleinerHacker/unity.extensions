@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
-namespace PcSoft.UI._90_Scripts.Components.UI.Component
+namespace PcSoft.ExtendedUI._90_Scripts.Components.UI.Component
 {
     [AddComponentMenu(ExtendedUIConstants.Menus.Components.Ui.ComponentMenu + "/Dia Show")]
     [DisallowMultipleComponent]
