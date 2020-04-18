@@ -78,11 +78,11 @@ namespace PcSoft.ExtendedAnimation._90_Scripts.Utils
             }
         }
 
-        public static IEnumerator RunAll(float delay, uint repeat, Action action, Action onFinished = null)
+        public static IEnumerator RunAll(float delay, uint repeat, Action<int> action, Action onFinished = null)
         {
             for (var i = 0; i < repeat; i++)
             {
-                action.Invoke();
+                action.Invoke(i);
                 yield return new WaitForSeconds(delay);
             }
             
