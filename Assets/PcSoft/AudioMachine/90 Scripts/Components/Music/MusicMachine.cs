@@ -1,0 +1,167 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using PcSoft.AudioMachine._90_Scripts.Assets.Music;
+using PcSoft.AudioMachine._90_Scripts.Assets.Music.Base;
+using PcSoft.AudioMachine._90_Scripts.Utils;
+using PcSoft.ExtendedAnimation._90_Scripts.Utils;
+using UnityEngine;
+using UnityEngine.Audio;
+using UnityEngine.Serialization;
+
+namespace PcSoft.AudioMachine._90_Scripts.Components.Music
+{
+    [AddComponentMenu(AudioMachineConstants.Menus.Components.MusicMenu + "/Music Machine")]
+    public sealed class MusicMachine : MonoBehaviour
+    {
+        #region Static Area
+
+        public static MusicMachine Singleton => Resources.FindObjectsOfTypeAll<MusicMachine>()[0];
+
+        #endregion
+
+        #region Inspector Data
+
+        [SerializeField]
+        private AudioMixerGroup audioMixerGroup;
+
+        [FormerlySerializedAs("overlapCurve")]
+        [Header("Transition")]
+        [SerializeField]
+        private AnimationCurve transitionCurve = AnimationCurve.EaseInOut(0f, 0f, 1f, 1f);
+
+        [FormerlySerializedAs("overlapSpeed")]
+        [SerializeField]
+        private float transitionSpeed = 1f;
+
+        #endregion
+
+        private readonly IDictionary<string, AudioSource> _currentAudioSources = new Dictionary<string, AudioSource>();
+        private CollectionAudioHelper<DirectMusicSourceAsset> _extendedAudioHelper;
+        private CollectionAudioHelper<AudioClip> _simpleAudioHelper;
+
+        #region Builtin Methods
+
+        private void LateUpdate()
+        {
+            if (_currentAudioSources.Any(x => !x.Value.isPlaying))
+            {
+                if (_extendedAudioHelper != null)
+                {
+                    var randomSource = _extendedAudioHelper.Next();
+
+                    StopAsync(_currentAudioSources.Values);
+                    UpdateAudioSources(randomSource, false);
+                    StartAsync(_currentAudioSources.Values);
+                }
+                else if (_simpleAudioHelper != null)
+                {
+                    var randomClip = _simpleAudioHelper.Next();
+                    
+                    StopAsync(_currentAudioSources.Values);
+                    
+                    var newAudioSource = CreateAudioSource(false);
+                    newAudioSource.clip = randomClip;
+                    newAudioSource.Play();
+                    
+                    _currentAudioSources.Add("Default", newAudioSource);
+                    StartAsync(_currentAudioSources.Values);
+                }
+            }
+        }
+
+        #endregion
+
+        public void Play(MusicSourceAsset musicSource)
+        {
+            Stop();
+
+            UpdateAudioSources(musicSource);
+            StartAsync(_currentAudioSources.Values);
+        }
+
+        public void Stop()
+        {
+            StopAsync(_currentAudioSources.Values);
+            _currentAudioSources.Clear();
+        }
+
+        private void UpdateAudioSources(MusicSourceAsset musicSource, bool loop = true)
+        {
+            if (musicSource == null)
+                throw new ArgumentException("music Source == null");
+
+            _extendedAudioHelper = null;
+            _simpleAudioHelper = null;
+            if (musicSource is SimpleMusicSourceAsset simpleMusicSource)
+            {
+                var newAudioSource = CreateAudioSource(loop);
+                newAudioSource.clip = simpleMusicSource.Clip;
+                newAudioSource.Play();
+
+                _currentAudioSources.Add("Default", newAudioSource);
+            }
+            else if (musicSource is MultiTrackMusicSourceAsset multiTrackMusicSource)
+            {
+                foreach (var track in multiTrackMusicSource.Tracks)
+                {
+                    var newAudioSource = CreateAudioSource(loop);
+                    newAudioSource.clip = track.Clip;
+                    newAudioSource.PlayDelayed(track.StartDelay);
+
+                    _currentAudioSources.Add(track.Identifier, newAudioSource);
+                }
+            }
+            else if (musicSource is ExtendedCollectionMusicSourceAsset extendedCollectionMusicSource)
+            {
+                _extendedAudioHelper = new CollectionAudioHelper<DirectMusicSourceAsset>(extendedCollectionMusicSource.PlayBehavior, extendedCollectionMusicSource.MusicSources);
+                var randomSource = _extendedAudioHelper.Next();
+
+                UpdateAudioSources(randomSource, false);
+            }
+            else if (musicSource is SimpleCollectionMusicSourceAsset simpleCollectionMusicSource)
+            {
+                _simpleAudioHelper = new CollectionAudioHelper<AudioClip>(simpleCollectionMusicSource.PlayBehavior, simpleCollectionMusicSource.Clips);
+                var randomClip = _simpleAudioHelper.Next();
+                
+                var newAudioSource = CreateAudioSource(false);
+                newAudioSource.clip = randomClip;
+                newAudioSource.Play();
+                
+                _currentAudioSources.Add("Default", newAudioSource);
+            }
+            else
+                throw new NotImplementedException();
+        }
+
+        private void StartAsync(IEnumerable<AudioSource> audioSources)
+        {
+            foreach (var audioSource in audioSources)
+            {
+                StartCoroutine(AnimationUtils.RunAnimationUnscaled(transitionCurve, transitionSpeed,
+                    v => audioSource.volume = v));
+            }
+        }
+
+        private void StopAsync(IEnumerable<AudioSource> audioSources)
+        {
+            foreach (var audioSource in audioSources)
+            {
+                StartCoroutine(AnimationUtils.RunAnimationUnscaled(transitionCurve, transitionSpeed,
+                    v => audioSource.volume = 1f - v,
+                    () => Destroy(audioSource)));
+            }
+        }
+
+        private AudioSource CreateAudioSource(bool loop)
+        {
+            var newAudioSource = gameObject.AddComponent<AudioSource>();
+            newAudioSource.playOnAwake = false;
+            newAudioSource.volume = 0f;
+            newAudioSource.loop = loop;
+            newAudioSource.outputAudioMixerGroup = audioMixerGroup;
+            
+            return newAudioSource;
+        }
+    }
+}

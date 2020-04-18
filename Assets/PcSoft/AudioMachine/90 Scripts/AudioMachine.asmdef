@@ -1,0 +1,15 @@
+{
+    "name": "AudioMachine",
+    "references": [
+        "GUID:9b0196a642edb924fa62483599f44a4c"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
