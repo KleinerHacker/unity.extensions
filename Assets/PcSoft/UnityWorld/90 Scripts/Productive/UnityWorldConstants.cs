@@ -1,4 +1,4 @@
-﻿namespace PcSoft.UnityWorld._90_Scripts
+﻿namespace PcSoft.UnityWorld._90_Scripts.Productive
 {
     internal static class UnityWorldConstants
     {
