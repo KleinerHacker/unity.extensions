@@ -1,4 +1,5 @@
 using System;
+using PcSoft.ExtendedAnimation._90_Scripts.Types;
 using PcSoft.ExtendedAnimation._90_Scripts.Utils;
 using UnityEditor;
 using UnityEngine;
@@ -111,7 +112,7 @@ namespace PcSoft.ExtendedUI._90_Scripts.Components.UI.Window
 
             canvasGroup.alpha = 0f;
             gameObject.SetActive(true);
-            StartCoroutine(AnimationUtils.RunAnimationUnscaled(fadingCurve, fadingSpeed, 
+            StartCoroutine(AnimationUtils.RunAnimation(AnimationType.Unscaled, fadingCurve, fadingSpeed, 
                 v =>
                 {
                     canvasGroup.alpha = v;
@@ -149,7 +150,7 @@ namespace PcSoft.ExtendedUI._90_Scripts.Components.UI.Window
 
             canvasGroup.alpha = 1f;
             gameObject.SetActive(true);
-            StartCoroutine(AnimationUtils.RunAnimationUnscaled(fadingCurve, fadingSpeed, 
+            StartCoroutine(AnimationUtils.RunAnimation(AnimationType.Unscaled, fadingCurve, fadingSpeed, 
                 v =>
                 {
                     canvasGroup.alpha = 1f - v;

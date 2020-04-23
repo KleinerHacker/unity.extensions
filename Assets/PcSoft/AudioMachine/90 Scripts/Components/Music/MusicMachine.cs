@@ -4,6 +4,7 @@ using System.Linq;
 using PcSoft.AudioMachine._90_Scripts.Assets.Music;
 using PcSoft.AudioMachine._90_Scripts.Assets.Music.Base;
 using PcSoft.AudioMachine._90_Scripts.Utils;
+using PcSoft.ExtendedAnimation._90_Scripts.Types;
 using PcSoft.ExtendedAnimation._90_Scripts.Utils;
 using UnityEngine;
 using UnityEngine.Audio;
@@ -138,7 +139,7 @@ namespace PcSoft.AudioMachine._90_Scripts.Components.Music
         {
             foreach (var audioSource in audioSources)
             {
-                StartCoroutine(AnimationUtils.RunAnimationUnscaled(transitionCurve, transitionSpeed,
+                StartCoroutine(AnimationUtils.RunAnimation(AnimationType.Unscaled, transitionCurve, transitionSpeed,
                     v => audioSource.volume = v));
             }
         }
@@ -147,7 +148,7 @@ namespace PcSoft.AudioMachine._90_Scripts.Components.Music
         {
             foreach (var audioSource in audioSources)
             {
-                StartCoroutine(AnimationUtils.RunAnimationUnscaled(transitionCurve, transitionSpeed,
+                StartCoroutine(AnimationUtils.RunAnimation(AnimationType.Unscaled, transitionCurve, transitionSpeed,
                     v => audioSource.volume = 1f - v,
                     () => Destroy(audioSource)));
             }

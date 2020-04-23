@@ -1,4 +1,5 @@
 using System;
+using PcSoft.ExtendedAnimation._90_Scripts.Types;
 using PcSoft.ExtendedAnimation._90_Scripts.Utils;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -158,8 +159,8 @@ namespace PcSoft.ExtendedUI._90_Scripts.Components.UI.Component
                     throw new NotImplementedException();
             }
 
-            StartCoroutine(AnimationUtils.RunAnimationUnscaled(
-                fadingCurve, fadingSpeed,
+            StartCoroutine(AnimationUtils.RunAnimation(
+                AnimationType.Unscaled, fadingCurve, fadingSpeed,
                 v =>
                 {
                     switch (_activeImage)
