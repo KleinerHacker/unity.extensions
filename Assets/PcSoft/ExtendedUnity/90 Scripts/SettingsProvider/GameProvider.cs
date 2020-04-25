@@ -22,6 +22,8 @@ namespace PcSoft.ExtendedUnity._90_Scripts.SettingsProvider
         #endregion
 
         private SerializedObject _settings;
+        private SerializedProperty _masterSceneProperty;
+        private SerializedProperty _loadProperty;
 
         public GameProvider() :
             base("Project/Game", SettingsScope.Project, new[] {"Game", "Settings", "Master", "Scene"})
@@ -33,14 +35,16 @@ namespace PcSoft.ExtendedUnity._90_Scripts.SettingsProvider
         public override void OnActivate(string searchContext, VisualElement rootElement)
         {
             _settings = GameSettings.SerializedSingleton;
+            _masterSceneProperty = _settings.FindProperty("masterScene");
+            _loadProperty = _settings.FindProperty("loadMasterIfNeeded");
         }
 
         public override void OnGUI(string searchContext)
         {
             _settings.Update();
             
-            EditorGUILayout.PropertyField(_settings.FindProperty("masterScene"), new GUIContent("Master Scene"));
-            EditorGUILayout.PropertyField(_settings.FindProperty("loadMasterIfNeeded"), new GUIContent("Load Master Scene if needed"));
+            EditorGUILayout.PropertyField(_masterSceneProperty, new GUIContent("Master Scene"));
+            EditorGUILayout.PropertyField(_loadProperty, new GUIContent("Load Master Scene if needed"));
 
             _settings.ApplyModifiedProperties();
         }
