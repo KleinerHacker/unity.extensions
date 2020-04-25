@@ -51,7 +51,7 @@ namespace PcSoft.UnityScene._90_Scripts._00_Runtime.Components
             State = initialState;
             LoadScene(State, doNotUnload: true);
 #else
-            LoadScene(SceneState, doNotUnload:true);
+            LoadScene(State, doNotUnload:true);
 #endif
         }
 
