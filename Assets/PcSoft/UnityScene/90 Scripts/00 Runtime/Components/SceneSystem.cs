@@ -6,7 +6,9 @@ using PcSoft.ExtendedEditor._90_Scripts._00_Runtime.Extra;
 using PcSoft.ExtendedEditor._90_Scripts._00_Runtime.Types;
 using PcSoft.ExtendedEditor._90_Scripts._00_Runtime.Utils;
 using PcSoft.ExtendedUnity._90_Scripts._00_Runtime.Utils.Extensions;
+#if UNITY_EDITOR
 using PcSoft.ExtendedUnity._90_Scripts._90_Editor.EditorEvents;
+#endif
 #if UNITY_EDITOR
 #endif
 using PcSoft.UnityBlending._90_Scripts;
