@@ -32,11 +32,18 @@ namespace PcSoft.UnityScene._90_Scripts._00_Runtime.Components
 
         #endregion
 
+        #region Properties
+
         public T State { get; protected set; }
 
-        protected SceneSystem()
+        #endregion
+        
+        private readonly bool _firstLoadImmediately;
+
+        protected SceneSystem(bool firstLoadImmediately = false)
         {
             scenes = ArrayUtils.CreateIdentifierArray<TScene, T>();
+            _firstLoadImmediately = firstLoadImmediately;
         }
 
         #region Builtin Methods
@@ -51,9 +58,23 @@ namespace PcSoft.UnityScene._90_Scripts._00_Runtime.Components
             }
 
             State = initialState;
-            LoadScene(State, doNotUnload: true);
+            if (_firstLoadImmediately)
+            {
+                LoadSceneImmediately(State);
+            }
+            else
+            {
+                LoadScene(State, doNotUnload: true);
+            }
 #else
-            LoadScene(State, doNotUnload:true);
+            if (_firstLoadImmediately)
+            {
+                LoadSceneImmediately(State);
+            }
+            else
+            {
+                LoadScene(State, doNotUnload: true);
+            }
 #endif
         }
 
@@ -90,6 +111,18 @@ namespace PcSoft.UnityScene._90_Scripts._00_Runtime.Components
             });
         }
 
+        protected void LoadSceneImmediately(T state)
+        {
+            var newData = FindSceneData(state);
+            var newScenes = newData.Scenes;
+
+            foreach (var newScene in newScenes)
+            {
+                SceneManager.LoadScene(newScene, LoadSceneMode.Additive);
+                SceneManager.SetActiveScene(SceneManager.GetSceneByPath(newScene));
+            }
+        }
+
         protected TScene FindSceneData(T state)
         {
             return scenes.First(item => Equals(item.Identifier, state));
@@ -101,7 +134,7 @@ namespace PcSoft.UnityScene._90_Scripts._00_Runtime.Components
             {
                 foreach (var oldScene in oldScenes)
                 {
-                    SceneManager.UnloadSceneAsync(oldScene, UnloadSceneOptions.UnloadAllEmbeddedSceneObjects);                    
+                    SceneManager.UnloadSceneAsync(oldScene, UnloadSceneOptions.UnloadAllEmbeddedSceneObjects);
                 }
             }
 
@@ -111,11 +144,11 @@ namespace PcSoft.UnityScene._90_Scripts._00_Runtime.Components
                 var operation = SceneManager.LoadSceneAsync(newScene, LoadSceneMode.Additive);
                 operation.allowSceneActivation = false;
                 operation.completed += asyncOperation => SceneManager.SetActiveScene(SceneManager.GetSceneByPath(newScene));
-                
+
                 operations.Add(operation);
             }
 
-            
+
             while (!operations.IsReady())
             {
                 blending.LoadingProgress = operations.CalculateProgress();
@@ -126,7 +159,7 @@ namespace PcSoft.UnityScene._90_Scripts._00_Runtime.Components
             {
                 operation.allowSceneActivation = true;
             }
-            
+
             while (!operations.IsDone())
             {
                 blending.LoadingProgress = operations.CalculateProgress();
