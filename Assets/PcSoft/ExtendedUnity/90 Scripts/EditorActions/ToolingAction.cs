@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using PcSoft.ExtendedUnity._90_Scripts.Assets.Misc;
 using UnityEditor;
@@ -10,13 +11,34 @@ namespace PcSoft.ExtendedUnity._90_Scripts.EditorActions
 {
     public static class ToolingAction
     {
-        [MenuItem("Tools/Player Prefs/Delete All")]
+        [MenuItem("Tools/Data/Delete All Player Prefs")]
         public static void DeleteAllPrefs()
         {
             if (EditorUtility.DisplayDialog("Delete All Player Prefs", "You are sure to delete all player prefs?", "Yes", "No"))
             {
                 Debug.Log("Delete all player prefs");
                 PlayerPrefs.DeleteAll();
+            }
+        }
+        
+        [MenuItem("Tools/Data/Delete All Save Data")]
+        public static void DeleteAllSaveData()
+        {
+            if (EditorUtility.DisplayDialog("Delete All Save Data", "You are sure to delete all save data?", "Yes", "No"))
+            {
+                Debug.Log("Delete all save data");
+                
+                foreach (var file in Directory.EnumerateFiles(Application.persistentDataPath))
+                {
+                    Debug.Log("> Delete file " + file);
+                    File.Delete(file);
+                }
+
+                foreach (var directory in Directory.EnumerateDirectories(Application.persistentDataPath))
+                {
+                    Debug.Log("> Delete directory " + directory);
+                    Directory.Delete(directory, true);
+                }
             }
         }
 
