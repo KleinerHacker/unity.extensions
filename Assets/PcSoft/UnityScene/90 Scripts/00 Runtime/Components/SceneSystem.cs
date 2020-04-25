@@ -88,7 +88,7 @@ namespace PcSoft.UnityScene._90_Scripts._00_Runtime.Components
             });
         }
 
-        private TScene FindSceneData(T state)
+        protected TScene FindSceneData(T state)
         {
             return scenes.First(item => Equals(item.Identifier, state));
         }

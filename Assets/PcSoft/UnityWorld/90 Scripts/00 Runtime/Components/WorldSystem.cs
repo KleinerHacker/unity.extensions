@@ -52,7 +52,7 @@ namespace PcSoft.UnityWorld._90_Scripts._00_Runtime.Components
                 return;
             }
 
-            var world = worlds.First(x => Equals(x.Identifier, initialState));
+            var world = FindWorldData();
             var scenes = world.World.Scenes.Select(x => x.Scene).ToArray();
             var activeScene = world.World.Scenes.FirstOrDefault(x => x.ActiveScene);
             ChangeScene(scenes, initialState, activeScene?.Scene);
@@ -123,6 +123,11 @@ namespace PcSoft.UnityWorld._90_Scripts._00_Runtime.Components
 
             _lastScenes = scenes;
             onFinished?.Invoke();
+        }
+        
+        protected TWorld FindWorldData()
+        {
+            return worlds.First(x => Equals(x.Identifier, initialState));
         }
         
         protected virtual void OnLoadingStarted(T oldState)
