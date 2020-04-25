@@ -9,7 +9,7 @@ namespace PcSoft.UnityBlending._90_Scripts
         
         public abstract void ShowBlend(Action onFinished = null);
         public abstract void ShowBlendImmediately();
-        public abstract void HideBlend(Action inFinished = null);
+        public abstract void HideBlend(Action onFinished = null);
         public abstract void HideBlendImmediately();
     }
 }
