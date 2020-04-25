@@ -18,13 +18,12 @@ namespace PcSoft.UnityBlending._90_Scripts.Components
 
         private void Start()
         {
-            OnShow(() => StartCoroutine(AnimationUtils.WaitAndRun(AnimationType.Unscaled, showTime, () => OnClose(onFinished: GotoNextScene))));
+            OnShow(() => StartCoroutine(AnimationUtils.WaitAndRun(AnimationType.Unscaled, showTime, OnClose)));
         }
 
         #endregion
 
         protected abstract void OnShow(Action onFinished);
-        protected abstract void OnClose(Action onFinished);
-        protected abstract void GotoNextScene();
+        protected abstract void OnClose();
     }
 }
