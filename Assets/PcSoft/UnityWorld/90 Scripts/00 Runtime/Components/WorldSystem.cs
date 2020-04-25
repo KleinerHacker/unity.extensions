@@ -43,7 +43,7 @@ namespace PcSoft.UnityWorld._90_Scripts._00_Runtime.Components
 
         #region Builtin Methods
 
-        protected virtual void Awake()
+        protected virtual void OnEnable()
         {
 #if UNITY_EDITOR
             if (AutoMasterOnPlayParameter.DoNotLoadOnAwake)
