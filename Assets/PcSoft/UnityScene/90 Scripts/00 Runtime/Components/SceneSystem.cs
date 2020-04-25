@@ -39,7 +39,7 @@ namespace PcSoft.UnityScene._90_Scripts._00_Runtime.Components
 
         #region Builtin Methods
 
-        protected virtual void OnEnable()
+        protected virtual void Awake()
         {
 #if UNITY_EDITOR
             if (AutoMasterOnPlayParameter.DoNotLoadOnAwake)
@@ -108,6 +108,7 @@ namespace PcSoft.UnityScene._90_Scripts._00_Runtime.Components
             {
                 var operation = SceneManager.LoadSceneAsync(newScene, LoadSceneMode.Additive);
                 operation.allowSceneActivation = false;
+                operation.completed += asyncOperation => SceneManager.SetActiveScene(SceneManager.GetSceneByPath(newScene));
                 
                 operations.Add(operation);
             }
@@ -129,8 +130,6 @@ namespace PcSoft.UnityScene._90_Scripts._00_Runtime.Components
                 blending.LoadingProgress = operations.CalculateProgress();
                 yield return null;
             }
-
-            SceneManager.SetActiveScene(SceneManager.GetSceneByPath(newScenes[0]));
 
             onFinished?.Invoke();
         }
