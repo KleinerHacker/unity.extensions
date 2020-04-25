@@ -1,12 +1,11 @@
 {
-    "name": "ExtendedUnity",
+    "name": "UnityScene.Runtime",
     "references": [
-        "GUID:c9d126c2870517046b89a075139e6ed7",
-        "GUID:508b848fbbe43f344a7cba068d4976c1"
+        "GUID:006c9cda28a9c074f8891b867d146280",
+        "GUID:508b848fbbe43f344a7cba068d4976c1",
+        "GUID:6093230500968c5429e3190bc9015b4a"
     ],
-    "includePlatforms": [
-        "Editor"
-    ],
+    "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,

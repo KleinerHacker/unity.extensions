@@ -1,7 +1,6 @@
 {
-    "name": "ExtendedUnity",
+    "name": "ExtendedEditor.Editor",
     "references": [
-        "GUID:c9d126c2870517046b89a075139e6ed7",
         "GUID:508b848fbbe43f344a7cba068d4976c1"
     ],
     "includePlatforms": [

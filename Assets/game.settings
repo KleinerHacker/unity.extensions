@@ -9,10 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e34161eacdfd4ae5af8dd0915a618a55, type: 3}
-  m_Name: ExtendedUnity
-  m_EditorClassIdentifier: 
-  packageName: ExtendedUnity
-  assetPaths:
-  - Assets/PcSoft/ExtendedUnity
-  - Assets/PcSoft/ExtendedEditor
+  m_Script: {fileID: 0}
+  m_Name: game
+  m_EditorClassIdentifier: ExtendedUnity:PcSoft.ExtendedUnity._90_Scripts.SettingsProvider:GameSettings
+  masterScene: 
+  loadMasterIfNeeded: 1

@@ -1,8 +1,8 @@
 {
-    "name": "ExtendedUnity",
+    "name": "UnityScene.Editor",
     "references": [
         "GUID:c9d126c2870517046b89a075139e6ed7",
-        "GUID:508b848fbbe43f344a7cba068d4976c1"
+        "GUID:214a09f9dff61d747a7c60c66d6b7915"
     ],
     "includePlatforms": [
         "Editor"
