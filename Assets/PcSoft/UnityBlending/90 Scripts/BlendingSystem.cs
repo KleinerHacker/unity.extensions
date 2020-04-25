@@ -5,7 +5,7 @@ namespace PcSoft.UnityBlending._90_Scripts
 {
     public abstract class BlendingSystem : MonoBehaviour
     {
-        public float LoadingProgress { get; set; }
+        public abstract float LoadingProgress { get; set; }
         
         public abstract void ShowBlend(Action onFinished = null);
         public abstract void ShowBlendImmediately();

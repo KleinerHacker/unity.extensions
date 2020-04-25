@@ -20,7 +20,7 @@ namespace PcSoft.UnityScene._90_Scripts._00_Runtime.Components
         #region Inspector Data
 
         [SerializeField]
-        private BlendingSystem blending;
+        protected BlendingSystem blending;
 
         [SerializeField]
         private TScene[] scenes;
@@ -59,7 +59,7 @@ namespace PcSoft.UnityScene._90_Scripts._00_Runtime.Components
 
         #region Private Methods
 
-        private void LoadScene(T state, Action onFinished = null, bool doNotUnload = false)
+        protected void LoadScene(T state, Action onFinished = null, bool doNotUnload = false)
         {
             OnLoadingStarted();
 

@@ -18,7 +18,7 @@ namespace PcSoft.UnityWorld._90_Scripts._00_Runtime.Components
         #region Inspector Data
 
         [SerializeField]
-        private BlendingSystem blending;
+        protected BlendingSystem blending;
 
         [SerializeField]
         private TWorld[] worlds;
