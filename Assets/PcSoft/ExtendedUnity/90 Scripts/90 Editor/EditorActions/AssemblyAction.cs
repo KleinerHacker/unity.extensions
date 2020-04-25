@@ -1,12 +1,9 @@
-using System;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using UnityEditor;
-using UnityEditorInternal;
 using UnityEngine;
 
-namespace PcSoft.ExtendedUnity._90_Scripts.EditorActions
+namespace PcSoft.ExtendedUnity._90_Scripts._90_Editor.EditorActions
 {
     public static class AssemblyAction
     {

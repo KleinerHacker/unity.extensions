@@ -1,6 +1,7 @@
+using PcSoft.ExtendedUnity._90_Scripts._00_Runtime;
 using UnityEngine;
 
-namespace PcSoft.ExtendedUnity._90_Scripts.Assets.Misc
+namespace PcSoft.ExtendedUnity._90_Scripts._90_Editor.Assets.Misc
 {
     [CreateAssetMenu(menuName = ExtendedUnityConstants.Menu.Asset.MiscMenu + "/Unity Package")]
     public sealed class UnityPackageAsset : ScriptableObject

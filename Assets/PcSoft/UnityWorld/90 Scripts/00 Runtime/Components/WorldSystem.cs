@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using PcSoft.ExtendedEditor._90_Scripts._00_Runtime.Types;
 using PcSoft.ExtendedEditor._90_Scripts._00_Runtime.Utils;
+using PcSoft.ExtendedUnity._90_Scripts._00_Runtime.Utils.Extensions;
+using PcSoft.ExtendedUnity._90_Scripts._90_Editor.EditorEvents;
 #if UNITY_EDITOR
-using PcSoft.ExtendedUnity._90_Scripts.EditorEvents;
-using PcSoft.ExtendedUnity._90_Scripts.Utils.Extensions;
 #endif
 using PcSoft.UnityBlending._90_Scripts;
 using PcSoft.UnityWorld._90_Scripts._00_Runtime.Assets;

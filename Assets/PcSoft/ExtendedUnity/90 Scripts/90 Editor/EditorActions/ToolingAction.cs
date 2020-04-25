@@ -2,12 +2,12 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using PcSoft.ExtendedUnity._90_Scripts.Assets.Misc;
+using PcSoft.ExtendedUnity._90_Scripts._90_Editor.Assets.Misc;
 using UnityEditor;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 
-namespace PcSoft.ExtendedUnity._90_Scripts.EditorActions
+namespace PcSoft.ExtendedUnity._90_Scripts._90_Editor.EditorActions
 {
     public static class ToolingAction
     {
@@ -52,6 +52,7 @@ namespace PcSoft.ExtendedUnity._90_Scripts.EditorActions
             try
             {
                 var packageAssets = FindAssetsByType<UnityPackageAsset>();
+                Debug.Log("Found: " + packageAssets.Count);
                 for (var i = 0; i < packageAssets.Count; i++)
                 {
                     EditorUtility.DisplayProgressBar("Auto Generate Unity Packages", packageAssets[i].PackageName, (float)i / packageAssets.Count);

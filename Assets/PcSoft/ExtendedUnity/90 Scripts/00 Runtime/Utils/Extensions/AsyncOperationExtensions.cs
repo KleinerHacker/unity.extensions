@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace PcSoft.ExtendedUnity._90_Scripts.Utils.Extensions
+namespace PcSoft.ExtendedUnity._90_Scripts._00_Runtime.Utils.Extensions
 {
     public static class AsyncOperationExtensions
     {

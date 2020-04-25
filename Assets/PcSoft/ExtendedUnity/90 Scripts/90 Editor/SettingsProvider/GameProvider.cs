@@ -1,13 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
 using PcSoft.ExtendedEditor._90_Scripts._00_Runtime.Extra;
-using PcSoft.ExtendedUnity._90_Scripts.Assets;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace PcSoft.ExtendedUnity._90_Scripts.SettingsProvider
+namespace PcSoft.ExtendedUnity._90_Scripts._90_Editor.SettingsProvider
 {
     public class GameProvider : UnityEditor.SettingsProvider
     {

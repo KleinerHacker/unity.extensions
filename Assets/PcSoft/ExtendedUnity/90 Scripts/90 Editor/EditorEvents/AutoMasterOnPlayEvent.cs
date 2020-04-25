@@ -1,10 +1,10 @@
 #if UNITY_EDITOR
-using PcSoft.ExtendedUnity._90_Scripts.SettingsProvider;
+using PcSoft.ExtendedUnity._90_Scripts._90_Editor.SettingsProvider;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace PcSoft.ExtendedUnity._90_Scripts.EditorEvents
+namespace PcSoft.ExtendedUnity._90_Scripts._90_Editor.EditorEvents
 {
     [InitializeOnLoad]
     public static class AutoMasterOnPlayEvent
