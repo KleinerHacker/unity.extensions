@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Assets.PcSoft.UnityWorld._90_Scripts._00_Runtime.Assets
+namespace PcSoft.UnityWorld._90_Scripts._00_Runtime.Assets
 {
     [CreateAssetMenu(menuName = UnityWorldConstants.Menus.Assets.RootMenu + "/World")]
     public sealed class WorldAsset : ScriptableObject

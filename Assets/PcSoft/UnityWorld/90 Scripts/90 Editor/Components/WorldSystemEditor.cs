@@ -4,9 +4,9 @@ using PcSoft.ExtendedEditor._90_Scripts._90_Editor;
 using UnityEditor;
 using UnityEngine;
 
-namespace Assets.PcSoft.UnityWorld._90_Scripts._90_Editor.Components
+namespace PcSoft.UnityWorld._90_Scripts._90_Editor.Components
 {
-    public abstract class WorldSystemEditor<T> : ExtendedEditor where T : Enum
+    public abstract class WorldSystemEditor<T> : ExtendedEditor._90_Scripts._90_Editor.ExtendedEditor where T : Enum
     {
         private SerializedProperty[] _sceneProperties;
         private SerializedProperty _initialStateProperty;

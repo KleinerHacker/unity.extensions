@@ -2,18 +2,18 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Assets.PcSoft.ExtendedEditor._90_Scripts._00_Runtime.Extra;
-using Assets.PcSoft.ExtendedEditor._90_Scripts._00_Runtime.Types;
-using Assets.PcSoft.ExtendedEditor._90_Scripts._00_Runtime.Utils;
+using PcSoft.ExtendedEditor._90_Scripts._00_Runtime.Extra;
+using PcSoft.ExtendedEditor._90_Scripts._00_Runtime.Types;
+using PcSoft.ExtendedEditor._90_Scripts._00_Runtime.Utils;
+using PcSoft.ExtendedUnity._90_Scripts.EditorEvents;
 using PcSoft.ExtendedUnity._90_Scripts.Utils.Extensions;
 using PcSoft.UnityBlending._90_Scripts;
-#if UNITY_EDITOR
-using PcSoft.ExtendedUnity._90_Scripts.EditorEvents;
-#endif
 using UnityEngine;
 using UnityEngine.SceneManagement;
+#if UNITY_EDITOR
+#endif
 
-namespace Assets.PcSoft.UnityScene._90_Scripts._00_Runtime.Components
+namespace PcSoft.UnityScene._90_Scripts._00_Runtime.Components
 {
     public abstract class SceneSystem<TScene, T> : MonoBehaviour where TScene : SceneData<T> where T : Enum
     {

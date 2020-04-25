@@ -1,8 +1,8 @@
-using Assets.PcSoft.UnityWorld._90_Scripts._00_Runtime.Assets;
+using PcSoft.UnityWorld._90_Scripts._00_Runtime.Assets;
 using UnityEditor;
 using UnityEditor.Callbacks;
 
-namespace Assets.PcSoft.UnityWorld._90_Scripts._90_Editor
+namespace PcSoft.UnityWorld._90_Scripts._90_Editor
 {
     public static class EditorEvent
     {

@@ -1,4 +1,4 @@
-using Assets.PcSoft.ExtendedEditor._90_Scripts._00_Runtime.Extra;
+using PcSoft.ExtendedEditor._90_Scripts._00_Runtime.Extra;
 using UnityEditor;
 using UnityEngine;
 

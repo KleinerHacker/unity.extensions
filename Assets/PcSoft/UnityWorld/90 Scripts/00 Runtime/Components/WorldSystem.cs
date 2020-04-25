@@ -2,16 +2,16 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Assets.PcSoft.ExtendedEditor._90_Scripts._00_Runtime.Types;
-using Assets.PcSoft.ExtendedEditor._90_Scripts._00_Runtime.Utils;
-using Assets.PcSoft.UnityWorld._90_Scripts._00_Runtime.Assets;
+using PcSoft.ExtendedEditor._90_Scripts._00_Runtime.Types;
+using PcSoft.ExtendedEditor._90_Scripts._00_Runtime.Utils;
 using PcSoft.ExtendedUnity._90_Scripts.EditorEvents;
 using PcSoft.ExtendedUnity._90_Scripts.Utils.Extensions;
 using PcSoft.UnityBlending._90_Scripts;
+using PcSoft.UnityWorld._90_Scripts._00_Runtime.Assets;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace Assets.PcSoft.UnityWorld._90_Scripts._00_Runtime.Components
+namespace PcSoft.UnityWorld._90_Scripts._00_Runtime.Components
 {
     public abstract class WorldSystem<TWorld, T> : MonoBehaviour where TWorld : WorldData<T> where T : Enum
     {

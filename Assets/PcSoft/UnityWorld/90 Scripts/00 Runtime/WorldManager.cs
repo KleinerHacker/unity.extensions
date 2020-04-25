@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Assets.PcSoft.UnityWorld._90_Scripts._00_Runtime.Assets;
+using PcSoft.UnityWorld._90_Scripts._00_Runtime.Assets;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace Assets.PcSoft.UnityWorld._90_Scripts._00_Runtime
+namespace PcSoft.UnityWorld._90_Scripts._00_Runtime
 {
     public static class WorldManager
     {

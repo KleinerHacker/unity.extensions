@@ -1,13 +1,12 @@
-using Assets.PcSoft.UnityWorld._90_Scripts._00_Runtime.Assets;
-using PcSoft.ExtendedEditor._90_Scripts._90_Editor;
+using PcSoft.UnityWorld._90_Scripts._00_Runtime.Assets;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
 
-namespace Assets.PcSoft.UnityWorld._90_Scripts._90_Editor.Assets
+namespace PcSoft.UnityWorld._90_Scripts._90_Editor.Assets
 {
     [CustomEditor(typeof(WorldAsset))]
-    public sealed class WorldAssetEditor : ExtendedEditor
+    public sealed class WorldAssetEditor : ExtendedEditor._90_Scripts._90_Editor.ExtendedEditor
     {
         private ReorderableList _sceneDataList;
 

@@ -1,8 +1,8 @@
 using System;
 using System.Linq;
-using Assets.PcSoft.ExtendedEditor._90_Scripts._00_Runtime.Types;
+using PcSoft.ExtendedEditor._90_Scripts._00_Runtime.Types;
 
-namespace Assets.PcSoft.ExtendedEditor._90_Scripts._00_Runtime.Utils
+namespace PcSoft.ExtendedEditor._90_Scripts._00_Runtime.Utils
 {
     public static class ArrayUtils
     {

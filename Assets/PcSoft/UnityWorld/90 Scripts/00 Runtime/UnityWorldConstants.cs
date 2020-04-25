@@ -1,4 +1,4 @@
-﻿namespace Assets.PcSoft.UnityWorld._90_Scripts._00_Runtime
+﻿namespace PcSoft.UnityWorld._90_Scripts._00_Runtime
 {
     internal static class UnityWorldConstants
     {
