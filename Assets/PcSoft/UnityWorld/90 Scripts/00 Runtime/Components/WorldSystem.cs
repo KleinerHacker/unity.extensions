@@ -65,8 +65,14 @@ namespace PcSoft.UnityWorld._90_Scripts._00_Runtime.Components
         
         protected void ChangeScene(string[] scenes, T targetState, string activeScene, Action onFinished = null)
         {
+            OnLoadingStarted(State);
+            
             State = targetState;
-            blending.ShowBlend(() => DoChangeScene(scenes, activeScene, () => blending.HideBlend(onFinished)));
+            blending.ShowBlend(() => DoChangeScene(scenes, activeScene, () => blending.HideBlend(() =>
+            {
+                OnLoadingFinished(targetState);
+                onFinished?.Invoke();
+            })));
         }
 
         private void DoChangeScene(string[] scenes, string activeScene, Action onFinished)
@@ -117,6 +123,14 @@ namespace PcSoft.UnityWorld._90_Scripts._00_Runtime.Components
 
             _lastScenes = scenes;
             onFinished?.Invoke();
+        }
+        
+        protected virtual void OnLoadingStarted(T oldState)
+        {
+        }
+
+        protected virtual void OnLoadingFinished(T newState)
+        {
         }
     }
 

@@ -61,7 +61,7 @@ namespace PcSoft.UnityScene._90_Scripts._00_Runtime.Components
 
         protected void LoadScene(T state, Action onFinished = null, bool doNotUnload = false)
         {
-            OnLoadingStarted();
+            OnLoadingStarted(State);
 
             string[] oldScenes = null;
             if (!doNotUnload)
@@ -79,7 +79,7 @@ namespace PcSoft.UnityScene._90_Scripts._00_Runtime.Components
                 {
                     blending.HideBlend(() =>
                     {
-                        OnLoadingFinished();
+                        OnLoadingFinished(state);
 
                         State = state;
                         onFinished?.Invoke();
@@ -137,11 +137,11 @@ namespace PcSoft.UnityScene._90_Scripts._00_Runtime.Components
 
         #endregion
 
-        protected virtual void OnLoadingStarted()
+        protected virtual void OnLoadingStarted(T oldState)
         {
         }
 
-        protected virtual void OnLoadingFinished()
+        protected virtual void OnLoadingFinished(T newState)
         {
         }
     }
