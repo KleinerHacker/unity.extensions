@@ -199,6 +199,7 @@ namespace PcSoft.SaveGame._90_Scripts.Serialization
         }
     }
 
+    [Serializable]
     public abstract class SlotData
     {
         public abstract object Identifier { get; }
