@@ -68,24 +68,33 @@ namespace PcSoft.SaveGame._90_Scripts.Serialization
 
         public void Load()
         {
-            using (var fileStream = new FileStream(Application.persistentDataPath + "/" + _filename, FileMode.Open))
+            var saveGameFilename = Application.persistentDataPath + "/" + _filename;
+            try
             {
-                using (var zipStream = new GZipStream(fileStream, CompressionMode.Decompress))
+                Debug.Log("Try to open save game " + saveGameFilename);
+                using (var fileStream = new FileStream(saveGameFilename, FileMode.Open))
                 {
-                    var versionBytes = new byte[sizeof(ulong)];
-                    zipStream.Read(versionBytes, 0, versionBytes.Length);
-                    var version = BitConverter.ToUInt64(versionBytes, 0);
-
-                    if (version < _version)
+                    using (var zipStream = new GZipStream(fileStream, CompressionMode.Decompress))
                     {
-                        Debug.Log("Migrate from version " + version);
-                        LoadMigration(zipStream, version);
+                        var versionBytes = new byte[sizeof(ulong)];
+                        zipStream.Read(versionBytes, 0, versionBytes.Length);
+                        var version = BitConverter.ToUInt64(versionBytes, 0);
 
-                        return;
+                        if (version < _version)
+                        {
+                            Debug.Log("Migrate from version " + version);
+                            LoadMigration(zipStream, version);
+
+                            return;
+                        }
+
+                        Load(zipStream);
                     }
-
-                    Load(zipStream);
                 }
+            }
+            catch (IOException)
+            {
+                Debug.LogWarning("Unable to load save game data from " + saveGameFilename + ", ignore...");
             }
         }
 
@@ -94,24 +103,33 @@ namespace PcSoft.SaveGame._90_Scripts.Serialization
             var op = new AsyncSerialization();
             Task.Run(() =>
             {
-                using (var fileStream = new FileStream(Application.persistentDataPath + "/" + _filename, FileMode.Open))
+                var saveGameFilename = Application.persistentDataPath + "/" + _filename;
+                try
                 {
-                    using (var zipStream = new GZipStream(fileStream, CompressionMode.Decompress))
+                    Debug.Log("Try to open save game " + saveGameFilename);
+                    using (var fileStream = new FileStream(Application.persistentDataPath + "/" + _filename, FileMode.Open))
                     {
-                        var versionBytes = new byte[sizeof(ulong)];
-                        zipStream.Read(versionBytes, 0, versionBytes.Length);
-                        var version = BitConverter.ToUInt64(versionBytes, 0);
-
-                        if (version != _version)
+                        using (var zipStream = new GZipStream(fileStream, CompressionMode.Decompress))
                         {
-                            Debug.Log("Migrate from version " + version);
-                            LoadMigrationAsync(zipStream, version, op);
+                            var versionBytes = new byte[sizeof(ulong)];
+                            zipStream.Read(versionBytes, 0, versionBytes.Length);
+                            var version = BitConverter.ToUInt64(versionBytes, 0);
 
-                            return;
+                            if (version != _version)
+                            {
+                                Debug.Log("Migrate from version " + version);
+                                LoadMigrationAsync(zipStream, version, op);
+
+                                return;
+                            }
+
+                            LoadAsync(zipStream, op);
                         }
-
-                        LoadAsync(zipStream, op);
                     }
+                }
+                catch (IOException)
+                {
+                    Debug.LogWarning("Unable to load save game data from " + saveGameFilename + ", ignore...");
                 }
             });
 
@@ -120,7 +138,10 @@ namespace PcSoft.SaveGame._90_Scripts.Serialization
 
         public void Save()
         {
-            using (var fileStream = new FileStream(Application.persistentDataPath + "/" + _filename, FileMode.Create))
+            var saveGameFilename = Application.persistentDataPath + "/" + _filename;
+            
+            Debug.Log("Try to store save game " + saveGameFilename);
+            using (var fileStream = new FileStream(saveGameFilename, FileMode.Create))
             {
                 using (var zipStream = new GZipStream(fileStream, CompressionMode.Compress))
                 {
@@ -137,6 +158,9 @@ namespace PcSoft.SaveGame._90_Scripts.Serialization
             var op = new AsyncSerialization();
             Task.Run(() =>
             {
+                var saveGameFilename = Application.persistentDataPath + "/" + _filename;
+            
+                Debug.Log("Try to store save game " + saveGameFilename);
                 using (var fileStream = new FileStream(Application.persistentDataPath + "/" + _filename, FileMode.Create))
                 {
                     using (var zipStream = new GZipStream(fileStream, CompressionMode.Compress))
