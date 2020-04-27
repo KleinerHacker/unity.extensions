@@ -5,6 +5,8 @@ namespace PcSoft.SavePrefs._90_Scripts.Utils
 {
     public static class PlayerPrefsEx
     {
+        #region Properties
+
         private static bool _autoSave;
 
         public static bool AutoSave
@@ -20,6 +22,14 @@ namespace PcSoft.SavePrefs._90_Scripts.Utils
             }
         }
 
+        #endregion
+
+        #region Events
+
+        public static event EventHandler<PlayerPrefsChangeEventArgs> OnChanged;
+
+        #endregion
+
         public static bool GetBool(string key, bool def) => PlayerPrefs.GetInt(key, def ? 1 : 0) != 0;
 
         public static void SetBool(string key, bool val)
@@ -29,6 +39,7 @@ namespace PcSoft.SavePrefs._90_Scripts.Utils
             {
                 PlayerPrefs.Save();
             }
+            RaiseChange(PlayerPrefsChangeType.AddOrUpdate, PlayerPrefsDataType.Boolean, key);
         }
 
         public static int GetInt(string key, int def) => PlayerPrefs.GetInt(key, def);
@@ -40,6 +51,7 @@ namespace PcSoft.SavePrefs._90_Scripts.Utils
             {
                 PlayerPrefs.Save();
             }
+            RaiseChange(PlayerPrefsChangeType.AddOrUpdate, PlayerPrefsDataType.Int, key);
         }
 
         public static float GetFloat(string key, float def) => PlayerPrefs.GetFloat(key, def);
@@ -51,6 +63,7 @@ namespace PcSoft.SavePrefs._90_Scripts.Utils
             {
                 PlayerPrefs.Save();
             }
+            RaiseChange(PlayerPrefsChangeType.AddOrUpdate, PlayerPrefsDataType.Float, key);
         }
         
         public static string GetString(string key, string def) => PlayerPrefs.GetString(key, def);
@@ -62,6 +75,7 @@ namespace PcSoft.SavePrefs._90_Scripts.Utils
             {
                 PlayerPrefs.Save();
             }
+            RaiseChange(PlayerPrefsChangeType.AddOrUpdate, PlayerPrefsDataType.String, key);
         }
         
         public static byte[] GetBytes(string key, byte[] def) => Convert.FromBase64String(PlayerPrefs.GetString(key, Convert.ToBase64String(def)));
@@ -73,6 +87,7 @@ namespace PcSoft.SavePrefs._90_Scripts.Utils
             {
                 PlayerPrefs.Save();
             }
+            RaiseChange(PlayerPrefsChangeType.AddOrUpdate, PlayerPrefsDataType.Binary, key);
         }
 
         public static bool HasKey(string key) => PlayerPrefs.HasKey(key);
@@ -113,7 +128,11 @@ namespace PcSoft.SavePrefs._90_Scripts.Utils
             }
         }
 
-        public static void DeleteKey(string key) => PlayerPrefs.DeleteKey(key);
+        public static void DeleteKey(string key)
+        {
+            PlayerPrefs.DeleteKey(key);
+            RaiseChange(PlayerPrefsChangeType.Delete, PlayerPrefsDataType.Unspecific, key);
+        }
 
         public static void DeleteKeys(params string[] keys)
         {
@@ -121,9 +140,14 @@ namespace PcSoft.SavePrefs._90_Scripts.Utils
             {
                 PlayerPrefs.DeleteKey(key);
             }
+            RaiseChange(PlayerPrefsChangeType.Delete, PlayerPrefsDataType.Unspecific, keys);
         }
 
-        public static void DeleteAll() => PlayerPrefs.DeleteAll();
+        public static void DeleteAll()
+        {
+            PlayerPrefs.DeleteAll();
+            RaiseChange(PlayerPrefsChangeType.DeleteAll, PlayerPrefsDataType.Unspecific);
+        }
 
         public static void Save()
         {
@@ -132,6 +156,11 @@ namespace PcSoft.SavePrefs._90_Scripts.Utils
             
             PlayerPrefs.Save();
         }
+
+        private static void RaiseChange(PlayerPrefsChangeType changeType, PlayerPrefsDataType dataType, params string[] keys)
+        {
+            OnChanged?.Invoke(null, new PlayerPrefsChangeEventArgs(keys, changeType, dataType));
+        }
     }
 
     public enum KeySearchType
@@ -139,5 +168,36 @@ namespace PcSoft.SavePrefs._90_Scripts.Utils
         All,
         Any,
         None
+    }
+
+    public class PlayerPrefsChangeEventArgs : EventArgs
+    {
+        public string[] Keys { get; }
+        public PlayerPrefsChangeType ChangeType { get; }
+        public PlayerPrefsDataType DataType { get; }
+
+        public PlayerPrefsChangeEventArgs(string[] keys, PlayerPrefsChangeType changeType, PlayerPrefsDataType dataType)
+        {
+            Keys = keys;
+            ChangeType = changeType;
+            DataType = dataType;
+        }
+    }
+
+    public enum PlayerPrefsChangeType
+    {
+        AddOrUpdate,
+        Delete,
+        DeleteAll
+    }
+
+    public enum PlayerPrefsDataType
+    {
+        Unspecific,
+        String,
+        Int,
+        Float,
+        Boolean,
+        Binary
     }
 }
