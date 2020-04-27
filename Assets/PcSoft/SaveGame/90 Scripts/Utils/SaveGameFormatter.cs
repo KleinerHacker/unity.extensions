@@ -38,18 +38,23 @@ namespace PcSoft.SaveGame._90_Scripts.Utils
 
         public void Serialize<T>(T o) where T : class
         {
+            if (o == null)
+                throw new ArgumentException("object is null");
+
             new BinaryWriter(BaseStream, Encoding.UTF8).Write(_version);
             SerializeNext(BaseStream, o);
         }
 
         private void SerializeNext(Stream stream, object o)
         {
+            stream.WriteByte((byte) (o == null ? 0x00 : 0xFF));
+            if (o == null)
+                return;
+
             var type = o.GetType();
 
             if (!type.IsSerializable)
                 throw new SerializationException("Type " + type.FullName + " is not marked as serializable");
-            if (type.GetConstructor(new Type[0]) == null)
-                throw new SerializationException("Type " + type.FullName + " has no default constructor");
 
             new BinaryWriter(stream, Encoding.UTF8).Write(type.FullName);
             foreach (var field in type.GetRuntimeFields())
@@ -85,18 +90,19 @@ namespace PcSoft.SaveGame._90_Scripts.Utils
 
         private object DeserializeNext(Stream stream, ulong objectVersion)
         {
+            var nullByte = stream.ReadByte();
+            if (nullByte == 0x00) //Value was NULL
+                return null;
+
             var typeName = new BinaryReader(stream, Encoding.UTF8).ReadString();
             var type = Type.GetType(typeName);
             if (type == null)
-                throw new SerializationException("Unable to find needed type " + typeName);
+                throw new SerializationException("Unable to find needed type <" + typeName + "> (" + stream.Position + ")");
 
             if (!type.IsSerializable)
                 throw new SerializationException("Type " + type.FullName + " is not marked as serializable");
-            var defaultConstructor = type.GetConstructor(new Type[0]);
-            if (defaultConstructor == null)
-                throw new SerializationException("Type " + type.FullName + " has no default constructor");
 
-            var o = defaultConstructor.Invoke(new object[0]);
+            var o = Activator.CreateInstance(type, true);
             foreach (var field in type.GetRuntimeFields())
             {
                 if (field.IsNotSerialized)

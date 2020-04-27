@@ -120,9 +120,6 @@ namespace PcSoft.SaveGame._90_Scripts.Serialization
             {
                 using (var zipStream = new GZipStream(fileStream, CompressionMode.Compress))
                 {
-                    var versionBytes = BitConverter.GetBytes(_version);
-                    zipStream.Write(versionBytes, 0, versionBytes.Length);
-
                     Save(new SaveGameFormatter(zipStream, _version));
                 }
             }
@@ -140,9 +137,6 @@ namespace PcSoft.SaveGame._90_Scripts.Serialization
                 {
                     using (var zipStream = new GZipStream(fileStream, CompressionMode.Compress))
                     {
-                        var versionBytes = BitConverter.GetBytes(_version);
-                        zipStream.Write(versionBytes, 0, versionBytes.Length);
-
                         SaveAsync(new SaveGameFormatter(zipStream, _version), op);
                     }
                 }
