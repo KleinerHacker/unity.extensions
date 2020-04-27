@@ -1,9 +1,13 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
+using PcSoft.SaveGame._90_Scripts.Utils.Extensions;
 using UnityEngine;
 
 namespace PcSoft.SaveGame._90_Scripts.Utils
@@ -68,10 +72,22 @@ namespace PcSoft.SaveGame._90_Scripts.Utils
                 if (versionHint != null && (_version < versionHint.SinceVersion || _version > versionHint.UntilVersion))
                     continue;
 
-                if (field.FieldType.IsPrimitive)
+                if (field.FieldType.IsPrimitive || field.FieldType == typeof(string))
                 {
                     var value = field.GetValue(o);
                     SerializePrimitiveValue(stream, value);
+                }
+                else if (typeof(IEnumerable).IsAssignableFrom(field.FieldType))
+                {
+                    var value = (IEnumerable) field.GetValue(o);
+                    stream.WriteByte((byte) (value == null ? 0x00 : 0xFF));
+
+                    new BinaryWriter(stream, Encoding.UTF8).Write(value.GetType().FullName);
+                    new BinaryWriter(stream).Write(value.Count());
+                    foreach (var item in value)
+                    {
+                        SerializeNext(stream, item);
+                    }
                 }
                 else
                 {
@@ -95,7 +111,7 @@ namespace PcSoft.SaveGame._90_Scripts.Utils
                 return null;
 
             var typeName = new BinaryReader(stream, Encoding.UTF8).ReadString();
-            var type = Type.GetType(typeName);
+            var type = FindType(typeName, Assembly.GetEntryAssembly());
             if (type == null)
                 throw new SerializationException("Unable to find needed type <" + typeName + "> (" + stream.Position + ")");
 
@@ -112,10 +128,27 @@ namespace PcSoft.SaveGame._90_Scripts.Utils
                 if (versionHint != null && (objectVersion < versionHint.SinceVersion || objectVersion > versionHint.UntilVersion))
                     continue;
 
-                if (field.FieldType.IsPrimitive)
+                if (field.FieldType.IsPrimitive || field.FieldType == typeof(string))
                 {
                     var value = DeserializePrimitiveValue(stream);
                     field.SetValue(o, value);
+                }
+                else if (field.FieldType.IsArray)
+                {
+                    var nByte = stream.ReadByte();
+                    if (nByte == 0x00)
+                        continue;
+
+                    var enumTypeName = new BinaryReader(stream, Encoding.UTF8).ReadString();
+                    var enumType = FindType(enumTypeName, Assembly.GetEntryAssembly());
+                    var count = new BinaryReader(stream).ReadInt32();
+
+                    var value = (IEnumerable) Activator.CreateInstance(enumType);
+                    for (var i = 0; i < count; i++)
+                    {
+                        var item = DeserializeNext(stream, objectVersion);
+                        value.Append(item);
+                    }
                 }
                 else
                 {
@@ -142,6 +175,18 @@ namespace PcSoft.SaveGame._90_Scripts.Utils
         private static object DeserializePrimitiveValue(Stream stream)
         {
             return new BinaryFormatter().Deserialize(stream);
+        }
+
+        private static Type FindType(string name, Assembly assembly)
+        {
+            var type = assembly.GetType(name);
+            if (type != null)
+                return type;
+
+            return assembly.GetReferencedAssemblies()
+                .Select(Assembly.Load)
+                .Select(asm => FindType(name, asm))
+                .FirstOrDefault(t => t != null);
         }
     }
 

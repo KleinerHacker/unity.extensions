@@ -15,5 +15,10 @@ namespace PcSoft.SaveGame._90_Scripts.Utils.Extensions
         {
             return Enumerable.ElementAt(e.Cast<object>(), index);
         }
+
+        public static void Append(this IEnumerable e, object o)
+        {
+            Enumerable.Append(e.Cast<object>(), o);
+        }
     }
 }
