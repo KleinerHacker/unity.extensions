@@ -21,12 +21,12 @@ namespace PcSoft.ExtendedUnity._90_Scripts._90_Editor.EditorActions
             }
         }
         
-        [MenuItem("Tools/Data/Delete All Save Data")]
+        [MenuItem("Tools/Data/Delete All Persistence Data")]
         public static void DeleteAllSaveData()
         {
-            if (EditorUtility.DisplayDialog("Delete All Save Data", "You are sure to delete all save data?", "Yes", "No"))
+            if (EditorUtility.DisplayDialog("Delete All Persistence Data", "You are sure to delete all persistence data?", "Yes", "No"))
             {
-                Debug.Log("Delete all save data");
+                Debug.Log("Delete all persistence data");
                 
                 foreach (var file in Directory.EnumerateFiles(Application.persistentDataPath))
                 {
