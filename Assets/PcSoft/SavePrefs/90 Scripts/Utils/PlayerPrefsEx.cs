@@ -1,10 +1,14 @@
 using System;
+using System.Runtime.Serialization;
 using UnityEngine;
 
 namespace PcSoft.SavePrefs._90_Scripts.Utils
 {
     public static class PlayerPrefsEx
     {
+        private static readonly DateTimeFormat DateFormat = new DateTimeFormat("dd-MM-yyyy hh:mm:ss");
+        private static readonly DateTimeFormat SpanFormat = new DateTimeFormat("hh:mm:ss");
+        
         #region Properties
 
         private static bool _autoSave;
@@ -88,6 +92,21 @@ namespace PcSoft.SavePrefs._90_Scripts.Utils
                 PlayerPrefs.Save();
             }
             RaiseChange(PlayerPrefsChangeType.AddOrUpdate, PlayerPrefsDataType.Binary, key);
+        }
+        
+        public static DateTime GetDateTime(string key, DateTime def)
+        {
+            return DateTime.Parse(PlayerPrefs.GetString(key, def.ToString(DateFormat.FormatProvider)), DateFormat.FormatProvider);
+        }
+
+        public static void SetDateTime(string key, DateTime val)
+        {
+            PlayerPrefs.SetString(key, val.ToString(DateFormat.FormatProvider));
+        }
+
+        public static TimeSpan GetTimeSpan(string key, TimeSpan def)
+        {
+            return TimeSpan.Parse(PlayerPrefs.GetString(key, def.ToString()));
         }
 
         public static bool HasKey(string key) => PlayerPrefs.HasKey(key);
