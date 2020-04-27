@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using PcSoft.ExtendedEditor._90_Scripts._00_Runtime.Types;
 
@@ -6,17 +7,20 @@ namespace PcSoft.ExtendedEditor._90_Scripts._00_Runtime.Utils
 {
     public static class ArrayUtils
     {
-        public static T[] CreateIdentifierArray<T,TE>() where T : IIdentifiedObject<TE> where TE : Enum
+        public static T[] CreateIdentifierArray<T,TE>(params TE[] excludes) where T : IIdentifiedObject<TE> where TE : Enum
         {
             var sceneStates = Enum.GetValues(typeof(TE)).Cast<TE>().ToArray();
-            var array = new T[sceneStates.Length];
+            var list = new List<T>();
 
-            for (var i = 0; i < sceneStates.Length; i++)
+            foreach (var state in sceneStates)
             {
-                array[i] = (T) typeof(T).GetConstructor(new []{typeof(TE)}).Invoke(new object[] {sceneStates[i]});
+                if (excludes.Contains(state))
+                    continue;
+                
+                list.Add((T) typeof(T).GetConstructor(new []{typeof(TE)}).Invoke(new object[] {state}));
             }
 
-            return array;
+            return list.ToArray();
         }
     }
 }
