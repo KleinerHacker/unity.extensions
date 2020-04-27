@@ -1,9 +1,9 @@
 using System;
 using UnityEngine;
 
-namespace PcSoft.ExtendedUnity._90_Scripts._00_Runtime.Utils
+namespace PcSoft.SavePrefs._90_Scripts.Utils
 {
-    public static class PlayerPrefEx
+    public static class PlayerPrefsEx
     {
         private static bool _autoSave;
 
