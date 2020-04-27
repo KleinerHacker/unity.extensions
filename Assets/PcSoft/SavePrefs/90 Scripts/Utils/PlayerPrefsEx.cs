@@ -74,5 +74,70 @@ namespace PcSoft.SavePrefs._90_Scripts.Utils
                 PlayerPrefs.Save();
             }
         }
+
+        public static bool HasKey(string key) => PlayerPrefs.HasKey(key);
+        
+        public static bool HasKeys(KeySearchType type, params string[] keys)
+        {
+            foreach (var key in keys)
+            {
+                switch (type)
+                {
+                    case KeySearchType.All:
+                        if (!PlayerPrefs.HasKey(key))
+                            return false;
+                        break;
+                    case KeySearchType.Any:
+                        if (PlayerPrefs.HasKey(key))
+                            return true;
+                        break;
+                    case KeySearchType.None:
+                        if (PlayerPrefs.HasKey(key))
+                            return false;
+                        break;
+                    default:
+                        throw new NotImplementedException();
+                }
+            }
+
+            switch (type)
+            {
+                case KeySearchType.All:
+                    return true;
+                case KeySearchType.Any:
+                    return false;
+                case KeySearchType.None:
+                    return true;
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+
+        public static void DeleteKey(string key) => PlayerPrefs.DeleteKey(key);
+
+        public static void DeleteKeys(params string[] keys)
+        {
+            foreach (var key in keys)
+            {
+                PlayerPrefs.DeleteKey(key);
+            }
+        }
+
+        public static void DeleteAll() => PlayerPrefs.DeleteAll();
+
+        public static void Save()
+        {
+            if (AutoSave)
+                throw new InvalidOperationException("Auto save is on, please do not call this method or disable auto save");
+            
+            PlayerPrefs.Save();
+        }
+    }
+
+    public enum KeySearchType
+    {
+        All,
+        Any,
+        None
     }
 }
