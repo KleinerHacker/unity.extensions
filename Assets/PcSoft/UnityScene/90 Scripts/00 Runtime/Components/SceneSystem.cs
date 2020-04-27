@@ -37,7 +37,7 @@ namespace PcSoft.UnityScene._90_Scripts._00_Runtime.Components
         public T State { get; protected set; }
 
         #endregion
-        
+
         private readonly bool _firstLoadImmediately;
 
         protected SceneSystem(bool firstLoadImmediately = false)
@@ -118,8 +118,8 @@ namespace PcSoft.UnityScene._90_Scripts._00_Runtime.Components
 
             foreach (var newScene in newScenes)
             {
-                SceneManager.LoadScene(newScene, LoadSceneMode.Additive);
-                SceneManager.SetActiveScene(SceneManager.GetSceneByPath(newScene));
+                var op = SceneManager.LoadSceneAsync(newScene, LoadSceneMode.Additive);
+                op.completed += operation => SceneManager.SetActiveScene(SceneManager.GetSceneByPath(newScenes[0]));
             }
         }
 
@@ -143,7 +143,7 @@ namespace PcSoft.UnityScene._90_Scripts._00_Runtime.Components
             {
                 var operation = SceneManager.LoadSceneAsync(newScene, LoadSceneMode.Additive);
                 operation.allowSceneActivation = false;
-                operation.completed += asyncOperation => SceneManager.SetActiveScene(SceneManager.GetSceneByPath(newScene));
+                operation.completed += asyncOperation => SceneManager.SetActiveScene(SceneManager.GetSceneByPath(newScenes[0]));
 
                 operations.Add(operation);
             }
