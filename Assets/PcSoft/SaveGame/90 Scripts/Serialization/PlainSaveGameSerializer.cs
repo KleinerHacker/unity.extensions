@@ -1,14 +1,10 @@
 using System;
-using System.IO;
-using System.Runtime.InteropServices;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Threading.Tasks;
 using PcSoft.SaveGame._90_Scripts.Types;
-using UnityEngine;
+using PcSoft.SaveGame._90_Scripts.Utils;
 
 namespace PcSoft.SaveGame._90_Scripts.Serialization
 {
-    public class PlainSaveGameSerializer<T> : SaveGameSerializer
+    public class PlainSaveGameSerializer<T> : SaveGameSerializer where T : class
     {
         private T _saveGame;
 
@@ -37,35 +33,21 @@ namespace PcSoft.SaveGame._90_Scripts.Serialization
             SaveGame = defaultSaveGame;
         }
 
-        protected override void LoadAsync(Stream stream, AsyncSerialization op)
+        protected override void LoadAsync(SaveGameFormatter formatter, AsyncSerialization op)
         {
-            var formatter = new BinaryFormatter();
             lock (_saveGame)
             {
-                SaveGame = (T) formatter.Deserialize(stream);
+                SaveGame = formatter.Deserialize(Migrator);
             }
 
             op?.Completed();
         }
 
-        protected override void LoadMigrationAsync(Stream stream, ulong version, AsyncSerialization op)
+        protected override void SaveAsync(SaveGameFormatter formatter, AsyncSerialization op)
         {
-            var formatter = new BinaryFormatter();
             lock (_saveGame)
             {
-                var oldSaveGame = (T) formatter.Deserialize(stream);
-                SaveGame = Migrator != null ? Migrator.Invoke(version, oldSaveGame) : oldSaveGame;
-            }
-
-            op?.Completed();
-        }
-
-        protected override void SaveAsync(Stream stream, AsyncSerialization op)
-        {
-            var formatter = new BinaryFormatter();
-            lock (_saveGame)
-            {
-                formatter.Serialize(stream, SaveGame);
+                formatter.Serialize(SaveGame);
             }
 
             op?.Completed();

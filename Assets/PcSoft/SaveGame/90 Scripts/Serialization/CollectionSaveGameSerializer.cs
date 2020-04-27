@@ -1,14 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Threading.Tasks;
 using PcSoft.SaveGame._90_Scripts.Types;
-using UnityEngine;
+using PcSoft.SaveGame._90_Scripts.Utils;
 
 namespace PcSoft.SaveGame._90_Scripts.Serialization
 {
-    public class CollectionSaveGameSerializer<T> : SaveGameSerializer
+    public class CollectionSaveGameSerializer<T> : SaveGameSerializer where T : class
     {
         private readonly IList<T> _saveGameList = new List<T>();
 
@@ -29,75 +27,42 @@ namespace PcSoft.SaveGame._90_Scripts.Serialization
         {
         }
 
-        protected override void LoadAsync(Stream stream, AsyncSerialization op)
+        protected override void LoadAsync(SaveGameFormatter formatter, AsyncSerialization op)
         {
-            var formatter = new BinaryFormatter();
             lock (_saveGameList)
             {
                 SaveGameList.Clear();
-                using (var reader = new BinaryReader(stream))
-                {
-                    var count = reader.ReadInt32();
-                    for (var i = 0; i < count; i++)
-                    {
-                        if (op != null)
-                        {
-                            op.Progress = (float) i / count;
-                        }
 
-                        var saveGame = (T) formatter.Deserialize(stream);
-                        SaveGameList.Add(saveGame);
+                var count = new BinaryReader(formatter.BaseStream).ReadInt32();
+                for (var i = 0; i < count; i++)
+                {
+                    if (op != null)
+                    {
+                        op.Progress = (float) i / count;
                     }
+
+                    var saveGame = formatter.Deserialize(Migrator);
+                    SaveGameList.Add(saveGame);
                 }
             }
 
             op?.Completed();
         }
 
-        protected override void LoadMigrationAsync(Stream stream, ulong version, AsyncSerialization op)
+        protected override void SaveAsync(SaveGameFormatter formatter, AsyncSerialization op)
         {
-            var formatter = new BinaryFormatter();
             lock (_saveGameList)
             {
-                SaveGameList.Clear();
-                using (var reader = new BinaryReader(stream))
+                new BinaryWriter(formatter.BaseStream).Write(SaveGameList.Count);
+                for (var i = 0; i < SaveGameList.Count; i++)
                 {
-                    var count = reader.ReadInt32();
-                    for (var i = 0; i < count; i++)
+                    if (op != null)
                     {
-                        if (op != null)
-                        {
-                            op.Progress = (float) i / count;
-                        }
-
-                        var oldSaveGame = (T) formatter.Deserialize(stream);
-                        var saveGame = Migrator != null ? Migrator.Invoke(version, oldSaveGame) : oldSaveGame;
-                        SaveGameList.Add(saveGame);
+                        op.Progress = (float) i / SaveGameList.Count;
                     }
-                }
-            }
 
-            op?.Completed();
-        }
-
-        protected override void SaveAsync(Stream stream, AsyncSerialization op)
-        {
-            var formatter = new BinaryFormatter();
-            lock (_saveGameList)
-            {
-                using (var writer = new BinaryWriter(stream))
-                {
-                    writer.Write(SaveGameList.Count);
-                    for (var i = 0; i < SaveGameList.Count; i++)
-                    {
-                        if (op != null)
-                        {
-                            op.Progress = (float) i / SaveGameList.Count;
-                        }
-
-                        var saveGame = SaveGameList[i];
-                        formatter.Serialize(stream, saveGame);
-                    }
+                    var saveGame = SaveGameList[i];
+                    formatter.Serialize(saveGame);
                 }
             }
 

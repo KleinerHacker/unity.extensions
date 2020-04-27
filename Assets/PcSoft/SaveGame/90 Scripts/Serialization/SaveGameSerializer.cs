@@ -3,9 +3,8 @@ using System.IO;
 using System.IO.Compression;
 using System.Threading.Tasks;
 using PcSoft.SaveGame._90_Scripts.Types;
+using PcSoft.SaveGame._90_Scripts.Utils;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using CompressionLevel = System.IO.Compression.CompressionLevel;
 
 namespace PcSoft.SaveGame._90_Scripts.Serialization
 {
@@ -15,12 +14,12 @@ namespace PcSoft.SaveGame._90_Scripts.Serialization
 
         #region Static Factory
 
-        public static PlainSaveGameSerializer<T> CreatePlain<T>(ulong version, string filename, T defaultSaveGame = default)
+        public static PlainSaveGameSerializer<T> CreatePlain<T>(ulong version, string filename, T defaultSaveGame = default) where T : class
         {
             return new PlainSaveGameSerializer<T>(filename, version, defaultSaveGame);
         }
 
-        public static PlainSaveGameSerializer<T> CreatePlain<T>(ulong version, T defaultSaveGame = default)
+        public static PlainSaveGameSerializer<T> CreatePlain<T>(ulong version, T defaultSaveGame = default) where T : class
         {
             return new PlainSaveGameSerializer<T>(DefaultFilename, version, defaultSaveGame);
         }
@@ -35,7 +34,7 @@ namespace PcSoft.SaveGame._90_Scripts.Serialization
             return new PlainSaveGameSerializer(DefaultFilename, version, defaultSaveGame);
         }
 
-        public static CollectionSaveGameSerializer<T> CreateCollection<T>(ulong version, string filename = DefaultFilename)
+        public static CollectionSaveGameSerializer<T> CreateCollection<T>(ulong version, string filename = DefaultFilename) where T : class
         {
             return new CollectionSaveGameSerializer<T>(filename, version);
         }
@@ -45,7 +44,7 @@ namespace PcSoft.SaveGame._90_Scripts.Serialization
             return new CollectionSaveGameSerializer(filename, version);
         }
 
-        public static SlotSaveGameSerializer<TS, TM> CreateSlot<TS, TM>(ulong version, string filename = DefaultFilename) where TS : SlotData
+        public static SlotSaveGameSerializer<TS, TM> CreateSlot<TS, TM>(ulong version, string filename = DefaultFilename) where TS : SlotData where TM : class
         {
             return new SlotSaveGameSerializer<TS, TM>(filename, version);
         }
@@ -76,19 +75,7 @@ namespace PcSoft.SaveGame._90_Scripts.Serialization
                 {
                     using (var zipStream = new GZipStream(fileStream, CompressionMode.Decompress))
                     {
-                        var versionBytes = new byte[sizeof(ulong)];
-                        zipStream.Read(versionBytes, 0, versionBytes.Length);
-                        var version = BitConverter.ToUInt64(versionBytes, 0);
-
-                        if (version < _version)
-                        {
-                            Debug.Log("Migrate from version " + version);
-                            LoadMigration(zipStream, version);
-
-                            return;
-                        }
-
-                        Load(zipStream);
+                        Load(new SaveGameFormatter(zipStream, _version));
                     }
                 }
             }
@@ -111,19 +98,7 @@ namespace PcSoft.SaveGame._90_Scripts.Serialization
                     {
                         using (var zipStream = new GZipStream(fileStream, CompressionMode.Decompress))
                         {
-                            var versionBytes = new byte[sizeof(ulong)];
-                            zipStream.Read(versionBytes, 0, versionBytes.Length);
-                            var version = BitConverter.ToUInt64(versionBytes, 0);
-
-                            if (version != _version)
-                            {
-                                Debug.Log("Migrate from version " + version);
-                                LoadMigrationAsync(zipStream, version, op);
-
-                                return;
-                            }
-
-                            LoadAsync(zipStream, op);
+                            LoadAsync(new SaveGameFormatter(zipStream, _version), op);
                         }
                     }
                 }
@@ -139,7 +114,7 @@ namespace PcSoft.SaveGame._90_Scripts.Serialization
         public void Save()
         {
             var saveGameFilename = Application.persistentDataPath + "/" + _filename;
-            
+
             Debug.Log("Try to store save game " + saveGameFilename);
             using (var fileStream = new FileStream(saveGameFilename, FileMode.Create))
             {
@@ -148,7 +123,7 @@ namespace PcSoft.SaveGame._90_Scripts.Serialization
                     var versionBytes = BitConverter.GetBytes(_version);
                     zipStream.Write(versionBytes, 0, versionBytes.Length);
 
-                    Save(zipStream);
+                    Save(new SaveGameFormatter(zipStream, _version));
                 }
             }
         }
@@ -159,7 +134,7 @@ namespace PcSoft.SaveGame._90_Scripts.Serialization
             Task.Run(() =>
             {
                 var saveGameFilename = Application.persistentDataPath + "/" + _filename;
-            
+
                 Debug.Log("Try to store save game " + saveGameFilename);
                 using (var fileStream = new FileStream(Application.persistentDataPath + "/" + _filename, FileMode.Create))
                 {
@@ -168,7 +143,7 @@ namespace PcSoft.SaveGame._90_Scripts.Serialization
                         var versionBytes = BitConverter.GetBytes(_version);
                         zipStream.Write(versionBytes, 0, versionBytes.Length);
 
-                        SaveAsync(zipStream, op);
+                        SaveAsync(new SaveGameFormatter(zipStream, _version), op);
                     }
                 }
             });
@@ -176,22 +151,18 @@ namespace PcSoft.SaveGame._90_Scripts.Serialization
             return op;
         }
 
-        private void Load(Stream stream)
+        private void Load(SaveGameFormatter formatter)
         {
-            LoadAsync(stream, null);
+            LoadAsync(formatter, null);
         }
-        protected abstract void LoadAsync(Stream stream, AsyncSerialization asyncSerialization);
 
-        private void LoadMigration(Stream stream, ulong version)
-        {
-            LoadMigrationAsync(stream, version, null);
-        }
-        protected abstract void LoadMigrationAsync(Stream stream, ulong version, AsyncSerialization asyncSerialization);
+        protected abstract void LoadAsync(SaveGameFormatter formatter, AsyncSerialization asyncSerialization);
 
-        private void Save(Stream stream)
+        private void Save(SaveGameFormatter formatter)
         {
-            SaveAsync(stream, null);
+            SaveAsync(formatter, null);
         }
-        protected abstract void SaveAsync(Stream stream, AsyncSerialization asyncSerialization);
+
+        protected abstract void SaveAsync(SaveGameFormatter formatter, AsyncSerialization asyncSerialization);
     }
 }

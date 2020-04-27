@@ -2,14 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Threading.Tasks;
 using PcSoft.SaveGame._90_Scripts.Types;
-using PcSoft.SaveGame._90_Scripts.Utils.Extensions;
+using PcSoft.SaveGame._90_Scripts.Utils;
 
 namespace PcSoft.SaveGame._90_Scripts.Serialization
 {
-    public class SlotSaveGameSerializer<TS, TM> : SaveGameSerializer where TS : SlotData
+    public class SlotSaveGameSerializer<TS, TM> : SaveGameSerializer where TS : SlotData where TM : class
     {
         public TS[] Slots
         {
@@ -79,8 +77,8 @@ namespace PcSoft.SaveGame._90_Scripts.Serialization
             {
                 if (!HasData(identifier))
                     return default;
-                
-                return  _saveGameDictionary.First(x => Equals(x.Key.Identifier, identifier)).Value;
+
+                return _saveGameDictionary.First(x => Equals(x.Key.Identifier, identifier)).Value;
             }
         }
 
@@ -106,85 +104,46 @@ namespace PcSoft.SaveGame._90_Scripts.Serialization
             }
         }
 
-        protected override void LoadAsync(Stream stream, AsyncSerialization op)
+        protected override void LoadAsync(SaveGameFormatter formatter, AsyncSerialization op)
         {
-            var formatter = new BinaryFormatter();
             lock (_saveGameDictionary)
             {
                 _saveGameDictionary.Clear();
 
-                using (var reader = new BinaryReader(stream))
+                var count = new BinaryReader(formatter.BaseStream).ReadInt32();
+                for (var i = 0; i < count; i++)
                 {
-                    var count = reader.ReadInt32();
-                    for (var i = 0; i < count; i++)
+                    if (op != null)
                     {
-                        if (op != null)
-                        {
-                            op.Progress = (float) i / count;
-                        }
-
-                        var slotData = (TS) formatter.Deserialize(stream);
-                        var modelData = (TM) formatter.Deserialize(stream);
-
-                        _saveGameDictionary.Add(slotData, modelData);
+                        op.Progress = (float) i / count;
                     }
+
+                    var slotData = formatter.Deserialize(SlotMigrator);
+                    var modelData = formatter.Deserialize(ModelMigrator);
+
+                    _saveGameDictionary.Add(slotData, modelData);
                 }
             }
 
             op?.Completed();
         }
 
-        protected override void LoadMigrationAsync(Stream stream, ulong version, AsyncSerialization op)
+        protected override void SaveAsync(SaveGameFormatter formatter, AsyncSerialization op)
         {
-            var formatter = new BinaryFormatter();
             lock (_saveGameDictionary)
             {
-                _saveGameDictionary.Clear();
-
-                using (var reader = new BinaryReader(stream))
+                new BinaryWriter(formatter.BaseStream).Write(_saveGameDictionary.Count);
+                for (var i = 0; i < _saveGameDictionary.Count; i++)
                 {
-                    var count = reader.ReadInt32();
-                    for (var i = 0; i < count; i++)
+                    if (op != null)
                     {
-                        if (op != null)
-                        {
-                            op.Progress = (float) i / count;
-                        }
-
-                        var oldSlotData = (TS) formatter.Deserialize(stream);
-                        var oldModelData = (TM) formatter.Deserialize(stream);
-
-                        var slotData = SlotMigrator != null ? SlotMigrator.Invoke(version, oldSlotData) : oldSlotData;
-                        var modelData = ModelMigrator != null ? ModelMigrator.Invoke(version, oldModelData) : oldModelData;
-
-                        _saveGameDictionary.Add(slotData, modelData);
+                        op.Progress = (float) i / _saveGameDictionary.Count;
                     }
-                }
-            }
 
-            op?.Completed();
-        }
+                    var pair = _saveGameDictionary.ElementAt(i);
 
-        protected override void SaveAsync(Stream stream, AsyncSerialization op)
-        {
-            var formatter = new BinaryFormatter();
-            lock (_saveGameDictionary)
-            {
-                using (var writer = new BinaryWriter(stream))
-                {
-                    writer.Write(_saveGameDictionary.Count);
-                    for (var i = 0; i < _saveGameDictionary.Count; i++)
-                    {
-                        if (op != null)
-                        {
-                            op.Progress = (float) i / _saveGameDictionary.Count;
-                        }
-
-                        var pair = _saveGameDictionary.ElementAt(i);
-
-                        formatter.Serialize(stream, pair.Key);
-                        formatter.Serialize(stream, pair.Value);
-                    }
+                    formatter.Serialize(pair.Key);
+                    formatter.Serialize(pair.Value);
                 }
             }
 
