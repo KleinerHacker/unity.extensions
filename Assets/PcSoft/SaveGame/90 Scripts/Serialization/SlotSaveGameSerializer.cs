@@ -31,7 +31,7 @@ namespace PcSoft.SaveGame._90_Scripts.Serialization
         {
         }
 
-        public void AddOrSetData(TS slotData, TM modelData)
+        public void AddOrReplaceData(TS slotData, TM modelData)
         {
             lock (_saveGameDictionary)
             {
@@ -54,6 +54,14 @@ namespace PcSoft.SaveGame._90_Scripts.Serialization
             }
         }
 
+        public bool HasData(object identifier)
+        {
+            lock (_saveGameDictionary)
+            {
+                return _saveGameDictionary.Keys.Any(x => Equals(x.Identifier, identifier));
+            }
+        }
+
         public TM GetData(TS slotData)
         {
             lock (_saveGameDictionary)
@@ -65,6 +73,17 @@ namespace PcSoft.SaveGame._90_Scripts.Serialization
             }
         }
 
+        public TM GetData(object identifier)
+        {
+            lock (_saveGameDictionary)
+            {
+                if (!HasData(identifier))
+                    return default;
+                
+                return  _saveGameDictionary.First(x => Equals(x.Key.Identifier, identifier)).Value;
+            }
+        }
+
         public void RemoveData(TS slotData)
         {
             lock (_saveGameDictionary)
@@ -73,6 +92,17 @@ namespace PcSoft.SaveGame._90_Scripts.Serialization
                     return;
 
                 _saveGameDictionary.Remove(slotData);
+            }
+        }
+
+        public void RemoveData(object identifier)
+        {
+            lock (_saveGameDictionary)
+            {
+                if (!HasData(identifier))
+                    return;
+
+                _saveGameDictionary.Remove(_saveGameDictionary.Keys.First(x => Equals(x.Identifier, identifier)));
             }
         }
 
