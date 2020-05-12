@@ -9,6 +9,12 @@ namespace PcSoft.DynamicAssets._90_Scripts.Loader
 {
     public sealed class AssetEditorLoader : AssetBaseLoader
     {
+        public static AssetEditorLoader Instance { get; } = new AssetEditorLoader();
+
+        private AssetEditorLoader()
+        {
+        }
+
         protected override IDictionary<Type, Object[]> LoadFrom(Type[] types, string path)
         {
             return types.ToDictionary(x => x, x => AssetDatabase.LoadAllAssetsAtPath(path));
