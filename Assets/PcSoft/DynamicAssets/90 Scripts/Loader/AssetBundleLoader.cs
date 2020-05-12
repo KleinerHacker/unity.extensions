@@ -2,68 +2,88 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using PcSoft.DynamicAssets._90_Scripts.Assets;
-using PcSoft.DynamicAssets._90_Scripts.Assets.Types;
+using System.Threading;
+using System.Threading.Tasks;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
 namespace PcSoft.DynamicAssets._90_Scripts.Loader
 {
-    public sealed class AssetBundleLoader : AssetBaseLoader<AssetBundles, ExtendedPathInfo>
+    public sealed class AssetBundleLoader : AssetBaseLoader
     {
         public static AssetBundleLoader Instance { get; } = new AssetBundleLoader();
-        
-        protected override AssetBundles AssetInstance => AssetBundles.Instance;
-        
-        private readonly IDictionary<string, AssetBundle> _bundles = new Dictionary<string, AssetBundle>();
 
         private AssetBundleLoader()
         {
         }
-        
-        public AssetBundleCreateRequest[] InitializeAsync()
-        {
-            if (IsInitialized)
-                throw new InvalidOperationException("Already initialized");
 
-            var asyncList = new List<AssetBundleCreateRequest>();
-            foreach (var path in AssetInstance.Paths)
+        protected override IDictionary<Type, Object[]> LoadFrom(Type[] types, string path)
+        {
+            var dict = new Dictionary<Type, Object[]>();
+            foreach (var file in Directory.EnumerateFiles(path))
             {
-                foreach (var file in Directory.EnumerateFiles(path.Path, path.FilePattern))
+                var assetBundle = AssetBundle.LoadFromFile(file);
+                foreach (var type in types)
                 {
-                    var request = AssetBundle.LoadFromFileAsync(file);
-                    request.completed += operation => _bundles.Add(file, request.assetBundle);
-                    
-                    asyncList.Add(request);
+                    if (dict.ContainsKey(type))
+                    {
+                        var list = dict[type].ToList();
+                        list.AddRange(assetBundle.LoadAllAssets(type));
+                        dict[type] = list.ToArray();
+                    }
+                    else
+                    {
+                        dict.Add(type, assetBundle.LoadAllAssets(type));
+                    }
                 }
+                assetBundle.Unload(false);
             }
 
-            _lazyLoading = true;
-            IsInitialized = true;
-            
-            return asyncList.ToArray();
+            return dict;
         }
 
-        protected override Object[] LoadAssets(ExtendedPathInfo path)
+        protected override void LoadFromAsync(Type[] types, string path, AsyncAnswer answer)
         {
-            var assets = new List<Object>();
-            foreach (var file in Directory.EnumerateFiles(path.Path, path.FilePattern))
+            var dict = new Dictionary<Type, Object[]>();
+            var requests = new List<AsyncOperation>();
+            foreach (var file in Directory.EnumerateFiles(path))
             {
-                AssetBundle assetBundle;
-                if (!_bundles.ContainsKey(file))
+                var fileRequest = AssetBundle.LoadFromFileAsync(file);
+                fileRequest.completed += operation =>
                 {
-                    assetBundle = AssetBundle.LoadFromFile(file);
-                    _bundles.Add(file, assetBundle);
-                }
-                else
-                {
-                    assetBundle = _bundles[file];
-                }
+                    foreach (var type in types)
+                    {
+                        var bundleRequest = fileRequest.assetBundle.LoadAllAssetsAsync(type);
+                        bundleRequest.completed += op =>
+                        {
+                            if (dict.ContainsKey(type))
+                            {
+                                var list = dict[type].ToList();
+                                list.AddRange(bundleRequest.allAssets);
+                                dict[type] = list.ToArray();
+                            }
+                            else
+                            {
+                                dict.Add(type, bundleRequest.allAssets);
+                            }
+                        };
+                        requests.Add(bundleRequest);
+                    }
 
-                assets.AddRange(assetBundle.LoadAllAssets(path.Type));
+                    fileRequest.assetBundle.Unload(false);
+                };
+                requests.Add(fileRequest);
             }
 
-            return assets.ToArray();
+            Task.Run(() =>
+            {
+                while (!requests.All(x => x.isDone))
+                {
+                    Thread.Sleep(100);
+                }
+                
+                answer.Invoke(dict);
+            });
         }
     }
 }

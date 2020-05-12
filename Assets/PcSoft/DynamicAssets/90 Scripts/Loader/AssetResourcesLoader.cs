@@ -1,26 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using PcSoft.DynamicAssets._90_Scripts.Assets;
-using PcSoft.DynamicAssets._90_Scripts.Assets.Types;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
 namespace PcSoft.DynamicAssets._90_Scripts.Loader
 {
-    public sealed class AssetResourcesLoader : AssetBaseLoader<AssetResources, PathInfo>
+    public sealed class AssetResourcesLoader : AssetBaseLoader
     {
         public static AssetResourcesLoader Instance { get; } = new AssetResourcesLoader();
-        
-        protected override AssetResources AssetInstance => AssetResources.Instance;
         
         private AssetResourcesLoader()
         {
         }
 
-        protected override Object[] LoadAssets(PathInfo path)
+        protected override IDictionary<Type, Object[]> LoadFrom(Type[] types, string path)
         {
-            return Resources.LoadAll(path.Path, path.Type);
+            return types.ToDictionary(x => x, x => Resources.LoadAll(path, x));
+        }
+
+        protected override void LoadFromAsync(Type[] types, string path, AsyncAnswer answer)
+        {
+            throw new NotSupportedException("Async loading is not supported by resources");
         }
     }
 }
