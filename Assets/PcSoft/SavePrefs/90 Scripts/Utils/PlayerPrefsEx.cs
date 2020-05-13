@@ -7,7 +7,6 @@ namespace PcSoft.SavePrefs._90_Scripts.Utils
     public static class PlayerPrefsEx
     {
         private static readonly DateTimeFormat DateFormat = new DateTimeFormat("dd-MM-yyyy hh:mm:ss");
-        private static readonly DateTimeFormat SpanFormat = new DateTimeFormat("hh:mm:ss");
         
         #region Properties
 
@@ -102,11 +101,43 @@ namespace PcSoft.SavePrefs._90_Scripts.Utils
         public static void SetDateTime(string key, DateTime val)
         {
             PlayerPrefs.SetString(key, val.ToString(DateFormat.FormatProvider));
+            if (AutoSave)
+            {
+                PlayerPrefs.Save();
+            }
+            RaiseChange(PlayerPrefsChangeType.AddOrUpdate, PlayerPrefsDataType.DateTime, key);
         }
 
         public static TimeSpan GetTimeSpan(string key, TimeSpan def)
         {
             return TimeSpan.Parse(PlayerPrefs.GetString(key, def.ToString()));
+        }
+
+        public static void SetTimeSpan(string key, TimeSpan value)
+        {
+            PlayerPrefs.SetString(key, value.ToString());
+            if (AutoSave)
+            {
+                PlayerPrefs.Save();
+            }
+            RaiseChange(PlayerPrefsChangeType.AddOrUpdate, PlayerPrefsDataType.TimeSpan, key);
+        }
+
+        public static T GetEnum<T>(string key, T def) where T : Enum
+        {
+            var s = PlayerPrefs.GetString(key, def.ToString());
+            return (T) Enum.Parse(typeof(T), s);
+        }
+
+        public static void SetEnum<T>(string key, T value) where T : Enum
+        {
+            PlayerPrefs.SetString(key, value.ToString());
+            if (AutoSave)
+            {
+                PlayerPrefs.Save();
+            }
+            RaiseChange(PlayerPrefsChangeType.AddOrUpdate, PlayerPrefsDataType.Enum, key);
+            
         }
 
         public static bool HasKey(string key) => PlayerPrefs.HasKey(key);
@@ -217,6 +248,9 @@ namespace PcSoft.SavePrefs._90_Scripts.Utils
         Int,
         Float,
         Boolean,
-        Binary
+        Binary,
+        DateTime,
+        TimeSpan,
+        Enum
     }
 }
