@@ -82,18 +82,18 @@ namespace PcSoft.UnityScene._90_Scripts._00_Runtime.Components
 
         #region Private Methods
 
-        protected void LoadScene(T state, Action onFinished = null, bool doNotUnload = false)
+        protected void LoadScene(T state, object data = null, Action onFinished = null, bool doNotUnload = false)
         {
             OnLoadingStarted(State);
 
             string[] oldScenes = null;
             if (!doNotUnload)
             {
-                var oldData = FindSceneData(State);
+                var oldData = FindSceneData(State, data);
                 oldScenes = oldData.Scenes;
             }
 
-            var newData = FindSceneData(state);
+            var newData = FindSceneData(state, data);
             var newScenes = newData.Scenes;
 
             blending.ShowBlend(() =>
@@ -111,9 +111,9 @@ namespace PcSoft.UnityScene._90_Scripts._00_Runtime.Components
             });
         }
 
-        protected void LoadSceneImmediately(T state)
+        protected void LoadSceneImmediately(T state, object data = null)
         {
-            var newData = FindSceneData(state);
+            var newData = FindSceneData(state, data);
             var newScenes = newData.Scenes;
 
             foreach (var newScene in newScenes)
@@ -123,7 +123,7 @@ namespace PcSoft.UnityScene._90_Scripts._00_Runtime.Components
             }
         }
 
-        protected TScene FindSceneData(T state)
+        protected virtual TScene FindSceneData(T state, object data)
         {
             return scenes.First(item => Equals(item.Identifier, state));
         }
@@ -206,6 +206,12 @@ namespace PcSoft.UnityScene._90_Scripts._00_Runtime.Components
         protected SceneData(T identifier)
         {
             this.identifier = identifier;
+        }
+        
+        protected SceneData(T identifier, string[] scenes)
+        {
+            this.identifier = identifier;
+            this.scenes = scenes;
         }
     }
 }
