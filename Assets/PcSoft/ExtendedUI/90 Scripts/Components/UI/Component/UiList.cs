@@ -90,6 +90,7 @@ namespace PcSoft.ExtendedUI._90_Scripts.Components.UI.Component
         {
             foreach (var listItem in _listItems)
             {
+                OnItemDeletion(listItem);
                 Destroy(listItem.gameObject);
             }
 
@@ -105,9 +106,21 @@ namespace PcSoft.ExtendedUI._90_Scripts.Components.UI.Component
 
                 var listItem = go.GetComponent<TI>();
                 listItem.Model = data;
+                
+                OnItemCreation(listItem, data);
 
                 _listItems.Add(listItem);
             }
+        }
+
+        protected virtual void OnItemCreation(TI item, TM model)
+        {
+            //Empty
+        }
+        
+        protected virtual void OnItemDeletion(TI item)
+        {
+            //Empty
         }
     }
 
