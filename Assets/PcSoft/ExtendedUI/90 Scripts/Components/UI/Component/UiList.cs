@@ -102,7 +102,7 @@ namespace PcSoft.ExtendedUI._90_Scripts.Components.UI.Component
             foreach (var data in ContentData)
             {
                 var go = Instantiate(itemPrefab.gameObject, Vector3.zero, Quaternion.identity);
-                go.transform.parent = content;
+                go.transform.SetParent(content, false);
 
                 var listItem = go.GetComponent<TI>();
                 listItem.Model = data;
