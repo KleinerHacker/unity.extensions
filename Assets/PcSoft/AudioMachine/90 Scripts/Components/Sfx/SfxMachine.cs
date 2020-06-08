@@ -145,6 +145,14 @@ namespace PcSoft.AudioMachine._90_Scripts.Components.Sfx
         {
             _audioSource.Stop();
         }
+        
+        public void StopAllLoops()
+        {
+            foreach (var clip in new List<SfxSourceAsset>(_audioSourceMap.Keys))
+            {
+                StopLoop(clip);
+            }
+        }
 
         public void StopLoop(SfxSourceAsset sfxSource)
         {
