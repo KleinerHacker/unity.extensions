@@ -47,7 +47,7 @@ namespace PcSoft.UnityWorld._90_Scripts._90_Editor
         private static void LoadWorldGroup(WorldSceneGroup group)
         {
             var world = Selection.activeObject as WorldAsset;
-            var scenes = world.Scenes.Where(x => x.Group == group).ToArray();
+            var scenes = world.Scenes.Where(x => x.Group == group || x.Group == WorldSceneGroup.All).ToArray();
             if (scenes.Length <= 0)
             {
                 EditorUtility.DisplayDialog("Open World Group", "No scenes are associated to this world group", "OK");

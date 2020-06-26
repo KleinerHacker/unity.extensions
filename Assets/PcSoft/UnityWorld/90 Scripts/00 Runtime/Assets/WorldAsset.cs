@@ -1,4 +1,5 @@
 using System;
+using PcSoft.ExtendedEditor._90_Scripts._00_Runtime.Extra;
 using UnityEngine;
 
 namespace PcSoft.UnityWorld._90_Scripts._00_Runtime.Assets
@@ -25,6 +26,7 @@ namespace PcSoft.UnityWorld._90_Scripts._00_Runtime.Assets
     {
         #region Inspector Data
 
+        [Scene]
         [SerializeField]
         private string scene;
 
@@ -57,6 +59,7 @@ namespace PcSoft.UnityWorld._90_Scripts._00_Runtime.Assets
         None,
         One, 
         Two, 
-        Three
+        Three,
+        All
     }
 }
