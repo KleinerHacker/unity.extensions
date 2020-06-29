@@ -2,7 +2,8 @@
     "name": "UnityWorld.Editor",
     "references": [
         "GUID:5ab0bf41f0530394aaba93b2890abbbd",
-        "GUID:c9d126c2870517046b89a075139e6ed7"
+        "GUID:c9d126c2870517046b89a075139e6ed7",
+        "GUID:b6234a67ee479954bb4d97f3eca86183"
     ],
     "includePlatforms": [
         "Editor"

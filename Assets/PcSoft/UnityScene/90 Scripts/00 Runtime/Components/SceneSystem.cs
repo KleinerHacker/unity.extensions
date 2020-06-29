@@ -25,7 +25,7 @@ namespace PcSoft.UnityScene._90_Scripts._00_Runtime.Components
         protected BlendingSystem blending;
 
         [SerializeField]
-        private TScene[] scenes;
+        protected TScene[] scenes;
 
         [SerializeField]
         private T initialState;
@@ -199,7 +199,7 @@ namespace PcSoft.UnityScene._90_Scripts._00_Runtime.Components
 
         public T Identifier => identifier;
 
-        public string[] Scenes => scenes;
+        public virtual string[] Scenes => scenes;
 
         #endregion
 
