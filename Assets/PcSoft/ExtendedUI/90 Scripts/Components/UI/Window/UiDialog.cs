@@ -49,7 +49,7 @@ namespace PcSoft.ExtendedUI._90_Scripts.Components.UI.Window
 
         #region Properties
 
-        public DialogState State => gameObject.activeSelf ? DialogState.Shown : DialogState.Hidden;
+        public DialogState State { get; private set; }
 
         public DialogEscapeAction EscapeAction => escapeAction;
 
@@ -68,6 +68,8 @@ namespace PcSoft.ExtendedUI._90_Scripts.Components.UI.Window
             _audioSource.playOnAwake = false;
             _audioSource.loop = false;
             _audioSource.outputAudioMixerGroup = audioMixerGroup;
+
+            State = initialState;
         }
 
         private void LateUpdate()
@@ -143,6 +145,8 @@ namespace PcSoft.ExtendedUI._90_Scripts.Components.UI.Window
 
             StopAllCoroutines();
 
+            State = DialogState.Shown;
+
             if (openClip != null)
             {
                 _audioSource.PlayOneShot(openClip);
@@ -182,6 +186,8 @@ namespace PcSoft.ExtendedUI._90_Scripts.Components.UI.Window
             Debug.Log("Hide dialog", this);
 
             StopAllCoroutines();
+
+            State = DialogState.Hidden;
 
             if (changeCursorSystem)
             {
