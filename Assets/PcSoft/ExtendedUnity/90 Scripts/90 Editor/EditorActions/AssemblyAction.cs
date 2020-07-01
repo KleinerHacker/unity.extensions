@@ -35,8 +35,9 @@ namespace PcSoft.ExtendedUnity._90_Scripts._90_Editor.EditorActions
             //1. Rename script folder and recreate
             var scriptRootSourceDirectory = new DirectoryInfo(scriptRoot);
             var scriptRootSourceName = scriptRootSourceDirectory.Name;
-            scriptRootSourceDirectory.MoveTo(scriptRootSourceDirectory.Parent.FullName + "/" + Guid.NewGuid());
-            var scriptRootTargetDirectory = Directory.CreateDirectory(scriptRootSourceDirectory.Parent.FullName + "/" + scriptRootSourceName);
+            var scriptRootSourceParent = scriptRootSourceDirectory.Parent.FullName;
+            scriptRootSourceDirectory.MoveTo(scriptRootSourceParent + "/" + Guid.NewGuid());
+            var scriptRootTargetDirectory = Directory.CreateDirectory(scriptRootSourceParent + "/" + scriptRootSourceName);
 
             //2. Count directories for progress bar
             var count = scriptRootSourceDirectory.EnumerateDirectories("*.*", SearchOption.AllDirectories).Count();
@@ -84,7 +85,7 @@ namespace PcSoft.ExtendedUnity._90_Scripts._90_Editor.EditorActions
 
             foreach (var file in files)
             {
-                File.Copy(file.FullName, targetDirectory.FullName + "/" + file.Name);
+                File.Copy(file.FullName, targetDirectory.FullName + "/" + file.Name, true);
             }
 
             foreach (var directory in directories)
