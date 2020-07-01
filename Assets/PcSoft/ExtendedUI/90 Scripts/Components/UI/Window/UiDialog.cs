@@ -17,24 +17,24 @@ namespace PcSoft.ExtendedUI._90_Scripts.Components.UI.Window
 
         [SerializeField]
         private DialogState initialState = DialogState.Hidden;
-        
+
         [SerializeField]
         private DialogEscapeAction escapeAction = DialogEscapeAction.None;
 
         [Header("SFX")]
         [SerializeField]
         private AudioMixerGroup audioMixerGroup;
-        
+
         [SerializeField]
         private AudioClip openClip;
-        
+
         [Header("Animation")]
         [SerializeField]
         private AnimationCurve fadingCurve = AnimationCurve.EaseInOut(0f, 0f, 1f, 1f);
 
         [SerializeField]
         private float fadingSpeed = 1f;
-        
+
         [SerializeField]
         private bool blockingGame = false;
 
@@ -57,6 +57,9 @@ namespace PcSoft.ExtendedUI._90_Scripts.Components.UI.Window
 
         private AudioSource _audioSource;
 
+        private bool _cursorVisibility;
+        private CursorLockMode _cursorLockMode;
+
         #region Builtin Methods
 
         protected override void Awake()
@@ -67,23 +70,58 @@ namespace PcSoft.ExtendedUI._90_Scripts.Components.UI.Window
             _audioSource.outputAudioMixerGroup = audioMixerGroup;
         }
 
+        private void LateUpdate()
+        {
+#if UNITY_EDITOR
+            if (EscapeAction != DialogEscapeAction.None && Input.GetKeyDown(KeyCode.F1))
+#else
+            if (EscapeAction != DialogEscapeAction.None && Input.GetButtonDown("Cancel"))
+#endif
+            {
+                Debug.Log("Escape action");
+
+                switch (EscapeAction)
+                {
+                    case DialogEscapeAction.None:
+                        throw new NotSupportedException();
+                    case DialogEscapeAction.Toggle:
+                        Debug.Log("Toggle dialog (escape)", this);
+                        if (State == DialogState.Shown)
+                            Hide();
+                        else
+                            Show();
+                        break;
+                    case DialogEscapeAction.HideOnly:
+                        if (State == DialogState.Shown)
+                        {
+                            Debug.Log("Hide dialog (escape)", this);
+                            Hide();
+                        }
+
+                        break;
+                    default:
+                        throw new NotImplementedException();
+                }
+            }
+        }
+
 #if UNITY_EDITOR
         protected override void OnValidate()
         {
             if (EditorApplication.isPlaying)
                 return;
-            
+
             canvasGroup = GetComponent<CanvasGroup>();
-            
+
             switch (initialState)
             {
                 case DialogState.Hidden:
                     canvasGroup.alpha = 0f;
-                    gameObject.SetActive(false);
+                    canvasGroup.interactable = canvasGroup.blocksRaycasts = false;
                     break;
                 case DialogState.Shown:
                     canvasGroup.alpha = 1f;
-                    gameObject.SetActive(true);
+                    canvasGroup.interactable = canvasGroup.blocksRaycasts = true;
                     break;
                 default:
                     throw new NotImplementedException();
@@ -100,7 +138,7 @@ namespace PcSoft.ExtendedUI._90_Scripts.Components.UI.Window
                 Debug.LogWarning("Dialog already shown", this);
                 return;
             }
-            
+
             Debug.Log("Show dialog", this);
 
             StopAllCoroutines();
@@ -111,8 +149,8 @@ namespace PcSoft.ExtendedUI._90_Scripts.Components.UI.Window
             }
 
             canvasGroup.alpha = 0f;
-            gameObject.SetActive(true);
-            StartCoroutine(AnimationUtils.RunAnimation(AnimationType.Unscaled, fadingCurve, fadingSpeed, 
+            canvasGroup.interactable = canvasGroup.blocksRaycasts = true;
+            StartCoroutine(AnimationUtils.RunAnimation(AnimationType.Unscaled, fadingCurve, fadingSpeed,
                 v =>
                 {
                     canvasGroup.alpha = v;
@@ -124,6 +162,9 @@ namespace PcSoft.ExtendedUI._90_Scripts.Components.UI.Window
                 {
                     if (changeCursorSystem)
                     {
+                        _cursorVisibility = Cursor.visible;
+                        _cursorLockMode = Cursor.lockState;
+
                         Cursor.visible = true;
                         Cursor.lockState = CursorLockMode.None;
                     }
@@ -137,20 +178,20 @@ namespace PcSoft.ExtendedUI._90_Scripts.Components.UI.Window
                 Debug.LogWarning("Dialog already hidden", this);
                 return;
             }
-            
+
             Debug.Log("Hide dialog", this);
 
             StopAllCoroutines();
-            
+
             if (changeCursorSystem)
             {
-                Cursor.visible = false;
-                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = _cursorVisibility;
+                Cursor.lockState = _cursorLockMode;
             }
 
             canvasGroup.alpha = 1f;
-            gameObject.SetActive(true);
-            StartCoroutine(AnimationUtils.RunAnimation(AnimationType.Unscaled, fadingCurve, fadingSpeed, 
+            canvasGroup.interactable = canvasGroup.blocksRaycasts = true;
+            StartCoroutine(AnimationUtils.RunAnimation(AnimationType.Unscaled, fadingCurve, fadingSpeed,
                 v =>
                 {
                     canvasGroup.alpha = 1f - v;
@@ -158,7 +199,7 @@ namespace PcSoft.ExtendedUI._90_Scripts.Components.UI.Window
                     {
                         Time.timeScale = v;
                     }
-                }, () => gameObject.SetActive(false)));
+                }, () => canvasGroup.interactable = canvasGroup.blocksRaycasts = true));
         }
     }
 
@@ -167,7 +208,7 @@ namespace PcSoft.ExtendedUI._90_Scripts.Components.UI.Window
         Shown,
         Hidden,
     }
-    
+
     public enum DialogEscapeAction
     {
         Toggle,

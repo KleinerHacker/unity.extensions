@@ -1,5 +1,7 @@
+using System;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEngine;
 
@@ -28,77 +30,90 @@ namespace PcSoft.ExtendedUnity._90_Scripts._90_Editor.EditorActions
             return Directory.Exists(path);
         }
 
-        private static void Restructure(string scriptRoot, string assemblyName, string runtimeFolder, string editorFolder, bool move)
+        private static void Restructure(string scriptRoot, string assemblyName, string runtimeFolder, string runtimeName, string editorFolder, string editorName, bool deleteStructure)
         {
-            var count = Directory.EnumerateDirectories(scriptRoot, "*.*", SearchOption.AllDirectories).Count();
+            //1. Rename script folder and recreate
+            var scriptRootSourceDirectory = new DirectoryInfo(scriptRoot);
+            var scriptRootSourceName = scriptRootSourceDirectory.Name;
+            scriptRootSourceDirectory.MoveTo(scriptRootSourceDirectory.Parent.FullName + "/" + Guid.NewGuid());
+            var scriptRootTargetDirectory = Directory.CreateDirectory(scriptRootSourceDirectory.Parent.FullName + "/" + scriptRootSourceName);
+
+            //2. Count directories for progress bar
+            var count = scriptRootSourceDirectory.EnumerateDirectories("*.*", SearchOption.AllDirectories).Count();
 
             try
             {
-                ShiftFiles(scriptRoot, null, runtimeFolder, editorFolder, false, move, 0, count);
+                //3. Shift files (recursive)
+                ShiftFiles(scriptRootSourceDirectory, null, scriptRootTargetDirectory, runtimeFolder, editorFolder, false, 0, count);
 
-                var runtimeAssemblyName = assemblyName + "." + runtimeFolder;
+                //4. Create Runtime Assembly
+                var runtimeAssemblyName = assemblyName + "." + runtimeName;
                 File.WriteAllText(
-                    scriptRoot + "/" + runtimeFolder + "/" + runtimeAssemblyName + ".asmdef",
+                    scriptRootTargetDirectory.FullName + "/" + runtimeFolder + "/" + runtimeAssemblyName + ".asmdef",
                     "{ \"name\": \"" + runtimeAssemblyName + "\" }"
                 );
 
-                var editorAssemblyName = assemblyName + "." + editorFolder;
+                var editorAssemblyName = assemblyName + "." + editorName;
                 File.WriteAllText(
-                    scriptRoot + "/" + editorFolder + "/" + editorAssemblyName + ".asmdef",
+                    scriptRootTargetDirectory.FullName + "/" + editorFolder + "/" + editorAssemblyName + ".asmdef",
                     "{ \"name\": \"" + editorAssemblyName + "\", \"includePlatforms\": [\"Editor\"], \"references\": [\"" + runtimeAssemblyName + "\"] }"
                 );
+
+                if (deleteStructure)
+                {
+                    scriptRootSourceDirectory.Delete(true);
+                }
             }
             finally
             {
                 EditorUtility.ClearProgressBar();
+                AssetDatabase.Refresh();
             }
-
-            AssetDatabase.Refresh();
         }
 
-        private static void ShiftFiles(string scriptRoot, string subDirectory, string runtimeFolder, string editorFolder, bool isEditor, bool move, int current, int count)
+        private static void ShiftFiles(DirectoryInfo sourceRootDirectory, string sourceSubDirectory, DirectoryInfo targetRootDirectory, string runtimeFolder, string editorFolder, bool isEditor, int current, int count)
         {
-            EditorUtility.DisplayProgressBar("Create Assembly", subDirectory, (float) current / (float) count);
+            Debug.Log("Create Assembly: " + sourceSubDirectory);
+            EditorUtility.DisplayProgressBar("Create Assembly", sourceSubDirectory, (float) current / (float) count);
 
-            var currentDir = string.IsNullOrEmpty(subDirectory) ? scriptRoot : scriptRoot + "/" + subDirectory;
+            var sourceDirectory = GetSourceDirectory(sourceRootDirectory, sourceSubDirectory);
+            var targetDirectory = GetTargetDirectory(sourceSubDirectory, targetRootDirectory, runtimeFolder, editorFolder, isEditor);
 
-            var files = Directory.EnumerateFiles(currentDir);
-            var directories = Directory.EnumerateDirectories(currentDir);
+            var files = sourceDirectory.EnumerateFiles();
+            var directories = sourceDirectory.EnumerateDirectories();
 
-            DirectoryInfo dir;
-            if (isEditor)
+            foreach (var file in files)
             {
-                var newSubDirectory = subDirectory.Replace("Editor", "");
-                dir = Directory.CreateDirectory(scriptRoot + "/" + editorFolder + "/" + newSubDirectory);
-            }
-            else
-            {
-                dir = Directory.CreateDirectory(scriptRoot + "/" + runtimeFolder + "/" + subDirectory);
-            }
-
-            foreach (var fileName in files)
-            {
-                var file = new FileInfo(fileName);
-                if (move)
-                {
-                    File.Move(file.FullName, dir.FullName + "/" + file.Name);
-                }
-                else
-                {
-                    File.Copy(file.FullName, dir.FullName + "/" + file.Name);
-                }
+                File.Copy(file.FullName, targetDirectory.FullName + "/" + file.Name);
             }
 
             foreach (var directory in directories)
             {
-                ShiftFiles(scriptRoot, subDirectory + "/" + new DirectoryInfo(directory).Name, runtimeFolder, editorFolder,
-                    isEditor || directory.EndsWith("Editor"), move, current + 1, count);
+                ShiftFiles(sourceRootDirectory, sourceSubDirectory + "/" + directory.Name, targetRootDirectory, runtimeFolder, editorFolder,
+                    isEditor || directory.Name.EndsWith("Editor"), current + 1, count);
             }
-            
-            if (move && !string.IsNullOrEmpty(subDirectory))
+        }
+
+        private static DirectoryInfo GetTargetDirectory(string sourceSubDirectory, DirectoryInfo targetRootDirectory, string runtimeFolder, string editorFolder, bool isEditor)
+        {
+            DirectoryInfo targetDirectory;
+            if (isEditor)
             {
-                Directory.Delete(scriptRoot + "/" + subDirectory, true);
+                var match = Regex.Match(sourceSubDirectory, "\bEditor\b");
+                var targetSubDirectory = sourceSubDirectory.Substring(0, match.Index) + sourceSubDirectory.Substring(match.Index + match.Length);
+                targetDirectory = Directory.CreateDirectory(targetRootDirectory.FullName + "/" + editorFolder + "/" + targetSubDirectory);
             }
+            else
+            {
+                targetDirectory = Directory.CreateDirectory(targetRootDirectory.FullName + "/" + runtimeFolder + "/" + sourceSubDirectory);
+            }
+
+            return targetDirectory;
+        }
+
+        private static DirectoryInfo GetSourceDirectory(DirectoryInfo sourceRootDirectory, string sourceSubDirectory)
+        {
+            return string.IsNullOrEmpty(sourceSubDirectory) ? sourceRootDirectory : new DirectoryInfo(sourceRootDirectory.FullName + "/" + sourceSubDirectory);
         }
 
         #region Window
@@ -109,7 +124,9 @@ namespace PcSoft.ExtendedUnity._90_Scripts._90_Editor.EditorActions
             private string _assemblyName;
 
             private string _runtimeFolderName = "Runtime";
+            private string _runtimeName = "Runtime";
             private string _editorFolderName = "Editor";
+            private string _editorName = "Editor";
 
             private bool _deleteStructure;
 
@@ -148,13 +165,19 @@ namespace PcSoft.ExtendedUnity._90_Scripts._90_Editor.EditorActions
 
                 EditorGUILayout.Space();
 
+                EditorGUILayout.LabelField("Runtime Assembly Postfix:");
+                _runtimeName = EditorGUILayout.TextField(_runtimeName);
+
+                EditorGUILayout.LabelField("Editor Assembly Postfix:");
+                _editorName = EditorGUILayout.TextField(_editorName);
+
+                EditorGUILayout.Space();
+                
                 EditorGUILayout.LabelField("Target Runtime Folder Name:");
                 _runtimeFolderName = EditorGUILayout.TextField(_runtimeFolderName);
 
                 EditorGUILayout.LabelField("Target Editor Folder Name:");
                 _editorFolderName = EditorGUILayout.TextField(_editorFolderName);
-
-                EditorGUILayout.Space();
 
                 _deleteStructure = EditorGUILayout.Toggle("Delete original structure", _deleteStructure);
 
@@ -163,7 +186,8 @@ namespace PcSoft.ExtendedUnity._90_Scripts._90_Editor.EditorActions
                 if (GUILayout.Button("Create"))
                 {
                     Close();
-                    Restructure(_scriptRootFolder, _assemblyName, _runtimeFolderName, _editorFolderName, _deleteStructure);
+                    Restructure(_scriptRootFolder, _assemblyName, _runtimeFolderName, _runtimeName, 
+                        _editorFolderName, _editorName, _deleteStructure);
                 }
             }
         }
