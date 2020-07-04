@@ -1,0 +1,19 @@
+{
+    "name": "TrafficLight.Editor",
+    "references": [
+        "GUID:0783ec1fada6d481593fffa111ae275b",
+        "GUID:c9d126c2870517046b89a075139e6ed7",
+        "GUID:4de7f76a5d50542c3b079ec8f3053adf"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

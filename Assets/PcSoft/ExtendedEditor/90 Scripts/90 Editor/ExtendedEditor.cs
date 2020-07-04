@@ -101,6 +101,36 @@ namespace PcSoft.ExtendedEditor._90_Scripts._90_Editor
                 }
             };
         }
+        
+        protected ReorderableList BuildReordableList(SerializedProperty property, string title, ReorderableList.ElementHeightCallbackDelegate elementHeight,
+            Action<SerializedProperty, Rect, int, bool, bool> elementDrawer, Action<SerializedProperty, int> adder = null)
+        {
+            return new ReorderableList(serializedObject, property)
+            {
+                draggable = true,
+                displayAdd = true,
+                displayRemove = true,
+                drawHeaderCallback = rect => EditorGUI.LabelField(rect, title),
+                drawElementCallback = (rect, index, active, focused) =>
+                {
+                    // Get the currently to be drawn element from YourList
+                    var element = property.GetArrayElementAtIndex(index);
+                    elementDrawer(element, rect, index, active, focused);
+                },
+                elementHeightCallback = elementHeight,
+                onAddCallback = list =>
+                {
+                    var index = list.serializedProperty.arraySize;
+
+                    // Since this method overwrites the usual adding, we have to do it manually:
+                    // Simply counting up the array size will automatically add an element
+                    list.serializedProperty.arraySize++;
+                    list.index = index;
+                    var element = list.serializedProperty.GetArrayElementAtIndex(index);
+                    adder?.Invoke(element, index);
+                }
+            };
+        }
 
         protected void ArrayArea<T>(string title, SerializedProperty[] properties, T[] values, Func<T,SerializedProperty,bool> check, Func<T, SerializedProperty,string> titleFunc)
         {
