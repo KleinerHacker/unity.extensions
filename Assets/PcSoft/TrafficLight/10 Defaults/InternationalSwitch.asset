@@ -34,3 +34,6 @@ MonoBehaviour:
       - type: 0
         behavior: 0
       showTime: 0
+  blinkDuration: 0.5
+  blinkGreenOnFinish: 1
+  blinkGreenOnFinishCount: 5

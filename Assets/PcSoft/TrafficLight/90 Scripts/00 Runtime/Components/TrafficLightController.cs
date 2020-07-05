@@ -1,4 +1,6 @@
 using System;
+using System.Linq;
+using PcSoft.ExtendedAnimation._90_Scripts.Utils;
 using UnityEngine;
 using UnityExtensions;
 
@@ -27,6 +29,11 @@ namespace PcSoft.TrafficLight._90_Scripts._00_Runtime.Components
             _index = 0;
             _counter = 0f;
             
+            foreach (var trafficLight in switchItems.SelectMany(x => x.TrafficLights).Distinct())
+            {
+                trafficLight.Initialize();
+            }
+
             RunSwitch();
         }
 
@@ -54,6 +61,8 @@ namespace PcSoft.TrafficLight._90_Scripts._00_Runtime.Components
 
         private void RunSwitch()
         {
+            Debug.Log("Run Switch for " + _index, this);
+            
             _inSwitchState = true;
             foreach (var trafficLight in switchItems[_index].TrafficLights)
             {

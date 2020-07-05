@@ -49,52 +49,45 @@ namespace PcSoft.TrafficLight._90_Scripts._00_Runtime.Components
         #endregion
 
         private float _counter = 0f;
-        private TrafficLightBlinkState _blinkState = TrafficLightBlinkState.Off;
+        private TrafficLightBlinkState _blinkState = TrafficLightBlinkState.On;
+        private byte _blinkCounter = 0;
+        private Action _blinkFinished = null;
 
         #region Builtin Methods
-
-        private void OnEnable()
-        {
-            switch (initialState)
-            {
-                case TrafficLightInitialState.Red:
-                    SwitchRed(immediately: true);
-                    break;
-                case TrafficLightInitialState.Green:
-                    SwitchGreen(immediately: true);
-                    break;
-                case TrafficLightInitialState.OutOfOrder:
-                    SwitchOutOfOrder(immediately: true);
-                    break;
-                default:
-                    throw new NotImplementedException();
-            }
-
-            _counter = 0f;
-            _blinkState = TrafficLightBlinkState.Off;
-        }
 
         private void LateUpdate()
         {
             if ((State != TrafficLightState.GreenFinish && State != TrafficLightState.OutOfOrder) || _blinkState == TrafficLightBlinkState.Switch)
                 return;
-            
+
             _counter += Time.deltaTime;
             if (_counter >= trafficLightSwitch.BlinkDuration)
             {
+                Debug.Log("Blink in state " + State + " to " + _blinkState, this);
                 switch (_blinkState)
                 {
                     case TrafficLightBlinkState.On:
                         _blinkState = TrafficLightBlinkState.Switch;
-                        AnimationUtils.RunAnimation(lightSwitchCurve, lightSwitchSpeed,
+                        StartCoroutine(AnimationUtils.RunAnimation(lightSwitchCurve, lightSwitchSpeed,
                             v => HandleLightItem(State == TrafficLightState.GreenFinish ? greenLight : yellowLight, TrafficLightBehavior.TurnOff, v),
-                            () => _blinkState = TrafficLightBlinkState.Off);
+                            () => _blinkState = TrafficLightBlinkState.Off));
+                        
+                        _blinkCounter++;
+                        if (State == TrafficLightState.GreenFinish && _blinkCounter >= trafficLightSwitch.BlinkGreenOnFinishCount)
+                        {
+                            DoSwitchRed(() =>
+                            {
+                                _blinkFinished?.Invoke();
+                                _blinkFinished = null;
+                                _blinkState = TrafficLightBlinkState.On;
+                            });
+                        }
                         break;
                     case TrafficLightBlinkState.Off:
                         _blinkState = TrafficLightBlinkState.Switch;
-                        AnimationUtils.RunAnimation(lightSwitchCurve, lightSwitchSpeed,
+                        StartCoroutine(AnimationUtils.RunAnimation(lightSwitchCurve, lightSwitchSpeed,
                             v => HandleLightItem(State == TrafficLightState.GreenFinish ? greenLight : yellowLight, TrafficLightBehavior.TurnOn, v),
-                            () => _blinkState = TrafficLightBlinkState.On);
+                            () => _blinkState = TrafficLightBlinkState.On));
                         break;
                     case TrafficLightBlinkState.Switch:
                         throw new NotSupportedException();
@@ -110,20 +103,22 @@ namespace PcSoft.TrafficLight._90_Scripts._00_Runtime.Components
 
         public void SwitchRed(Action onFinished = null, bool immediately = false)
         {
-            if (State == TrafficLightState.Red)
+            if (State == TrafficLightState.Red || State == TrafficLightState.GreenFinish)
             {
-                Debug.LogWarning("Traffic Light State already RED");
+                Debug.LogWarning("Traffic Light State already RED or GREEN FINISHED", this);
                 return;
             }
 
             if (State == TrafficLightState.Switching)
             {
-                Debug.LogWarning("Traffic Light State is switching, unable to change to RED");
+                Debug.LogWarning("Traffic Light State is switching, unable to change to RED", this);
                 return;
             }
 
             if (immediately)
             {
+                Debug.Log("Switch to red immediately", this);
+                
                 SwitchOn(redLight);
                 SwitchOff(yellowLight);
                 SwitchOff(greenLight);
@@ -133,12 +128,16 @@ namespace PcSoft.TrafficLight._90_Scripts._00_Runtime.Components
             }
             else
             {
-                State = TrafficLightState.Switching;
-                SwitchDynamic(trafficLightSwitch.SwitchToRed, () =>
+                if (trafficLightSwitch.BlinkGreenOnFinish)
                 {
-                    State = TrafficLightState.Red;
-                    onFinished?.Invoke();
-                });
+                    Debug.Log("Switch to green finished (way to red)", this);
+                    DoSwitchGreenFinish(onFinished);
+                }
+                else
+                {
+                    Debug.Log("Switch to red", this);
+                    DoSwitchRed(onFinished);
+                }
             }
         }
 
@@ -146,18 +145,20 @@ namespace PcSoft.TrafficLight._90_Scripts._00_Runtime.Components
         {
             if (State == TrafficLightState.Green)
             {
-                Debug.LogWarning("Traffic Light State already GREEN");
+                Debug.LogWarning("Traffic Light State already GREEN", this);
                 return;
             }
 
             if (State == TrafficLightState.Switching)
             {
-                Debug.LogWarning("Traffic Light State is switching, unable to change to GREEN");
+                Debug.LogWarning("Traffic Light State is switching, unable to change to GREEN", this);
                 return;
             }
 
             if (immediately)
             {
+                Debug.Log("Switch to green immediately", this);
+                
                 SwitchOff(redLight);
                 SwitchOff(yellowLight);
                 SwitchOn(greenLight);
@@ -167,6 +168,8 @@ namespace PcSoft.TrafficLight._90_Scripts._00_Runtime.Components
             }
             else
             {
+                Debug.Log("Switch to green", this);
+                
                 State = TrafficLightState.Switching;
                 SwitchDynamic(trafficLightSwitch.SwitchToGreen, () =>
                 {
@@ -176,63 +179,24 @@ namespace PcSoft.TrafficLight._90_Scripts._00_Runtime.Components
             }
         }
 
-        public void SwitchGreenFinish(Action onFinished = null, bool immediately = false)
-        {
-            if (State == TrafficLightState.GreenFinish)
-            {
-                Debug.LogWarning("Traffic Light State already GREEN FINISH");
-                return;
-            }
-
-            if (State == TrafficLightState.Switching)
-            {
-                Debug.LogWarning("Traffic Light State is switching, unable to change to GREEN FINISH");
-                return;
-            }
-
-            if (immediately)
-            {
-                SwitchOff(redLight);
-                SwitchOff(yellowLight);
-                SwitchOn(greenLight);
-
-                State = TrafficLightState.GreenFinish;
-                onFinished?.Invoke();
-            }
-            else
-            {
-                if (State != TrafficLightState.Green)
-                {
-                    State = TrafficLightState.Switching;
-                    SwitchDynamic(trafficLightSwitch.SwitchToGreen, () =>
-                    {
-                        State = TrafficLightState.GreenFinish;
-                        onFinished?.Invoke();
-                    });
-                }
-                else
-                {
-                    State = TrafficLightState.GreenFinish;
-                }
-            }
-        }
-
         public void SwitchOutOfOrder(Action onFinished = null, bool immediately = false)
         {
             if (State == TrafficLightState.OutOfOrder)
             {
-                Debug.LogWarning("Traffic Light State already OUT OF ORDER");
+                Debug.LogWarning("Traffic Light State already OUT OF ORDER", this);
                 return;
             }
 
             if (State == TrafficLightState.Switching)
             {
-                Debug.LogWarning("Traffic Light State is switching, unable to change to OUT OF ORDER");
+                Debug.LogWarning("Traffic Light State is switching, unable to change to OUT OF ORDER", this);
                 return;
             }
 
             if (immediately)
             {
+                Debug.Log("Switch to out of order immediately", this);
+                
                 SwitchOff(redLight);
                 SwitchOn(yellowLight);
                 SwitchOff(greenLight);
@@ -242,6 +206,7 @@ namespace PcSoft.TrafficLight._90_Scripts._00_Runtime.Components
             }
             else
             {
+                Debug.Log("Switch to out of order", this);
                 AnimationBuilder.Create(this)
                     .Animate(lightSwitchCurve, lightSwitchSpeed, v =>
                     {
@@ -251,6 +216,54 @@ namespace PcSoft.TrafficLight._90_Scripts._00_Runtime.Components
                     })
                     .WithFinisher(onFinished)
                     .Start();
+            }
+        }
+
+        private void DoSwitchRed(Action onFinished)
+        {
+            State = TrafficLightState.Switching;
+            SwitchDynamic(trafficLightSwitch.SwitchToRed, () =>
+            {
+                State = TrafficLightState.Red;
+                onFinished?.Invoke();
+            });
+        }
+
+        private void DoSwitchGreenFinish(Action onFinished)
+        {
+            if (State == TrafficLightState.GreenFinish)
+            {
+                Debug.LogWarning("Traffic Light State already GREEN FINISH", this);
+                return;
+            }
+
+            if (State == TrafficLightState.Switching)
+            {
+                Debug.LogWarning("Traffic Light State is switching, unable to change to GREEN FINISH", this);
+                return;
+            }
+
+            if (State != TrafficLightState.Green)
+            {
+                Debug.Log("Switch to green (for finishing)", this);
+                
+                State = TrafficLightState.Switching;
+                SwitchDynamic(trafficLightSwitch.SwitchToGreen, () =>
+                {
+                    _blinkCounter = 0;
+                    _blinkFinished = onFinished;
+                    
+                    State = TrafficLightState.GreenFinish;
+                });
+            }
+            else
+            {
+                Debug.Log("Green Finishing set", this);
+                
+                _blinkCounter = 0;
+                _blinkFinished = onFinished;
+                
+                State = TrafficLightState.GreenFinish;
             }
         }
 
@@ -342,6 +355,28 @@ namespace PcSoft.TrafficLight._90_Scripts._00_Runtime.Components
                 default:
                     throw new NotImplementedException();
             }
+        }
+        
+        internal void Initialize()
+        {
+            switch (initialState)
+            {
+                case TrafficLightInitialState.Red:
+                    SwitchRed(immediately: true);
+                    break;
+                case TrafficLightInitialState.Green:
+                    SwitchGreen(immediately: true);
+                    break;
+                case TrafficLightInitialState.OutOfOrder:
+                    SwitchOutOfOrder(immediately: true);
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
+
+            _counter = 0f;
+            _blinkCounter = 0;
+            _blinkState = TrafficLightBlinkState.On;
         }
     }
 
