@@ -39,6 +39,7 @@ namespace PcSoft.ExtendedUI._90_Scripts.Components.UI.Component
             {
                 case ListUpdatePolicy.FillAndClear:
                 case ListUpdatePolicy.Refresh:
+                case ListUpdatePolicy.None:
                     break;
                 case ListUpdatePolicy.OnlyStartup:
                     FillList();
@@ -59,6 +60,7 @@ namespace PcSoft.ExtendedUI._90_Scripts.Components.UI.Component
                     Refresh();
                     break;
                 case ListUpdatePolicy.OnlyStartup:
+                case ListUpdatePolicy.None:
                     break;
                 default:
                     throw new NotImplementedException();
@@ -74,6 +76,7 @@ namespace PcSoft.ExtendedUI._90_Scripts.Components.UI.Component
                     break;
                 case ListUpdatePolicy.Refresh:
                 case ListUpdatePolicy.OnlyStartup:
+                case ListUpdatePolicy.None:
                     break;
                 default:
                     throw new NotImplementedException();
@@ -213,6 +216,7 @@ namespace PcSoft.ExtendedUI._90_Scripts.Components.UI.Component
     {
         FillAndClear,
         Refresh,
-        OnlyStartup
+        OnlyStartup,
+        None
     }
 }
