@@ -11,6 +11,7 @@ namespace PcSoft.ExtendedUI._90_Scripts.Components.UI.Component
         #region Inspector Data
 
         [Header("Behavior")]
+        [SerializeField]
         private ListUpdatePolicy updatePolicy = ListUpdatePolicy.FillAndClear;
 
         [Header("References")]
