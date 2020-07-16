@@ -35,7 +35,7 @@ namespace PcSoft.UnityWorld._90_Scripts._00_Runtime.Assets
         private bool activeScene;
 
         [SerializeField]
-        private SceneLoadingBehavior loadingBehavior = SceneLoadingBehavior.Default;
+        private SceneLoadingBehavior loadingBehavior = SceneLoadingBehavior.Always;
 
         [SerializeField]
         private WorldSceneGroup group = WorldSceneGroup.None;
@@ -66,7 +66,7 @@ namespace PcSoft.UnityWorld._90_Scripts._00_Runtime.Assets
 
     public enum SceneLoadingBehavior
     {
-        Default,
+        Always,
         OnlyInEditor,
         OnlyAtRuntime
     }

@@ -13,7 +13,7 @@ namespace PcSoft.UnityWorld._90_Scripts._90_Editor
             if (world == null || world.Scenes.Length <= 0)
                 return false;
 
-            EditorActionUtils.LoadScenes(world.Scenes);
+            EditorActionUtils.LoadScenes(world.Scenes, false);
             return true;
         }
     }

@@ -44,19 +44,31 @@ namespace PcSoft.UnityWorld._90_Scripts._90_Editor
             return Selection.activeObject is WorldAsset;
         }
 
-        private static void LoadWorldGroup(WorldSceneGroup group)
+        #endregion
+        
+        [MenuItem("Assets/Open Runtime World", false, -1)]
+        public static void OpenRuntimeWorldThree()
+        {
+            LoadWorldGroup(null, true);
+        }
+
+        [MenuItem("Assets/Open Runtime World", true, -1)]
+        public static bool CanOpenRuntimeWorldThree()
+        {
+            return Selection.activeObject is WorldAsset;
+        }
+
+        private static void LoadWorldGroup(WorldSceneGroup? group, bool loadRuntime = false)
         {
             var world = Selection.activeObject as WorldAsset;
-            var scenes = world.Scenes.Where(x => x.Group == group || x.Group == WorldSceneGroup.All).ToArray();
+            var scenes = group == null ? world.Scenes : world.Scenes.Where(x => x.Group == group || x.Group == WorldSceneGroup.All).ToArray();
             if (scenes.Length <= 0)
             {
                 EditorUtility.DisplayDialog("Open World Group", "No scenes are associated to this world group", "OK");
                 return;
             }
 
-            EditorActionUtils.LoadScenes(scenes);
+            EditorActionUtils.LoadScenes(scenes, loadRuntime);
         }
-
-        #endregion
     }
 }

@@ -18,7 +18,7 @@ namespace PcSoft.UnityWorld._90_Scripts._90_Editor.Assets
             {
                 var sceneProperty = property.FindPropertyRelative("scene");
                 var activeSceneProperty = property.FindPropertyRelative("activeScene");
-                var doNotLoadProperty = property.FindPropertyRelative("doNotLoadInEditor");
+                var loadingBehaviorProperty = property.FindPropertyRelative("loadingBehavior");
                 var groupingProperty = property.FindPropertyRelative("group");
 
                 rect.y += 3;
@@ -40,7 +40,7 @@ namespace PcSoft.UnityWorld._90_Scripts._90_Editor.Assets
                 );
                 EditorGUI.PropertyField(
                     new Rect(rect.x + rect.width / 2, rect.y, rect.width / 2, EditorGUIUtility.singleLineHeight),
-                    doNotLoadProperty, new GUIContent("Do not load (editor only)")
+                    loadingBehaviorProperty, new GUIContent("Loading Behavior")
                 );
                 rect.y += EditorGUIUtility.singleLineHeight + 3;
                 
