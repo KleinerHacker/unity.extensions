@@ -1,12 +1,16 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using PcSoft.ExtendedEditor._90_Scripts._90_Editor.Commons;
 using UnityEditor;
+using UnityEngine;
 
 namespace PcSoft.ExtendedEditor._90_Scripts._90_Editor
 {
     public abstract class ExtendedDrawer : PropertyDrawer
     {
         private readonly IDictionary<string, bool> _showMap = new Dictionary<string, bool>();
+        private readonly IDictionary<string, int> _showTab = new Dictionary<string, int>();
 
         protected void IntentArea(Action action)
         {
@@ -60,6 +64,20 @@ namespace PcSoft.ExtendedEditor._90_Scripts._90_Editor
             {
                 action();
             }
+        }
+        
+        protected void TabArea(string title, params TabItem[] items) 
+        {
+            LabeledArea(title, false, () =>
+            {
+                if (!_showTab.ContainsKey(title))
+                {
+                    _showTab.Add(title, 0);
+                }
+
+                _showTab[title] = GUILayout.Toolbar(_showTab[title], items.Select(x => x.Title).ToArray());
+                items[_showTab[title]]?.OnGUI?.Invoke();
+            });
         }
     }
 }

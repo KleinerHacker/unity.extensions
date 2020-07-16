@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -27,7 +28,7 @@ namespace PcSoft.ExtendedUI._90_Scripts.Components.UI.Component
 
         #endregion
 
-        private readonly IList<TI> _listItems = new List<TI>();
+        protected readonly IList<TI> _listItems = new List<TI>();
 
         #region Builtin Methods
 
@@ -90,7 +91,6 @@ namespace PcSoft.ExtendedUI._90_Scripts.Components.UI.Component
         {
             foreach (var listItem in _listItems)
             {
-                OnItemDeletion(listItem);
                 Destroy(listItem.gameObject);
             }
 
@@ -102,25 +102,109 @@ namespace PcSoft.ExtendedUI._90_Scripts.Components.UI.Component
             foreach (var data in ContentData)
             {
                 var go = Instantiate(itemPrefab.gameObject, Vector3.zero, Quaternion.identity);
-                go.transform.SetParent(content, false);
+                go.transform.parent = content;
 
                 var listItem = go.GetComponent<TI>();
                 listItem.Model = data;
-                
-                OnItemCreation(listItem, data);
 
                 _listItems.Add(listItem);
             }
         }
+    }
 
-        protected virtual void OnItemCreation(TI item, TM model)
+    public abstract class UiSelectionList<TI, TM> : UiList<TI, TM> where TI : UiSelectableListItem<TM>
+    {
+        #region Properties
+
+        private int _selectedIndex = 0;
+
+        public int SelectedIndex
         {
-            //Empty
+            get => _selectedIndex;
+            set
+            {
+                if (value < 0 || value >= ContentData.Length)
+                    throw new IndexOutOfRangeException();
+
+                _selectedIndex = value;
+                OnSelectedItemChanged();
+            }
         }
-        
-        protected virtual void OnItemDeletion(TI item)
+
+        public TM SelectedItem
         {
-            //Empty
+            get => SelectedIndex < 0 || SelectedIndex >= ContentData.Length ? default : ContentData[SelectedIndex];
+            set
+            {
+                var index = -1;
+                for (var i = 0; i < ContentData.Length; i++)
+                {
+                    var data = ContentData[i];
+                    index++;
+
+                    if (data.Equals(value))
+                        index = i;
+                }
+
+                if (index < 0)
+                    throw new IndexOutOfRangeException("Item not found");
+
+                SelectedIndex = index;
+            }
+        }
+
+        #endregion
+
+        public bool SelectNext(bool rollOver = true)
+        {
+            if (SelectedIndex + 1 >= ContentData.Length)
+            {
+                if (rollOver)
+                {
+                    SelectedIndex = 0;
+                }
+
+                return false;
+            }
+
+            SelectedIndex++;
+            return true;
+        }
+
+        public bool SelectPrev(bool rollOver = true)
+        {
+            if (SelectedIndex - 1 < 0)
+            {
+                if (rollOver)
+                {
+                    SelectedIndex = ContentData.Length - 1;
+                }
+
+                return false;
+            }
+
+            SelectedIndex--;
+            return true;
+        }
+
+        protected virtual void OnSelectedItemChanged()
+        {
+            foreach (var listItem in _listItems)
+            {
+                listItem.IsSelected = false;
+            }
+
+            if (SelectedItem == null)
+                return;
+
+            foreach (var listItem in _listItems)
+            {
+                if (listItem.Model.Equals(SelectedItem))
+                {
+                    listItem.IsSelected = true;
+                    break;
+                }
+            }
         }
     }
 
