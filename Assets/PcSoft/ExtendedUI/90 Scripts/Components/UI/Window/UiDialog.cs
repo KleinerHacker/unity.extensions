@@ -1,6 +1,7 @@
 using System;
 using PcSoft.ExtendedAnimation._90_Scripts.Types;
 using PcSoft.ExtendedAnimation._90_Scripts.Utils;
+using PcSoft.ExtendedUI._90_Scripts.Utils.Extensions;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Audio;
@@ -17,48 +18,42 @@ namespace PcSoft.ExtendedUI._90_Scripts.Components.UI.Window
 
         [SerializeField]
         private DialogState initialState = DialogState.Hidden;
-
+        
         [SerializeField]
         private DialogEscapeAction escapeAction = DialogEscapeAction.None;
 
         [Header("SFX")]
         [SerializeField]
         private AudioMixerGroup audioMixerGroup;
-
+        
         [SerializeField]
         private AudioClip openClip;
-
+        
         [Header("Animation")]
         [SerializeField]
         private AnimationCurve fadingCurve = AnimationCurve.EaseInOut(0f, 0f, 1f, 1f);
 
         [SerializeField]
         private float fadingSpeed = 1f;
-
+        
         [SerializeField]
         private bool blockingGame = false;
 
         [SerializeField]
         private bool changeCursorSystem = false;
 
-        [SerializeField]
-        [HideInInspector]
-        private CanvasGroup canvasGroup;
-
         #endregion
 
         #region Properties
 
-        public DialogState State { get; private set; }
+        public DialogState State => _canvasGroup.IsShown() ? DialogState.Shown : DialogState.Hidden;
 
         public DialogEscapeAction EscapeAction => escapeAction;
 
         #endregion
 
         private AudioSource _audioSource;
-
-        private bool _cursorVisibility;
-        private CursorLockMode _cursorLockMode;
+        private CanvasGroup _canvasGroup;
 
         #region Builtin Methods
 
@@ -69,28 +64,44 @@ namespace PcSoft.ExtendedUI._90_Scripts.Components.UI.Window
             _audioSource.loop = false;
             _audioSource.outputAudioMixerGroup = audioMixerGroup;
 
-            State = initialState;
+            _canvasGroup = GetComponent<CanvasGroup>();
         }
 
-        private void LateUpdate()
-        {
 #if UNITY_EDITOR
-            if (EscapeAction != DialogEscapeAction.None && Input.GetKeyDown(KeyCode.F1))
-#else
-            if (EscapeAction != DialogEscapeAction.None && Input.GetButtonDown("Cancel"))
-#endif
+        protected override void OnValidate()
+        {
+            if (EditorApplication.isPlaying)
+                return;
+            
+            var canvasGroup = GetComponent<CanvasGroup>();
+            
+            switch (initialState)
             {
-                Debug.Log("Escape action");
+                case DialogState.Hidden:
+                    canvasGroup.Hide();
+                    break;
+                case DialogState.Shown:
+                    canvasGroup.Show();
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+#endif
 
+        private void Update()
+        {
+            if (Input.GetButtonUp("Cancel"))
+            {
                 switch (EscapeAction)
                 {
                     case DialogEscapeAction.None:
-                        throw new NotSupportedException();
+                        break;
                     case DialogEscapeAction.Toggle:
                         Debug.Log("Toggle dialog (escape)", this);
                         if (State == DialogState.Shown)
                             Hide();
-                        else
+                        else 
                             Show();
                         break;
                     case DialogEscapeAction.HideOnly:
@@ -107,30 +118,6 @@ namespace PcSoft.ExtendedUI._90_Scripts.Components.UI.Window
             }
         }
 
-#if UNITY_EDITOR
-        protected override void OnValidate()
-        {
-            if (EditorApplication.isPlaying)
-                return;
-
-            canvasGroup = GetComponent<CanvasGroup>();
-
-            switch (initialState)
-            {
-                case DialogState.Hidden:
-                    canvasGroup.alpha = 0f;
-                    canvasGroup.interactable = canvasGroup.blocksRaycasts = false;
-                    break;
-                case DialogState.Shown:
-                    canvasGroup.alpha = 1f;
-                    canvasGroup.interactable = canvasGroup.blocksRaycasts = true;
-                    break;
-                default:
-                    throw new NotImplementedException();
-            }
-        }
-#endif
-
         #endregion
 
         public void Show()
@@ -140,35 +127,30 @@ namespace PcSoft.ExtendedUI._90_Scripts.Components.UI.Window
                 Debug.LogWarning("Dialog already shown", this);
                 return;
             }
-
+            
             Debug.Log("Show dialog", this);
 
             StopAllCoroutines();
-
-            State = DialogState.Shown;
 
             if (openClip != null)
             {
                 _audioSource.PlayOneShot(openClip);
             }
 
-            canvasGroup.alpha = 0f;
-            canvasGroup.interactable = canvasGroup.blocksRaycasts = true;
-            StartCoroutine(AnimationUtils.RunAnimation(AnimationType.Unscaled, fadingCurve, fadingSpeed,
+            _canvasGroup.Hide();
+            StartCoroutine(AnimationUtils.RunAnimation(AnimationType.Unscaled, fadingCurve, fadingSpeed, 
                 v =>
                 {
-                    canvasGroup.alpha = v;
+                    _canvasGroup.alpha = v;
                     if (blockingGame)
                     {
                         Time.timeScale = 1f - v;
                     }
                 }, () =>
                 {
+                    _canvasGroup.Show();
                     if (changeCursorSystem)
                     {
-                        _cursorVisibility = Cursor.visible;
-                        _cursorLockMode = Cursor.lockState;
-
                         Cursor.visible = true;
                         Cursor.lockState = CursorLockMode.None;
                     }
@@ -182,30 +164,28 @@ namespace PcSoft.ExtendedUI._90_Scripts.Components.UI.Window
                 Debug.LogWarning("Dialog already hidden", this);
                 return;
             }
-
+            
             Debug.Log("Hide dialog", this);
 
             StopAllCoroutines();
-
-            State = DialogState.Hidden;
-
+            
             if (changeCursorSystem)
             {
-                Cursor.visible = _cursorVisibility;
-                Cursor.lockState = _cursorLockMode;
+                Cursor.visible = false;
+                Cursor.lockState = CursorLockMode.Locked;
             }
 
-            canvasGroup.alpha = 1f;
-            canvasGroup.interactable = canvasGroup.blocksRaycasts = true;
-            StartCoroutine(AnimationUtils.RunAnimation(AnimationType.Unscaled, fadingCurve, fadingSpeed,
+            _canvasGroup.Hide();
+            _canvasGroup.alpha = 1f;
+            StartCoroutine(AnimationUtils.RunAnimation(AnimationType.Unscaled, fadingCurve, fadingSpeed, 
                 v =>
                 {
-                    canvasGroup.alpha = 1f - v;
+                    _canvasGroup.alpha = 1f - v;
                     if (blockingGame)
                     {
                         Time.timeScale = v;
                     }
-                }, () => canvasGroup.interactable = canvasGroup.blocksRaycasts = true));
+                }));
         }
     }
 
@@ -214,7 +194,7 @@ namespace PcSoft.ExtendedUI._90_Scripts.Components.UI.Window
         Shown,
         Hidden,
     }
-
+    
     public enum DialogEscapeAction
     {
         Toggle,
