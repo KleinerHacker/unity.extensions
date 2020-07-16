@@ -13,3 +13,6 @@ Extensions for Unity
 * Dynamic Assets - A system to load simple and efficient assets from resources or asset bundles
 * Easy Tutorial - A basic tutorial system
 * Traffic Light - A Traffic Light System
+
+## Special Thanks
+* [Array Drawer](https://github.com/garettbass/UnityExtensions.ArrayDrawer)
