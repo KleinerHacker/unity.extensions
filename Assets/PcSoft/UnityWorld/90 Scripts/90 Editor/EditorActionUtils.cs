@@ -36,7 +36,7 @@ namespace PcSoft.UnityWorld._90_Scripts._90_Editor
         {
             EditorUtility.DisplayProgressBar("Open World", "Load scene " + sceneData.Scene, progress);
             var scene = EditorSceneManager.OpenScene(sceneData.Scene, additive ? OpenSceneMode.Additive : OpenSceneMode.Single);
-            if (sceneData.DoNotLoadInEditor)
+            if (sceneData.LoadingBehavior == SceneLoadingBehavior.OnlyAtRuntime)
             {
                 EditorSceneManager.CloseScene(scene, false);
             }

@@ -24,7 +24,7 @@ namespace PcSoft.UnityWorld._90_Scripts._00_Runtime.Components
             var scene = data?.World?.Scenes.FirstOrDefault(x => x.ActiveScene);
             if (scene == null)
                 return;
-            
+
             SceneManager.SetActiveScene(SceneManager.GetSceneByPath(scene.Scene));
         }
     }
@@ -43,7 +43,11 @@ namespace PcSoft.UnityWorld._90_Scripts._00_Runtime.Components
 
         public WorldAsset World => world;
 
-        public override string[] Scenes => base.Scenes.Concat(world.Scenes.Select(x => x.Scene)).ToArray();
+        public override string[] Scenes => base.Scenes.Concat(
+            world.Scenes
+                .Where(x => x.LoadingBehavior != (Application.isEditor ? SceneLoadingBehavior.OnlyAtRuntime : SceneLoadingBehavior.OnlyInEditor))
+                .Select(x => x.Scene)
+        ).ToArray();
 
         #endregion
 

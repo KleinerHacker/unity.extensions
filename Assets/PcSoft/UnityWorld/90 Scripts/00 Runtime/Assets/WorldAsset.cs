@@ -1,6 +1,7 @@
 using System;
 using PcSoft.ExtendedEditor._90_Scripts._00_Runtime.Extra;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace PcSoft.UnityWorld._90_Scripts._00_Runtime.Assets
 {
@@ -34,7 +35,7 @@ namespace PcSoft.UnityWorld._90_Scripts._00_Runtime.Assets
         private bool activeScene;
 
         [SerializeField]
-        private bool doNotLoadInEditor;
+        private SceneLoadingBehavior loadingBehavior = SceneLoadingBehavior.Default;
 
         [SerializeField]
         private WorldSceneGroup group = WorldSceneGroup.None;
@@ -47,7 +48,7 @@ namespace PcSoft.UnityWorld._90_Scripts._00_Runtime.Assets
 
         public bool ActiveScene => activeScene;
 
-        public bool DoNotLoadInEditor => doNotLoadInEditor;
+        public SceneLoadingBehavior LoadingBehavior => loadingBehavior;
 
         public WorldSceneGroup Group => group;
 
@@ -61,5 +62,12 @@ namespace PcSoft.UnityWorld._90_Scripts._00_Runtime.Assets
         Two, 
         Three,
         All
+    }
+
+    public enum SceneLoadingBehavior
+    {
+        Default,
+        OnlyInEditor,
+        OnlyAtRuntime
     }
 }
