@@ -14,5 +14,5 @@ Extensions for Unity
 * Easy Tutorial - A basic tutorial system
 * Traffic Light - A Traffic Light System
 
-##Special Thanks
+## Special Thanks
 * [Array Drawer](https://github.com/garettbass/UnityExtensions.ArrayDrawer)
