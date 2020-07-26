@@ -108,21 +108,36 @@ namespace PcSoft.ExtendedEditor._90_Scripts._90_Editor
             };
         }
 
-        protected void ArrayArea<T>(string title, SerializedProperty[] properties, T[] values, Func<T, SerializedProperty, bool> check, Func<T, SerializedProperty, string> titleFunc)
+        protected void ArrayArea<T>(string title, SerializedProperty[] properties, T[] values, Func<T, SerializedProperty, bool> check,
+            Func<T, SerializedProperty, string> titleFunc, ArrayAreaType type = ArrayAreaType.Folding, int maxTabsPerLine = 5)
         {
-            LabeledArea(title, () =>
+            switch (type)
             {
-                foreach (var value in values)
-                {
-                    var property = properties.FirstOrDefault(item => check.Invoke(value, item));
-                    if (property == null)
-                        continue;
-                    EditorGUILayout.PropertyField(property, new GUIContent(titleFunc.Invoke(value, property)), true);
-                }
-            });
+                case ArrayAreaType.Folding:
+                    LabeledArea(title, () =>
+                    {
+                        foreach (var value in values)
+                        {
+                            var property = properties.FirstOrDefault(item => check.Invoke(value, item));
+                            if (property == null)
+                                continue;
+                            EditorGUILayout.PropertyField(property, new GUIContent(titleFunc.Invoke(value, property)), true);
+                        }
+                    });
+                    break;
+                case ArrayAreaType.Tab:
+                    TabArea(title, maxTabsPerLine, values.Select(x =>
+                    {
+                        var property = properties.FirstOrDefault(item => check.Invoke(x, item));
+                        return new TabItem(titleFunc.Invoke(x, property), () => EditorGUILayout.PropertyField(property, new GUIContent(titleFunc.Invoke(x, property)), true));
+                    }).ToArray());
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
         }
 
-        protected void TabArea(string title, params TabItem[] items)
+        protected void TabArea(string title, int maxTabsPerLine, params TabItem[] items)
         {
             LabeledArea(title, false, () =>
             {
@@ -131,7 +146,7 @@ namespace PcSoft.ExtendedEditor._90_Scripts._90_Editor
                     _showTab.Add(title, 0);
                 }
 
-                _showTab[title] = GUILayout.Toolbar(_showTab[title], items.Select(x => x.Title).ToArray());
+                _showTab[title] = GUILayout.SelectionGrid(_showTab[title], items.Select(x => x.Title).ToArray(), maxTabsPerLine);
                 items[_showTab[title]]?.OnGUI?.Invoke();
             });
         }
@@ -217,7 +232,7 @@ namespace PcSoft.ExtendedEditor._90_Scripts._90_Editor
                         .ThenBy(x => x.GetCustomAttribute<SerializedPropertyTabGroupAttribute>().Name)
                         .GroupBy(x => x.GetCustomAttribute<SerializedPropertyTabGroupAttribute>().Name)
                         .ToDictionary(x => x.Key, x => x.ToList());
-                    TabArea(title, fieldDict.Select(x => new TabItem(x.Key, () => BuildFields(x.Value.ToArray()))).ToArray());
+                    TabArea(title, 5, fieldDict.Select(x => new TabItem(x.Key, () => BuildFields(x.Value.ToArray()))).ToArray());
                 }
             }
 
@@ -286,5 +301,11 @@ namespace PcSoft.ExtendedEditor._90_Scripts._90_Editor
             Top,
             Bottom
         }
+    }
+    
+    public enum ArrayAreaType
+    {
+        Folding,
+        Tab,
     }
 }
