@@ -49,24 +49,28 @@ namespace PcSoft.AudioMachine._90_Scripts.Components.Music
             {
                 if (_extendedAudioHelper != null)
                 {
+                    Debug.Log("Play next music");
+                    
                     var randomSource = _extendedAudioHelper.Next();
 
-                    StopAsync(_currentAudioSources.Values);
+                    DoStopAsync();
                     UpdateAudioSources(randomSource, false);
-                    StartAsync(_currentAudioSources.Values);
+                    DoStartAsync();
                 }
                 else if (_simpleAudioHelper != null)
                 {
+                    Debug.Log("Play next music");
+                    
                     var randomClip = _simpleAudioHelper.Next();
                     
-                    StopAsync(_currentAudioSources.Values);
+                    DoStop();
                     
                     var newAudioSource = CreateAudioSource(false);
                     newAudioSource.clip = randomClip;
                     newAudioSource.Play();
                     
                     _currentAudioSources.Add("Default", newAudioSource);
-                    StartAsync(_currentAudioSources.Values);
+                    DoStart();
                 }
             }
         }
@@ -78,12 +82,12 @@ namespace PcSoft.AudioMachine._90_Scripts.Components.Music
             Stop();
 
             UpdateAudioSources(musicSource);
-            StartAsync(_currentAudioSources.Values);
+            DoStartAsync();
         }
 
         public void Stop()
         {
-            StopAsync(_currentAudioSources.Values);
+            DoStopAsync();
             _currentAudioSources.Clear();
         }
 
@@ -91,6 +95,8 @@ namespace PcSoft.AudioMachine._90_Scripts.Components.Music
         {
             if (musicSource == null)
                 throw new ArgumentException("music Source == null");
+            
+            Debug.Log("Play new music");
 
             _extendedAudioHelper = null;
             _simpleAudioHelper = null;
@@ -135,23 +141,47 @@ namespace PcSoft.AudioMachine._90_Scripts.Components.Music
                 throw new NotImplementedException();
         }
 
-        private void StartAsync(IEnumerable<AudioSource> audioSources)
+        private void DoStartAsync()
         {
-            foreach (var audioSource in audioSources)
+            foreach (var audioSource in _currentAudioSources.ToArray())
             {
                 StartCoroutine(AnimationUtils.RunAnimation(AnimationType.Unscaled, transitionCurve, transitionSpeed,
-                    v => audioSource.volume = v));
+                    v => audioSource.Value.volume = v));
             }
         }
 
-        private void StopAsync(IEnumerable<AudioSource> audioSources)
+        private void DoStopAsync()
         {
+            var audioSources = _currentAudioSources.Values.ToArray();
+            
             foreach (var audioSource in audioSources)
             {
                 StartCoroutine(AnimationUtils.RunAnimation(AnimationType.Unscaled, transitionCurve, transitionSpeed,
                     v => audioSource.volume = 1f - v,
                     () => Destroy(audioSource)));
             }
+            
+            _currentAudioSources.Clear();
+        }
+        
+        private void DoStart()
+        {
+            foreach (var audioSource in _currentAudioSources.ToArray())
+            {
+                audioSource.Value.volume = 1f;
+            }
+        }
+        
+        private void DoStop()
+        {
+            var audioSources = _currentAudioSources.Values.ToArray();
+            
+            foreach (var audioSource in audioSources)
+            {
+                Destroy(audioSource);
+            }
+            
+            _currentAudioSources.Clear();
         }
 
         private AudioSource CreateAudioSource(bool loop)

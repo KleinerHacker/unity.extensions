@@ -84,17 +84,18 @@ namespace PcSoft.UnityScene._90_Scripts._00_Runtime.Components
 
         protected void LoadScene(T state, object data = null, Action onFinished = null, bool doNotUnload = false)
         {
-            OnLoadingStarted(State);
-
             string[] oldScenes = null;
+            TScene oldData = null;
             if (!doNotUnload)
             {
-                var oldData = FindSceneData(State, data);
+                oldData = FindSceneData(State, data);
                 oldScenes = oldData.Scenes;
             }
 
             var newData = FindSceneData(state, data);
             var newScenes = newData.Scenes;
+            
+            OnLoadingStarted(State, oldData);
 
             blending.ShowBlend(() =>
             {
@@ -102,7 +103,7 @@ namespace PcSoft.UnityScene._90_Scripts._00_Runtime.Components
                 {
                     blending.HideBlend(() =>
                     {
-                        OnLoadingFinished(state);
+                        OnLoadingFinished(state, newData);
 
                         State = state;
                         onFinished?.Invoke();
@@ -121,6 +122,8 @@ namespace PcSoft.UnityScene._90_Scripts._00_Runtime.Components
                 var op = SceneManager.LoadSceneAsync(newScene, LoadSceneMode.Additive);
                 op.completed += operation => SceneManager.SetActiveScene(SceneManager.GetSceneByPath(newScenes[0]));
             }
+            
+            OnLoadingFinished(state, newData);
         }
 
         protected virtual TScene FindSceneData(T state, object data)
@@ -171,11 +174,11 @@ namespace PcSoft.UnityScene._90_Scripts._00_Runtime.Components
 
         #endregion
 
-        protected virtual void OnLoadingStarted(T oldState)
+        protected virtual void OnLoadingStarted(T oldState, TScene scene)
         {
         }
 
-        protected virtual void OnLoadingFinished(T newState)
+        protected virtual void OnLoadingFinished(T newState, TScene scene)
         {
         }
     }
