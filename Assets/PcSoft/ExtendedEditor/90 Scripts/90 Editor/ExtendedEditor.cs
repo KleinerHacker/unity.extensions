@@ -276,8 +276,8 @@ namespace PcSoft.ExtendedEditor._90_Scripts._90_Editor
                 else if (attribute is SerializedPropertyIdentifiedArrayRepresentationAttribute arrayAttribute)
                 {
                     ArrayArea(arrayAttribute.Title, (SerializedProperty[]) field.GetValue(this),
-                        Enum.GetValues(arrayAttribute.EnumType).Cast<object>().ToArray(),
-                        (o, property) => property.FindPropertyRelative("identifier").intValue == (int) o,
+                        Enum.GetValues(arrayAttribute.EnumType).Cast<Enum>().ToArray(),
+                        (o, property) => property.FindPropertyRelative("identifier").intValue == Convert.ToInt32(Convert.ChangeType(o, o.GetTypeCode())),
                         (o, property) => o.ToString());
                 }
                 else
