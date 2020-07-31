@@ -4,6 +4,9 @@ namespace PcSoft.ExtendedAnimation._90_Scripts.Utils
 {
     public sealed class AnimationRunner
     {
+        internal Coroutine Coroutine { get; set; }
+        public bool IsStopped { get; private set; }
+        
         private readonly MonoBehaviour _behaviour;
 
         internal AnimationRunner(MonoBehaviour behaviour)
@@ -13,7 +16,11 @@ namespace PcSoft.ExtendedAnimation._90_Scripts.Utils
 
         public void Stop()
         {
-            _behaviour.StopAllCoroutines();
+            IsStopped = true;
+            if (Coroutine != null)
+            {
+                _behaviour.StopCoroutine(Coroutine);
+            }
         }
     }
 }

@@ -1,12 +1,13 @@
 using System;
 using System.Collections;
+using UnityEngine;
 
 namespace PcSoft.ExtendedAnimation._90_Scripts.Utils
 {
     public sealed partial class AnimationBuilder
     {
         public bool IsRunning { get; private set; }
-        
+
         public AnimationRunner Start(float delayed, Action onFinished = null)
         {
             if (_steps.Count <= 0)
@@ -14,14 +15,18 @@ namespace PcSoft.ExtendedAnimation._90_Scripts.Utils
             if (IsRunning)
                 throw new InvalidOperationException("Is already running");
 
+            var animationRunner = new AnimationRunner(_behaviour);
+            
             IsRunning = true;
-            Run(AnimationUtils.WaitAndRun(delayed, () =>
+            animationRunner.Coroutine = Run(AnimationUtils.WaitAndRun(delayed, () =>
             {
                 onFinished?.Invoke();
-                StartNext(0);
+                if (animationRunner.IsStopped)
+                    return;
+                StartNext(0, animationRunner);
             }));
-            
-            return new AnimationRunner(_behaviour);
+
+            return animationRunner;
         }
 
         public AnimationRunner Start()
@@ -31,77 +36,98 @@ namespace PcSoft.ExtendedAnimation._90_Scripts.Utils
             if (IsRunning)
                 throw new InvalidOperationException("Is already running");
 
+            var animationRunner = new AnimationRunner(_behaviour);
+
             IsRunning = true;
-            StartNext(0);
-            return new AnimationRunner(_behaviour);
+            StartNext(0, animationRunner);
+
+            return animationRunner;
         }
 
-        private void StartNext(int stepIndex)
+        private void StartNext(int stepIndex, AnimationRunner animationRunner)
         {
             if (stepIndex >= _steps.Count)
             {
                 _onFinished?.Invoke();
                 IsRunning = false;
-                
+
                 return;
             }
 
             var step = _steps[stepIndex];
             if (step is AnimateAnimationStep animStep)
             {
-                Run(AnimationUtils.RunAnimation(_type, animStep.Curve, animStep.Speed, animStep.Handler, () =>
+                animationRunner.Coroutine = Run(AnimationUtils.RunAnimation(_type, animStep.Curve, animStep.Speed, animStep.Handler, () =>
                 {
                     animStep.OnFinished?.Invoke();
-                    StartNext(stepIndex + 1);
+                    if (animationRunner.IsStopped)
+                        return;
+                    StartNext(stepIndex + 1, animationRunner);
                 }));
             }
             else if (step is WaitSecondsAnimationStep waitSecStep)
             {
-                Run(AnimationUtils.WaitAndRun(_type, waitSecStep.Seconds, () =>
+                animationRunner.Coroutine = Run(AnimationUtils.WaitAndRun(_type, waitSecStep.Seconds, () =>
                 {
                     waitSecStep.OnFinished?.Invoke();
-                    StartNext(stepIndex + 1);
+                    if (animationRunner.IsStopped)
+                        return;
+                    StartNext(stepIndex + 1, animationRunner);
                 }));
             }
             else if (step is WaitFramesAnimationStep waitFrameStep)
             {
-                Run(AnimationUtils.WaitAndRun(waitFrameStep.Frames, () =>
+                animationRunner.Coroutine = Run(AnimationUtils.WaitAndRun(waitFrameStep.Frames, () =>
                 {
                     waitFrameStep.OnFinished?.Invoke();
-                    StartNext(stepIndex + 1);
+                    if (animationRunner.IsStopped)
+                        return;
+                    StartNext(stepIndex + 1, animationRunner);
                 }));
             }
             else if (step is RunAllSecondsAnimationStep runAllSecStep)
             {
-                Run(AnimationUtils.RunAll(_type, runAllSecStep.Seconds, () =>
+                animationRunner.Coroutine = Run(AnimationUtils.RunAll(_type, runAllSecStep.Seconds, () =>
                 {
                     runAllSecStep.OnFinished?.Invoke();
-                    StartNext(stepIndex + 1);
+                    if (animationRunner.IsStopped)
+                        return;
+                    StartNext(stepIndex + 1, animationRunner);
                 }, runAllSecStep.Actions));
             }
             else if (step is RunAllFramesAnimationStep runAllFramesStep)
             {
-                Run(AnimationUtils.RunAll(_type, runAllFramesStep.Frames, () =>
+                animationRunner.Coroutine = Run(AnimationUtils.RunAll(_type, runAllFramesStep.Frames, () =>
                 {
                     runAllFramesStep.OnFinished?.Invoke();
-                    StartNext(stepIndex + 1);
+                    if (animationRunner.IsStopped)
+                        return;
+                    StartNext(stepIndex + 1, animationRunner);
                 }, runAllFramesStep.Actions));
             }
             else if (step is RunRepeatSecondsAnimationStep runRepeatSecStep)
             {
-                Run(AnimationUtils.RunAll(runRepeatSecStep.Seconds, runRepeatSecStep.RepeatCount, runRepeatSecStep.Action, _type, () =>
-                {
-                    runRepeatSecStep.OnFinished?.Invoke();
-                    StartNext(stepIndex + 1);
-                }));
+                animationRunner.Coroutine = Run(AnimationUtils.RunAll(
+                    runRepeatSecStep.Seconds, runRepeatSecStep.RepeatCount, runRepeatSecStep.Action, _type, () =>
+                    {
+                        runRepeatSecStep.OnFinished?.Invoke();
+                        if (animationRunner.IsStopped)
+                            return;
+                        StartNext(stepIndex + 1, animationRunner);
+                    }
+                ));
             }
             else if (step is RunRepeatFramesAnimationStep runRepeatFramesStep)
             {
-                Run(AnimationUtils.RunAll(runRepeatFramesStep.Frames, runRepeatFramesStep.RepeatCount, runRepeatFramesStep.Action, _type, () =>
-                {
-                    runRepeatFramesStep.OnFinished?.Invoke();
-                    StartNext(stepIndex + 1);
-                }));
+                animationRunner.Coroutine = Run(AnimationUtils.RunAll(
+                    runRepeatFramesStep.Frames, runRepeatFramesStep.RepeatCount, runRepeatFramesStep.Action, _type, () =>
+                    {
+                        runRepeatFramesStep.OnFinished?.Invoke();
+                        if (animationRunner.IsStopped)
+                            return;
+                        StartNext(stepIndex + 1, animationRunner);
+                    }
+                ));
             }
             else if (step is ParallelAnimationStep parallelStep)
             {
@@ -117,9 +143,9 @@ namespace PcSoft.ExtendedAnimation._90_Scripts.Utils
                 throw new NotImplementedException(step.GetType().FullName);
         }
 
-        private void Run(IEnumerator animation)
+        private Coroutine Run(IEnumerator animation)
         {
-            _behaviour.StartCoroutine(animation);
+            return _behaviour.StartCoroutine(animation);
         }
     }
 }
