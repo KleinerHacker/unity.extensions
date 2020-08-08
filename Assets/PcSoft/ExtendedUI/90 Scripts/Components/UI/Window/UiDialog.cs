@@ -2,6 +2,7 @@ using System;
 using PcSoft.ExtendedAnimation._90_Scripts.Types;
 using PcSoft.ExtendedAnimation._90_Scripts.Utils;
 using PcSoft.ExtendedUI._90_Scripts.Utils.Extensions;
+using PcSoft.ExtendedUnity._90_Scripts._00_Runtime.Utils;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Audio;
@@ -139,14 +140,7 @@ namespace PcSoft.ExtendedUI._90_Scripts.Components.UI.Window
 
             _canvasGroup.Hide();
             StartCoroutine(AnimationUtils.RunAnimation(AnimationType.Unscaled, fadingCurve, fadingSpeed, 
-                v =>
-                {
-                    _canvasGroup.alpha = v;
-                    if (blockingGame)
-                    {
-                        Time.timeScale = 1f - v;
-                    }
-                }, () =>
+                v => _canvasGroup.alpha = v, () =>
                 {
                     _canvasGroup.Show();
                     if (changeCursorSystem)
@@ -155,6 +149,10 @@ namespace PcSoft.ExtendedUI._90_Scripts.Components.UI.Window
                         Cursor.lockState = CursorLockMode.None;
                     }
                 }));
+            if (blockingGame)
+            {
+                GameTimeController.Pause(this, fadingCurve, fadingSpeed);
+            }
         }
 
         public void Hide()
@@ -178,14 +176,11 @@ namespace PcSoft.ExtendedUI._90_Scripts.Components.UI.Window
             _canvasGroup.Hide();
             _canvasGroup.alpha = 1f;
             StartCoroutine(AnimationUtils.RunAnimation(AnimationType.Unscaled, fadingCurve, fadingSpeed, 
-                v =>
-                {
-                    _canvasGroup.alpha = 1f - v;
-                    if (blockingGame)
-                    {
-                        Time.timeScale = v;
-                    }
-                }));
+                v => _canvasGroup.alpha = 1f - v));
+            if (blockingGame)
+            {
+                GameTimeController.Resume(this, fadingCurve, fadingSpeed);
+            }
         }
     }
 

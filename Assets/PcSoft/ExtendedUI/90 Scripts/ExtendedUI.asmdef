@@ -1,7 +1,8 @@
 {
     "name": "ExtendedUI",
     "references": [
-        "GUID:9b0196a642edb924fa62483599f44a4c"
+        "GUID:9b0196a642edb924fa62483599f44a4c",
+        "GUID:006c9cda28a9c074f8891b867d146280"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

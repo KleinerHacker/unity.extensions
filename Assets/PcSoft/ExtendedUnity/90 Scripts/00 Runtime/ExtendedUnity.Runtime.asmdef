@@ -2,7 +2,8 @@
     "name": "ExtendedUnity.Runtime",
     "references": [
         "GUID:508b848fbbe43f344a7cba068d4976c1",
-        "GUID:c9d126c2870517046b89a075139e6ed7"
+        "GUID:c9d126c2870517046b89a075139e6ed7",
+        "GUID:9b0196a642edb924fa62483599f44a4c"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

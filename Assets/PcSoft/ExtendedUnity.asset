@@ -16,3 +16,4 @@ MonoBehaviour:
   assetPaths:
   - Assets/PcSoft/ExtendedUnity
   - Assets/PcSoft/ExtendedEditor
+  - Assets/PcSoft/ExtendedAnimation

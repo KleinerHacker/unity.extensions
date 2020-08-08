@@ -14,5 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   packageName: ExtendedUI
   assetPaths:
-  - Assets/PcSoft/ExtendedAnimation
   - Assets/PcSoft/ExtendedUI
+  - Assets/PcSoft/ExtendedAnimation
+  - Assets/PcSoft/ExtendedUnity
