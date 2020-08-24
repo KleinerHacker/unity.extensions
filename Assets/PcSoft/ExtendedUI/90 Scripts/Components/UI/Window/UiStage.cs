@@ -31,6 +31,15 @@ namespace PcSoft.ExtendedUI._90_Scripts.Components.UI.Window
         public ViewableState State => _canvasGroup.IsShown() ? ViewableState.Shown : ViewableState.Hidden;
 
         #endregion
+
+        #region Events
+
+        public event EventHandler Showing;
+        public event EventHandler Shown;
+        public event EventHandler Hiding;
+        public event EventHandler Hidden;
+
+        #endregion
         
         private CanvasGroup _canvasGroup;
 
@@ -77,6 +86,7 @@ namespace PcSoft.ExtendedUI._90_Scripts.Components.UI.Window
 
             StopAllCoroutines();
             OnShowing();
+            Showing?.Invoke(this, EventArgs.Empty);
 
             _canvasGroup.Hide();
             StartCoroutine(AnimationUtils.RunAnimation(AnimationType.Unscaled, fadingCurve, fadingSpeed, 
@@ -84,6 +94,7 @@ namespace PcSoft.ExtendedUI._90_Scripts.Components.UI.Window
                 {
                     _canvasGroup.Show();
                     OnShown();
+                    Shown?.Invoke(this, EventArgs.Empty);
                 }));
         }
 
@@ -99,11 +110,16 @@ namespace PcSoft.ExtendedUI._90_Scripts.Components.UI.Window
 
             StopAllCoroutines();
             OnHiding();
+            Hiding?.Invoke(this, EventArgs.Empty);
 
             _canvasGroup.Hide();
             _canvasGroup.alpha = 1f;
             StartCoroutine(AnimationUtils.RunAnimation(AnimationType.Unscaled, fadingCurve, fadingSpeed, 
-                v => _canvasGroup.alpha = 1f - v, OnHidden));
+                v => _canvasGroup.alpha = 1f - v, () =>
+                {
+                    OnHidden();
+                    Hidden?.Invoke(this, EventArgs.Empty);
+                }));
         }
         
         protected virtual void OnShowing() {}
