@@ -147,7 +147,6 @@ namespace PcSoft.ExtendedUI._90_Scripts.Components.UI.Window
 #if ENABLE_INPUT_SYSTEM
         private void PlayerInputOnActionTriggered(InputAction.CallbackContext obj)
         {
-            Debug.Log("*** ESC ***");
             HandleToggle();
         }
 #endif
