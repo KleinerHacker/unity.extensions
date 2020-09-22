@@ -96,6 +96,7 @@ namespace PcSoft.ExtendedUI._90_Scripts.Components.UI.Component
             foreach (var listItem in _listItems)
             {
                 Destroy(listItem.gameObject);
+                OnRemoveItem(listItem);
             }
 
             _listItems.Clear();
@@ -112,7 +113,16 @@ namespace PcSoft.ExtendedUI._90_Scripts.Components.UI.Component
                 listItem.Model = data;
 
                 _listItems.Add(listItem);
+                OnAddItem(listItem);
             }
+        }
+
+        protected virtual void OnAddItem(TI item)
+        {
+        }
+
+        protected virtual void OnRemoveItem(TI item)
+        {
         }
     }
 
