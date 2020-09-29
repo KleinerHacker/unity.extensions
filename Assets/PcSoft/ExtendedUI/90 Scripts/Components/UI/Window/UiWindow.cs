@@ -104,7 +104,7 @@ namespace PcSoft.ExtendedUI._90_Scripts.Components.UI.Window
         {
             base.OnValidate();
 
-            if (inputAction == null)
+            if (inputAction == null || !string.IsNullOrEmpty(actionId))
                 return;
 
             var enumerator = inputAction.GetEnumerator();
