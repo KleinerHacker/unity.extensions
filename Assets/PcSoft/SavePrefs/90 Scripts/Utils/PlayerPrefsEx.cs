@@ -56,6 +56,18 @@ namespace PcSoft.SavePrefs._90_Scripts.Utils
             }
             RaiseChange(PlayerPrefsChangeType.AddOrUpdate, PlayerPrefsDataType.Int, key);
         }
+        
+        public static long GetLong(string key, long def) => PlayerPrefs.HasKey(key) ? long.Parse(PlayerPrefs.GetString(key)) : def;
+
+        public static void SetLong(string key, long val)
+        {
+            PlayerPrefs.SetString(key, val.ToString());
+            if (AutoSave)
+            {
+                PlayerPrefs.Save();
+            }
+            RaiseChange(PlayerPrefsChangeType.AddOrUpdate, PlayerPrefsDataType.Long, key);
+        }
 
         public static float GetFloat(string key, float def) => PlayerPrefs.GetFloat(key, def);
 
@@ -246,6 +258,7 @@ namespace PcSoft.SavePrefs._90_Scripts.Utils
         Unspecific,
         String,
         Int,
+        Long,
         Float,
         Boolean,
         Binary,

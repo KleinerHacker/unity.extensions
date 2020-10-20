@@ -36,6 +36,12 @@ namespace PcSoft.ExtendedAnimation._90_Scripts.Utils
         {
             return Animate(curve, 1f, handler, onFinished);
         }
+        
+        public AnimationBuilder AnimateConstant(float time, Action<float> handler, Action onFinished = null)
+        {
+            _steps.Add(new AnimateConstantAnimationStep(time, handler, onFinished));
+            return this;
+        }
 
         public AnimationBuilder Wait(float seconds, Action onFinished = null)
         {

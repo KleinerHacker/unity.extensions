@@ -65,6 +65,16 @@ namespace PcSoft.ExtendedAnimation._90_Scripts.Utils
                     StartNext(stepIndex + 1, animationRunner);
                 }));
             }
+            else if (step is AnimateConstantAnimationStep animConstStep)
+            {
+                animationRunner.Coroutine = Run(AnimationUtils.RunAnimationConstant(_type, animConstStep.Time, animConstStep.Handler, () =>
+                {
+                    animConstStep.OnFinished?.Invoke();
+                    if (animationRunner.IsStopped)
+                        return;
+                    StartNext(stepIndex + 1, animationRunner);
+                }));
+            }
             else if (step is WaitSecondsAnimationStep waitSecStep)
             {
                 animationRunner.Coroutine = Run(AnimationUtils.WaitAndRun(_type, waitSecStep.Seconds, () =>

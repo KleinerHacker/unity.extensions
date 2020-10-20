@@ -50,6 +50,49 @@ namespace PcSoft.ExtendedAnimation._90_Scripts.Utils
             handler(curve.Evaluate(1f));
             onFinished?.Invoke();
         }
+        
+        public static IEnumerator RunAnimationConstant(float time, Action<float> handler, Action onFinished)
+        {
+            return RunAnimationConstant(AnimationType.Scaled, 0f, time, handler, onFinished);
+        }
+
+        public static IEnumerator RunAnimationConstant(float preDelay, float time, Action<float> handler, Action onFinished)
+        {
+            return RunAnimationConstant(AnimationType.Scaled, preDelay, time, handler, onFinished);
+        }
+
+        public static IEnumerator RunAnimationConstant(AnimationType type, float time, Action<float> handler, Action onFinished)
+        {
+            return RunAnimationConstant(type, 0f, time, handler, onFinished);
+        }
+
+        public static IEnumerator RunAnimationConstant(AnimationType type, float preDelay, float time, Action<float> handler, Action onFinished)
+        {
+            if (preDelay > 0f)
+            {
+                switch (type)
+                {
+                    case AnimationType.Scaled:
+                        yield return new WaitForSeconds(preDelay);
+                        break;
+                    case AnimationType.Unscaled:
+                        yield return new WaitForSecondsRealtime(preDelay);
+                        break;
+                    default:
+                        throw new NotImplementedException();
+                }
+            }
+
+            for (var i = 0f; i < time; i += GetDelta(type))
+            {
+                var value = i / time;
+                handler(value);
+
+                yield return null;
+            }
+
+            onFinished?.Invoke();
+        }
 
         public static IEnumerator WaitAndRun(float preDelay, float postDelay, Action preAction, Action postAction)
         {

@@ -16,6 +16,18 @@ namespace PcSoft.ExtendedAnimation._90_Scripts.Utils
             }
         }
 
+        private sealed class AnimateConstantAnimationStep : AnimationStep
+        {
+            public float Time { get; }
+            public Action<float> Handler { get; }
+
+            public AnimateConstantAnimationStep(float time, Action<float> handler, Action onFinished) : base(onFinished)
+            {
+                Time = time;
+                Handler = handler;
+            }
+        }
+
         private sealed class AnimateAnimationStep : AnimationStep
         {
             public AnimationCurve Curve { get; }
