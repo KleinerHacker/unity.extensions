@@ -7,25 +7,6 @@ namespace PcSoft.SavePrefs._90_Scripts.Utils
     public static class PlayerPrefsEx
     {
         private static readonly DateTimeFormat DateFormat = new DateTimeFormat("dd-MM-yyyy hh:mm:ss");
-        
-        #region Properties
-
-        private static bool _autoSave;
-
-        public static bool AutoSave
-        {
-            get => _autoSave;
-            set
-            {
-                _autoSave = value;
-                if (value)
-                {
-                    PlayerPrefs.Save();
-                }
-            }
-        }
-
-        #endregion
 
         #region Events
 
@@ -35,10 +16,10 @@ namespace PcSoft.SavePrefs._90_Scripts.Utils
 
         public static bool GetBool(string key, bool def) => PlayerPrefs.GetInt(key, def ? 1 : 0) != 0;
 
-        public static void SetBool(string key, bool val)
+        public static void SetBool(string key, bool val, bool autoSave = false)
         {
             PlayerPrefs.SetInt(key, val ? 1 : 0);
-            if (AutoSave)
+            if (autoSave)
             {
                 PlayerPrefs.Save();
             }
@@ -47,10 +28,10 @@ namespace PcSoft.SavePrefs._90_Scripts.Utils
 
         public static int GetInt(string key, int def) => PlayerPrefs.GetInt(key, def);
 
-        public static void SetInt(string key, int val)
+        public static void SetInt(string key, int val, bool autoSave = false)
         {
             PlayerPrefs.SetInt(key, val);
-            if (AutoSave)
+            if (autoSave)
             {
                 PlayerPrefs.Save();
             }
@@ -59,10 +40,10 @@ namespace PcSoft.SavePrefs._90_Scripts.Utils
         
         public static long GetLong(string key, long def) => PlayerPrefs.HasKey(key) ? long.Parse(PlayerPrefs.GetString(key)) : def;
 
-        public static void SetLong(string key, long val)
+        public static void SetLong(string key, long val, bool autoSave = false)
         {
             PlayerPrefs.SetString(key, val.ToString());
-            if (AutoSave)
+            if (autoSave)
             {
                 PlayerPrefs.Save();
             }
@@ -71,10 +52,10 @@ namespace PcSoft.SavePrefs._90_Scripts.Utils
 
         public static float GetFloat(string key, float def) => PlayerPrefs.GetFloat(key, def);
 
-        public static void SetFloat(string key, float val)
+        public static void SetFloat(string key, float val, bool autoSave = false)
         {
             PlayerPrefs.SetFloat(key, val);
-            if (AutoSave)
+            if (autoSave)
             {
                 PlayerPrefs.Save();
             }
@@ -83,10 +64,10 @@ namespace PcSoft.SavePrefs._90_Scripts.Utils
         
         public static string GetString(string key, string def) => PlayerPrefs.GetString(key, def);
 
-        public static void SetString(string key, string val)
+        public static void SetString(string key, string val, bool autoSave = false)
         {
             PlayerPrefs.SetString(key, val);
-            if (AutoSave)
+            if (autoSave)
             {
                 PlayerPrefs.Save();
             }
@@ -95,10 +76,10 @@ namespace PcSoft.SavePrefs._90_Scripts.Utils
         
         public static byte[] GetBytes(string key, byte[] def) => Convert.FromBase64String(PlayerPrefs.GetString(key, Convert.ToBase64String(def)));
 
-        public static void SetBytes(string key, byte[] val)
+        public static void SetBytes(string key, byte[] val, bool autoSave = false)
         {
             PlayerPrefs.SetString(key, Convert.ToBase64String(val));
-            if (AutoSave)
+            if (autoSave)
             {
                 PlayerPrefs.Save();
             }
@@ -110,10 +91,10 @@ namespace PcSoft.SavePrefs._90_Scripts.Utils
             return DateTime.Parse(PlayerPrefs.GetString(key, def.ToString(DateFormat.FormatProvider)), DateFormat.FormatProvider);
         }
 
-        public static void SetDateTime(string key, DateTime val)
+        public static void SetDateTime(string key, DateTime val, bool autoSave = false)
         {
             PlayerPrefs.SetString(key, val.ToString(DateFormat.FormatProvider));
-            if (AutoSave)
+            if (autoSave)
             {
                 PlayerPrefs.Save();
             }
@@ -125,10 +106,10 @@ namespace PcSoft.SavePrefs._90_Scripts.Utils
             return TimeSpan.Parse(PlayerPrefs.GetString(key, def.ToString()));
         }
 
-        public static void SetTimeSpan(string key, TimeSpan value)
+        public static void SetTimeSpan(string key, TimeSpan value, bool autoSave = false)
         {
             PlayerPrefs.SetString(key, value.ToString());
-            if (AutoSave)
+            if (autoSave)
             {
                 PlayerPrefs.Save();
             }
@@ -141,10 +122,10 @@ namespace PcSoft.SavePrefs._90_Scripts.Utils
             return (T) Enum.Parse(typeof(T), s);
         }
 
-        public static void SetEnum<T>(string key, T value) where T : Enum
+        public static void SetEnum<T>(string key, T value, bool autoSave = false) where T : Enum
         {
             PlayerPrefs.SetString(key, value.ToString());
-            if (AutoSave)
+            if (autoSave)
             {
                 PlayerPrefs.Save();
             }
@@ -213,9 +194,6 @@ namespace PcSoft.SavePrefs._90_Scripts.Utils
 
         public static void Save()
         {
-            if (AutoSave)
-                throw new InvalidOperationException("Auto save is on, please do not call this method or disable auto save");
-            
             PlayerPrefs.Save();
         }
 

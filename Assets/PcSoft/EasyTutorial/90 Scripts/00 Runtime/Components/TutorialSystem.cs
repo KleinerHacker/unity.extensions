@@ -1,9 +1,8 @@
 using System;
-using PcSoft.ExtendedAnimation._90_Scripts.Utils;
 using PcSoft.ExtendedEditor._90_Scripts._00_Runtime.Types;
 using PcSoft.ExtendedEditor._90_Scripts._00_Runtime.Utils;
+using PcSoft.SavePrefs._90_Scripts.Utils;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace PcSoft.EasyTutorial._90_Scripts._00_Runtime.Components
 {
@@ -12,56 +11,27 @@ namespace PcSoft.EasyTutorial._90_Scripts._00_Runtime.Components
         #region Inspector Data
 
         [SerializeField]
-        private TS[] steps;
+        protected TS[] steps;
 
         [SerializeField]
-        private TutorialStep lastStep;
-
-        [SerializeField]
-        private string playerPrefKey;
-
-        [SerializeField]
-        private Button btnCurrent;
-
-        [SerializeField]
-        private Text txtCurrent;
-
-        [SerializeField]
-        private GameObject current;
-
-        [SerializeField]
-        private float autoStartDelay = 1f;
+        protected string playerPrefKey;
 
         #endregion
 
-        #region Properties
-
-        public byte CurrentStep => _stepIndex;
-
-        #endregion
-
-        private bool _active;
-        private byte _stepIndex = 0;
-        private T _currentKey;
+        protected bool _active;
+        protected readonly T _noneValue;
 
         protected TutorialSystem(T noneValue)
         {
             steps = ArrayUtils.CreateIdentifierArray<TS, T>(noneValue);
+            _noneValue = noneValue;
         }
 
         #region Builtin Methods
 
         protected virtual void OnEnable()
         {
-            _active = PlayerPrefs.GetInt(playerPrefKey, 0) == 0;
-            if (_active)
-            {
-                StartCoroutine(AnimationUtils.WaitAndRun(autoStartDelay, () =>
-                {
-                    current.SetActive(true);
-                    ShowNextStep(true);
-                }));
-            }
+            _active = !IsFinished();
 
             foreach (var step in steps)
             {
@@ -81,64 +51,54 @@ namespace PcSoft.EasyTutorial._90_Scripts._00_Runtime.Components
 
         public void SendEvent(params T[] keys)
         {
-            if (_active && IsHandleEvent(_currentKey, keys, out var acceptKey))
-            {
-                _currentKey = acceptKey;
-                ShowNextStep();
-            }
-        }
-
-        public void ShowCurrentStep()
-        {
-            if (_stepIndex >= steps.Length)
+            if (!_active)
                 return;
-            
-            steps[_stepIndex].Step.Show();
-            txtCurrent.text = steps[_stepIndex].StepInfo;
+
+            Debug.Log("Receive tutorial keys: " + string.Join(",", keys));
+            HandleEvent(keys);
         }
 
         public void SkipTutorial()
         {
-            PlayerPrefs.SetInt(playerPrefKey, int.MaxValue);
-            PlayerPrefs.Save();
-                
-            current.SetActive(false);
-            _active = false;
-        }
-
-        protected abstract bool IsHandleEvent(T currentKey, T[] eventKeys, out T acceptKey);
-
-        private void ShowNextStep(bool first = false)
-        {
-            if (!first)
-            {
-                _stepIndex++;
-            }
-
-            if (_stepIndex >= steps.Length)
-            {
-                PlayerPrefs.SetInt(playerPrefKey, int.MaxValue);
-                PlayerPrefs.Save();
-                
-                current.SetActive(false);
-                ShowLastStep();
-
-                _active = false;
+            if (!_active)
                 return;
-            }
-            
-            ShowCurrentStep();
+
+            Debug.Log("Skip Tutorial");
+
+            MarkAsFinished();
+            _active = false;
+
+            OnSkipTutorial();
         }
 
-        private void ShowLastStep()
+        public virtual void ResetTutorial()
         {
-            lastStep.Show();
+            Debug.Log("Reset tutorial");
+
+            PlayerPrefsEx.SetBool(playerPrefKey, false);
+            _active = true;
         }
-        
-        protected virtual void StepOnSkip(object sender, EventArgs e)
+
+        private void StepOnSkip(object sender, EventArgs e)
         {
             SkipTutorial();
         }
+
+        protected bool IsFinished()
+        {
+            return PlayerPrefsEx.GetBool(playerPrefKey, false);
+        }
+
+        protected void MarkAsFinished()
+        {
+            PlayerPrefsEx.SetBool(playerPrefKey, true, true);
+        }
+
+        protected virtual void OnSkipTutorial()
+        {
+        }
+
+        protected abstract void HandleEvent(T[] keys);
     }
 
     [Serializable]
@@ -161,11 +121,9 @@ namespace PcSoft.EasyTutorial._90_Scripts._00_Runtime.Components
 
         public TutorialStep Step => step;
 
-        public abstract string StepInfo { get; }
-
         #endregion
 
-        public TutorialStepItem(T identifier)
+        protected TutorialStepItem(T identifier)
         {
             this.identifier = identifier;
         }

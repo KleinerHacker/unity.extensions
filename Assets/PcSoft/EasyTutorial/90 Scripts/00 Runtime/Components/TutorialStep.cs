@@ -21,6 +21,9 @@ namespace PcSoft.EasyTutorial._90_Scripts._00_Runtime.Components
         private float fadingSpeed = 0.5f;
 
         [SerializeField]
+        private bool allowFading = true;
+
+        [SerializeField]
         private Toggle ckbSkip;
 
         [Space]
@@ -52,10 +55,13 @@ namespace PcSoft.EasyTutorial._90_Scripts._00_Runtime.Components
 
         public void Show()
         {
-            StopAllCoroutines();
-            StartCoroutine(AnimationUtils.RunAnimation(AnimationType.Unscaled, fadingCurve, fadingSpeed, v => _canvasGroup.alpha = v, 
-                () => _canvasGroup.interactable = _canvasGroup.blocksRaycasts = true));
-            
+            if (allowFading)
+            {
+                StopAllCoroutines();
+                StartCoroutine(AnimationUtils.RunAnimation(AnimationType.Unscaled, fadingCurve, fadingSpeed, v => _canvasGroup.alpha = v,
+                    () => _canvasGroup.interactable = _canvasGroup.blocksRaycasts = true));
+            }
+
             onShowStep.Invoke();
         }
 
@@ -65,11 +71,14 @@ namespace PcSoft.EasyTutorial._90_Scripts._00_Runtime.Components
             {
                 Skip?.Invoke(this, EventArgs.Empty);
             }
-            
-            StopAllCoroutines();
-            StartCoroutine(AnimationUtils.RunAnimation(AnimationType.Unscaled, fadingCurve, fadingSpeed, v => _canvasGroup.alpha = 1f - v,
-                () => _canvasGroup.interactable = _canvasGroup.blocksRaycasts = false));
-            
+
+            if (allowFading)
+            {
+                StopAllCoroutines();
+                StartCoroutine(AnimationUtils.RunAnimation(AnimationType.Unscaled, fadingCurve, fadingSpeed, v => _canvasGroup.alpha = 1f - v,
+                    () => _canvasGroup.interactable = _canvasGroup.blocksRaycasts = false));
+            }
+
             onHideStep.Invoke();
         }
     }
