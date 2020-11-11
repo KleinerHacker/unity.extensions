@@ -82,7 +82,7 @@ namespace PcSoft.UnityScene._90_Scripts._00_Runtime.Components
 
         #region Private Methods
 
-        protected void LoadScene(T state, object data = null, Action onFinished = null, bool doNotUnload = false)
+        protected void LoadScene(T state, object data = null, Action onFinished = null, Action<Action> onBlendOff = null, bool doNotUnload = false)
         {
             string[] oldScenes = null;
             TScene oldData = null;
@@ -94,22 +94,34 @@ namespace PcSoft.UnityScene._90_Scripts._00_Runtime.Components
 
             var newData = FindSceneData(state, data);
             var newScenes = newData.Scenes;
-            
+
             OnLoadingStarted(State, oldData);
 
             blending.ShowBlend(() =>
             {
-                StartCoroutine(ChangeScenes(oldScenes, newScenes, () =>
+                if (onBlendOff == null)
                 {
-                    blending.HideBlend(() =>
-                    {
-                        OnLoadingFinished(state, newData);
-
-                        State = state;
-                        onFinished?.Invoke();
-                    });
-                }));
+                    DoLoadAsync(state, onFinished, oldScenes, newScenes, newData);
+                }
+                else
+                {
+                    onBlendOff.Invoke(() => DoLoadAsync(state, onFinished, oldScenes, newScenes, newData));
+                }
             });
+        }
+
+        private void DoLoadAsync(T state, Action onFinished, string[] oldScenes, string[] newScenes, TScene newData)
+        {
+            StartCoroutine(ChangeScenes(oldScenes, newScenes, () =>
+            {
+                blending.HideBlend(() =>
+                {
+                    OnLoadingFinished(state, newData);
+
+                    State = state;
+                    onFinished?.Invoke();
+                });
+            }));
         }
 
         protected void LoadSceneImmediately(T state, object data = null)
@@ -122,7 +134,7 @@ namespace PcSoft.UnityScene._90_Scripts._00_Runtime.Components
                 var op = SceneManager.LoadSceneAsync(newScene, LoadSceneMode.Additive);
                 op.completed += operation => SceneManager.SetActiveScene(SceneManager.GetSceneByPath(newScenes[0]));
             }
-            
+
             OnLoadingFinished(state, newData);
         }
 
@@ -210,7 +222,7 @@ namespace PcSoft.UnityScene._90_Scripts._00_Runtime.Components
         {
             this.identifier = identifier;
         }
-        
+
         protected SceneData(T identifier, string[] scenes)
         {
             this.identifier = identifier;
