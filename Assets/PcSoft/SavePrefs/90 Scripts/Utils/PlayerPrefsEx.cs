@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Runtime.Serialization;
 using UnityEngine;
 
@@ -14,7 +15,7 @@ namespace PcSoft.SavePrefs._90_Scripts.Utils
 
         #endregion
 
-        public static bool GetBool(string key, bool def) => PlayerPrefs.GetInt(key, def ? 1 : 0) != 0;
+        public static bool GetBool(string key, bool def, params string[] oldKeys) => GetValue(key, def, oldKeys, (k,d) => PlayerPrefs.GetInt(k, d ? 1 : 0) != 0);
 
         public static void SetBool(string key, bool val, bool autoSave = false)
         {
@@ -26,7 +27,7 @@ namespace PcSoft.SavePrefs._90_Scripts.Utils
             RaiseChange(PlayerPrefsChangeType.AddOrUpdate, PlayerPrefsDataType.Boolean, key);
         }
 
-        public static int GetInt(string key, int def) => PlayerPrefs.GetInt(key, def);
+        public static int GetInt(string key, int def, params string[] oldKeys) => GetValue(key, def, oldKeys, PlayerPrefs.GetInt);
 
         public static void SetInt(string key, int val, bool autoSave = false)
         {
@@ -38,7 +39,8 @@ namespace PcSoft.SavePrefs._90_Scripts.Utils
             RaiseChange(PlayerPrefsChangeType.AddOrUpdate, PlayerPrefsDataType.Int, key);
         }
         
-        public static long GetLong(string key, long def) => PlayerPrefs.HasKey(key) ? long.Parse(PlayerPrefs.GetString(key)) : def;
+        public static long GetLong(string key, long def, params string[] oldKeys) => 
+            GetValue(key, def, oldKeys, (k,d) => PlayerPrefs.HasKey(k) ? long.Parse(PlayerPrefs.GetString(k)) : d);
 
         public static void SetLong(string key, long val, bool autoSave = false)
         {
@@ -50,7 +52,7 @@ namespace PcSoft.SavePrefs._90_Scripts.Utils
             RaiseChange(PlayerPrefsChangeType.AddOrUpdate, PlayerPrefsDataType.Long, key);
         }
 
-        public static float GetFloat(string key, float def) => PlayerPrefs.GetFloat(key, def);
+        public static float GetFloat(string key, float def, params string[] oldKeys) => GetValue(key, def, oldKeys, PlayerPrefs.GetFloat);
 
         public static void SetFloat(string key, float val, bool autoSave = false)
         {
@@ -62,7 +64,7 @@ namespace PcSoft.SavePrefs._90_Scripts.Utils
             RaiseChange(PlayerPrefsChangeType.AddOrUpdate, PlayerPrefsDataType.Float, key);
         }
         
-        public static string GetString(string key, string def) => PlayerPrefs.GetString(key, def);
+        public static string GetString(string key, string def, params string[] oldKeys) => GetValue(key, def, oldKeys, PlayerPrefs.GetString);
 
         public static void SetString(string key, string val, bool autoSave = false)
         {
@@ -74,7 +76,8 @@ namespace PcSoft.SavePrefs._90_Scripts.Utils
             RaiseChange(PlayerPrefsChangeType.AddOrUpdate, PlayerPrefsDataType.String, key);
         }
         
-        public static byte[] GetBytes(string key, byte[] def) => Convert.FromBase64String(PlayerPrefs.GetString(key, Convert.ToBase64String(def)));
+        public static byte[] GetBytes(string key, byte[] def, params string[] oldKeys) => 
+            Convert.FromBase64String(GetValue(key, Convert.ToBase64String(def), oldKeys, PlayerPrefs.GetString));
 
         public static void SetBytes(string key, byte[] val, bool autoSave = false)
         {
@@ -86,10 +89,8 @@ namespace PcSoft.SavePrefs._90_Scripts.Utils
             RaiseChange(PlayerPrefsChangeType.AddOrUpdate, PlayerPrefsDataType.Binary, key);
         }
         
-        public static DateTime GetDateTime(string key, DateTime def)
-        {
-            return DateTime.Parse(PlayerPrefs.GetString(key, def.ToString(DateFormat.FormatProvider)), DateFormat.FormatProvider);
-        }
+        public static DateTime GetDateTime(string key, DateTime def, params string[] oldKeys) => 
+            DateTime.Parse(GetValue(key, def.ToString(DateFormat.FormatProvider), oldKeys, PlayerPrefs.GetString), DateFormat.FormatProvider);
 
         public static void SetDateTime(string key, DateTime val, bool autoSave = false)
         {
@@ -101,10 +102,8 @@ namespace PcSoft.SavePrefs._90_Scripts.Utils
             RaiseChange(PlayerPrefsChangeType.AddOrUpdate, PlayerPrefsDataType.DateTime, key);
         }
 
-        public static TimeSpan GetTimeSpan(string key, TimeSpan def)
-        {
-            return TimeSpan.Parse(PlayerPrefs.GetString(key, def.ToString()));
-        }
+        public static TimeSpan GetTimeSpan(string key, TimeSpan def, params string[] oldKeys) => 
+            TimeSpan.Parse(GetValue(key, def.ToString(), oldKeys, PlayerPrefs.GetString));
 
         public static void SetTimeSpan(string key, TimeSpan value, bool autoSave = false)
         {
@@ -116,9 +115,9 @@ namespace PcSoft.SavePrefs._90_Scripts.Utils
             RaiseChange(PlayerPrefsChangeType.AddOrUpdate, PlayerPrefsDataType.TimeSpan, key);
         }
 
-        public static T GetEnum<T>(string key, T def) where T : Enum
+        public static T GetEnum<T>(string key, T def, params string[] oldKeys) where T : Enum
         {
-            var s = PlayerPrefs.GetString(key, def.ToString());
+            var s = GetValue(key, def.ToString(), oldKeys, PlayerPrefs.GetString);
             return (T) Enum.Parse(typeof(T), s);
         }
 
@@ -130,7 +129,20 @@ namespace PcSoft.SavePrefs._90_Scripts.Utils
                 PlayerPrefs.Save();
             }
             RaiseChange(PlayerPrefsChangeType.AddOrUpdate, PlayerPrefsDataType.Enum, key);
-            
+        }
+        
+        private static T GetValue<T>(string key, T def, string[] oldKeys, Func<string, T, T> getter)
+        {
+            if (oldKeys == null || oldKeys.Length <= 0)
+                return getter(key, def);
+
+            var currentDefault = getter(oldKeys.Last(), def);
+            for (var i = oldKeys.Length - 2; i >= 0; i--)
+            {
+                currentDefault = getter(oldKeys[i], currentDefault);
+            }
+
+            return getter(key, currentDefault);
         }
 
         public static bool HasKey(string key) => PlayerPrefs.HasKey(key);
