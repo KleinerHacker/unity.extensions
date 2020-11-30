@@ -24,6 +24,13 @@ namespace PcSoft.ExtendedUI._90_Scripts.Components.UI.Component
         private Image progressImage;
 
         [SerializeField]
+        private Text progressPercentage;
+
+        [SerializeField]
+        private string progressPercentageFormat = "{0}%";
+
+        [Space]
+        [SerializeField]
         private Image fillPointImage;
 
         [SerializeField]
@@ -59,6 +66,11 @@ namespace PcSoft.ExtendedUI._90_Scripts.Components.UI.Component
                         break;
                     default:
                         throw new NotImplementedException();
+                }
+                
+                if (progressPercentage != null)
+                {
+                    progressPercentage.text = string.Format(progressPercentageFormat, (value * 100f).ToString("F0"));
                 }
 
                 if (fillPointImage != null)

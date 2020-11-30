@@ -35,10 +35,7 @@ namespace PcSoft.ExtendedUI._90_Scripts.Components.UI.Window
         [Header("Input System")]
 #if ENABLE_INPUT_SYSTEM
         [SerializeField]
-        private InputActionAsset inputAction;
-
-        [SerializeField]
-        private string actionId;
+        private InputActionReference toggler;
 #else
         [SerializeField]
         private string action = "Cancel";
@@ -54,7 +51,7 @@ namespace PcSoft.ExtendedUI._90_Scripts.Components.UI.Window
 
         private AudioSource _audioSource;
 #if ENABLE_INPUT_SYSTEM
-        private InputAction _ia;
+        private InputAction _togglerAction;
 #endif
 
         #region Builtin Methods
@@ -69,23 +66,23 @@ namespace PcSoft.ExtendedUI._90_Scripts.Components.UI.Window
             _audioSource.outputAudioMixerGroup = audioMixerGroup;
 
 #if ENABLE_INPUT_SYSTEM
-            _ia = inputAction.FindAction(actionId, true);
+            _togglerAction = toggler.ToInputAction();
 #endif
         }
 
         protected override void OnEnable()
         {
 #if ENABLE_INPUT_SYSTEM
-            _ia.performed += PlayerInputOnActionTriggered;
-            _ia.Enable();
+            _togglerAction.performed += PlayerInputOnActionTriggered;
+            _togglerAction.Enable();
 #endif
         }
 
         protected override void OnDisable()
         {
 #if ENABLE_INPUT_SYSTEM
-            _ia.Disable();
-            _ia.performed -= PlayerInputOnActionTriggered;
+            _togglerAction.Disable();
+            _togglerAction.performed -= PlayerInputOnActionTriggered;
 #endif
         }
 
@@ -95,23 +92,6 @@ namespace PcSoft.ExtendedUI._90_Scripts.Components.UI.Window
             if (Input.GetButtonUp(action))
             {
                 HandleToggle();
-            }
-        }
-#endif
-
-#if ENABLE_INPUT_SYSTEM && UNITY_EDITOR
-        protected override void OnValidate()
-        {
-            base.OnValidate();
-
-            if (inputAction == null || !string.IsNullOrEmpty(actionId))
-                return;
-
-            var enumerator = inputAction.GetEnumerator();
-            if (enumerator.MoveNext())
-            {
-                var current = enumerator.Current;
-                actionId = current.id.ToString();
             }
         }
 #endif
