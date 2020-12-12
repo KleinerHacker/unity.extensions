@@ -73,8 +73,13 @@ namespace PcSoft.ExtendedUI._90_Scripts.Components.UI.Window
 #endif
 
         #endregion
-        
+
         public void Show()
+        {
+            Show(null);
+        }
+        
+        public void Show(Action onFinished)
         {
             if (State == ViewableState.Shown)
             {
@@ -95,10 +100,16 @@ namespace PcSoft.ExtendedUI._90_Scripts.Components.UI.Window
                     _canvasGroup.Show();
                     OnShown();
                     Shown?.Invoke(this, EventArgs.Empty);
+                    onFinished?.Invoke();
                 }));
         }
 
         public void Hide()
+        {
+            Hide(null);
+        }
+
+        public void Hide(Action onFinished)
         {
             if (State == ViewableState.Hidden)
             {
@@ -119,6 +130,7 @@ namespace PcSoft.ExtendedUI._90_Scripts.Components.UI.Window
                 {
                     OnHidden();
                     Hidden?.Invoke(this, EventArgs.Empty);
+                    onFinished?.Invoke();
                 }));
         }
         

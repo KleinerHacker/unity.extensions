@@ -39,7 +39,7 @@ namespace PcSoft.ExtendedUI._90_Scripts.Components.UI.Window
 
         private void AutoHide()
         {
-            StartCoroutine(AnimationUtils.WaitAndRun(AnimationType.Unscaled, showTime, Hide));
+            StartCoroutine(AnimationUtils.WaitAndRun(AnimationType.Unscaled, showTime, () => Hide()));
         }
     }
 }

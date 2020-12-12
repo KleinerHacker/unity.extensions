@@ -30,6 +30,10 @@ namespace PcSoft.UnityScene._90_Scripts._00_Runtime.Components
         [SerializeField]
         private T initialState;
 
+        [Scene]
+        [SerializeField]
+        private string masterScene;
+
         #endregion
 
         #region Properties
@@ -84,28 +88,34 @@ namespace PcSoft.UnityScene._90_Scripts._00_Runtime.Components
 
         protected void LoadScene(T state, object data = null, Action onFinished = null, Action<Action> onBlendOff = null, bool doNotUnload = false)
         {
-            string[] oldScenes = null;
-            TScene oldData = null;
+            IList<string> oldScenes = null;
             if (!doNotUnload)
             {
-                oldData = FindSceneData(State, data);
-                oldScenes = oldData.Scenes;
+                oldScenes = new List<string>();
+                for (int i = 0; i < SceneManager.sceneCount; i++)
+                {
+                    var scene = SceneManager.GetSceneAt(i);
+                    if (scene.path == masterScene)
+                        continue;
+                    
+                    oldScenes.Add(scene.path);
+                }
             }
 
             var newData = FindSceneData(state, data);
             var newScenes = newData.Scenes;
 
-            OnLoadingStarted(State, oldData);
+            OnLoadingStarted(State);
 
             blending.ShowBlend(() =>
             {
                 if (onBlendOff == null)
                 {
-                    DoLoadAsync(state, onFinished, oldScenes, newScenes, newData);
+                    DoLoadAsync(state, onFinished, oldScenes?.ToArray(), newScenes, newData);
                 }
                 else
                 {
-                    onBlendOff.Invoke(() => DoLoadAsync(state, onFinished, oldScenes, newScenes, newData));
+                    onBlendOff.Invoke(() => DoLoadAsync(state, onFinished, oldScenes?.ToArray(), newScenes, newData));
                 }
             });
         }
@@ -186,7 +196,7 @@ namespace PcSoft.UnityScene._90_Scripts._00_Runtime.Components
 
         #endregion
 
-        protected virtual void OnLoadingStarted(T oldState, TScene scene)
+        protected virtual void OnLoadingStarted(T oldState)
         {
         }
 
