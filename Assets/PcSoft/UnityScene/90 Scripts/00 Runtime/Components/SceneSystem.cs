@@ -111,22 +111,22 @@ namespace PcSoft.UnityScene._90_Scripts._00_Runtime.Components
             {
                 if (onBlendOff == null)
                 {
-                    DoLoadAsync(state, onFinished, oldScenes?.ToArray(), newScenes, newData);
+                    DoLoadAsync(state, onFinished, oldScenes?.ToArray(), newScenes, newData, data);
                 }
                 else
                 {
-                    onBlendOff.Invoke(() => DoLoadAsync(state, onFinished, oldScenes?.ToArray(), newScenes, newData));
+                    onBlendOff.Invoke(() => DoLoadAsync(state, onFinished, oldScenes?.ToArray(), newScenes, newData, data));
                 }
             });
         }
 
-        private void DoLoadAsync(T state, Action onFinished, string[] oldScenes, string[] newScenes, TScene newData)
+        private void DoLoadAsync(T state, Action onFinished, string[] oldScenes, string[] newScenes, TScene newData, object data)
         {
             StartCoroutine(ChangeScenes(oldScenes, newScenes, () =>
             {
                 blending.HideBlend(() =>
                 {
-                    OnLoadingFinished(state, newData);
+                    OnLoadingFinished(state, newData, data);
 
                     State = state;
                     onFinished?.Invoke();
@@ -145,7 +145,7 @@ namespace PcSoft.UnityScene._90_Scripts._00_Runtime.Components
                 op.completed += operation => SceneManager.SetActiveScene(SceneManager.GetSceneByPath(newScenes[0]));
             }
 
-            OnLoadingFinished(state, newData);
+            OnLoadingFinished(state, newData, data);
         }
 
         protected virtual TScene FindSceneData(T state, object data)
@@ -200,7 +200,7 @@ namespace PcSoft.UnityScene._90_Scripts._00_Runtime.Components
         {
         }
 
-        protected virtual void OnLoadingFinished(T newState, TScene scene)
+        protected virtual void OnLoadingFinished(T newState, TScene scene, object data)
         {
         }
     }

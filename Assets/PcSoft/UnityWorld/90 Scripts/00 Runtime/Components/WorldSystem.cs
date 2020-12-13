@@ -18,7 +18,7 @@ namespace PcSoft.UnityWorld._90_Scripts._00_Runtime.Components
 {
     public abstract class WorldSystem<TWorld, T> : SceneSystem<TWorld, T> where TWorld : WorldData<T> where T : Enum
     {
-        protected override void OnLoadingFinished(T newState, TWorld world)
+        protected override void OnLoadingFinished(T newState, TWorld world, object data)
         {
             var scene = world?.World?.Scenes.FirstOrDefault(x => x.ActiveScene);
             if (scene == null)
