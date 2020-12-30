@@ -140,7 +140,7 @@ namespace PcSoft.UnityGameTooling._90_Scripts._00_Runtime.Components.Cameras
         {
             var t = transform;
             var newPos = t.rotation * new Vector3(allowFreeMoving ? deltaX : 0f, 0f, deltaY) + t.position;
-            if (!border.InBox(newPos))
+            if (border != null && !border.InBox(newPos))
                 return;
             transform.position = new Vector3(newPos.x, CalculateCameraHeight(newPos) ?? newPos.y, newPos.z);
         }
