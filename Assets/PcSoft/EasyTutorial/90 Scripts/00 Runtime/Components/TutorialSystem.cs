@@ -1,7 +1,7 @@
 using System;
 using PcSoft.ExtendedEditor._90_Scripts._00_Runtime.Types;
 using PcSoft.ExtendedEditor._90_Scripts._00_Runtime.Utils;
-using PcSoft.SavePrefs._90_Scripts.Utils;
+using PcSoft.SavePrefs._90_Scripts._00_Runtime.Utils;
 using UnityEngine;
 
 namespace PcSoft.EasyTutorial._90_Scripts._00_Runtime.Components

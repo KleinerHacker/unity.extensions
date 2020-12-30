@@ -12,6 +12,7 @@ using PcSoft.ExtendedUnity._90_Scripts._90_Editor.EditorEvents;
 #if UNITY_EDITOR
 #endif
 using PcSoft.UnityBlending._90_Scripts;
+using PcSoft.UnityBlending._90_Scripts._00_Runtime;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 

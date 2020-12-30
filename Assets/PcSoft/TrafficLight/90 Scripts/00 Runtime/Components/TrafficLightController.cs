@@ -1,8 +1,6 @@
 using System;
 using System.Linq;
-using PcSoft.ExtendedAnimation._90_Scripts.Utils;
 using UnityEngine;
-using UnityExtensions;
 
 namespace PcSoft.TrafficLight._90_Scripts._00_Runtime.Components
 {
@@ -12,7 +10,6 @@ namespace PcSoft.TrafficLight._90_Scripts._00_Runtime.Components
     {
         #region Inspector Data
 
-        [ReorderableList(elementsAreSubassets = true, hideFooterButtons = true)]
         [SerializeField]
         private TrafficLightSwitchSystemItem[] switchItems;
 
@@ -86,7 +83,6 @@ namespace PcSoft.TrafficLight._90_Scripts._00_Runtime.Components
     {
         #region Inspector Data
 
-        [ReorderableList(elementsAreSubassets = false, hideFooterButtons = true)]
         [SerializeField]
         private TrafficLight[] trafficLights;
 

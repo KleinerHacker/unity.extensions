@@ -1,11 +1,8 @@
 using System;
 using System.Linq;
-using PcSoft.ExtendedAnimation._90_Scripts.Utils;
-using PcSoft.ExtendedEditor._90_Scripts._00_Runtime.Extra;
+using PcSoft.ExtendedAnimation._90_Scripts._00_Runtime.Utils;
 using PcSoft.TrafficLight._90_Scripts._00_Runtime.Assets;
-using PcSoft.TrafficLight._90_Scripts._00_Runtime.Utils.Extensions;
 using UnityEngine;
-using UnityExtensions;
 
 namespace PcSoft.TrafficLight._90_Scripts._00_Runtime.Components
 {
@@ -385,11 +382,9 @@ namespace PcSoft.TrafficLight._90_Scripts._00_Runtime.Components
     {
         #region Inspector Data
 
-        [ReorderableList(elementsAreSubassets = true, hideFooterButtons = true)]
         [SerializeField]
         private TrafficLightRendererItem[] lightRenderers;
 
-        [ReorderableList(elementsAreSubassets = true, hideFooterButtons = true)]
         [SerializeField]
         private TrafficLightLightItem[] lights;
 

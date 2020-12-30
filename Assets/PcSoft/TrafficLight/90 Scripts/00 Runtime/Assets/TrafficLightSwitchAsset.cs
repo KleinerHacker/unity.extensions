@@ -1,7 +1,6 @@
 using System;
 using UnityEngine;
 using UnityEngine.Serialization;
-using UnityExtensions;
 
 namespace PcSoft.TrafficLight._90_Scripts._00_Runtime.Assets
 {
@@ -50,7 +49,6 @@ namespace PcSoft.TrafficLight._90_Scripts._00_Runtime.Assets
     {
         #region Inspector Data
 
-        [ReorderableList(elementsAreSubassets = true, hideFooterButtons = true)]
         [SerializeField]
         private TrafficLightSwitchStep[] steps;
 
@@ -68,7 +66,6 @@ namespace PcSoft.TrafficLight._90_Scripts._00_Runtime.Assets
     {
         #region Inspector Data
 
-        [ReorderableList(elementsAreSubassets = true, hideFooterButtons = true)]
         [SerializeField]
         private TrafficLightSwitchItem[] items;
 

@@ -1,6 +1,6 @@
 using System;
-using PcSoft.ExtendedAnimation._90_Scripts.Types;
-using PcSoft.ExtendedAnimation._90_Scripts.Utils;
+using PcSoft.ExtendedAnimation._90_Scripts._00_Runtime.Types;
+using PcSoft.ExtendedAnimation._90_Scripts._00_Runtime.Utils;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
