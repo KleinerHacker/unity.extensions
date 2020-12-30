@@ -103,6 +103,9 @@ namespace PcSoft.ExtendedUI._90_Scripts._00_Runtime.Components.UI.Component
 
         private void FillList()
         {
+            if (ContentData == null)
+                return;
+        
             foreach (var data in ContentData)
             {
                 var go = Instantiate(itemPrefab.gameObject, Vector3.zero, Quaternion.identity, content);
