@@ -2,7 +2,6 @@ using System;
 using PcSoft.ExtendedUnity._90_Scripts._00_Runtime.Utils;
 using UnityEngine;
 using UnityEngine.Audio;
-
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
 #endif

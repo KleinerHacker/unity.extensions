@@ -2,12 +2,13 @@ using System;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace PcSoft.ExtendedEditor._90_Scripts._90_Editor.Utils
 {
     public static class ExtendedEditorGUILayout
     {
-        public static T AssetPopup<T>(Func<T, string> nameExtractor, SerializedProperty property, Action<T> onChanged = null) where T : UnityEngine.Object
+        public static T AssetPopup<T>(Func<T, string> nameExtractor, SerializedProperty property, Action<T> onChanged = null) where T : Object
         {
             var assetNames = AssetDatabase.FindAssets("t:" + typeof(T).Name)
                 .Select(AssetDatabase.GUIDToAssetPath)

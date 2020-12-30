@@ -1,7 +1,5 @@
 using System;
 using PcSoft.ExtendedAnimation._90_Scripts._00_Runtime.Utils;
-using PcSoft.ExtendedEditor._90_Scripts._00_Runtime.Types;
-using PcSoft.ExtendedEditor._90_Scripts._00_Runtime.Utils;
 using UnityEngine;
 using UnityEngine.UI;
 

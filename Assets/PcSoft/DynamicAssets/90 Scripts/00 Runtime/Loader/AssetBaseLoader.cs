@@ -7,7 +7,7 @@ namespace PcSoft.DynamicAssets._90_Scripts._00_Runtime.Loader
 {
     public abstract class AssetBaseLoader
     {
-        private readonly IDictionary<Type, UnityEngine.Object[]> _assets = new Dictionary<Type, UnityEngine.Object[]>();
+        private readonly IDictionary<Type, Object[]> _assets = new Dictionary<Type, Object[]>();
 
         public void LoadAssets(Type[] types, string path, bool throwIfEmpty = false)
         {
@@ -48,12 +48,12 @@ namespace PcSoft.DynamicAssets._90_Scripts._00_Runtime.Loader
 
         public bool HasAsset<TA>() => HasAsset(typeof(TA));
 
-        public TA GetAsset<TA>(bool throwIfNotOne = false) where TA : UnityEngine.Object
+        public TA GetAsset<TA>(bool throwIfNotOne = false) where TA : Object
         {
             return (TA) GetAsset(typeof(TA), throwIfNotOne);
         }
 
-        public UnityEngine.Object GetAsset(Type type, bool throwIfNotOne = false)
+        public Object GetAsset(Type type, bool throwIfNotOne = false)
         {
             var assets = GetAssets(type);
             if (throwIfNotOne && assets.Length != 1)
@@ -62,29 +62,29 @@ namespace PcSoft.DynamicAssets._90_Scripts._00_Runtime.Loader
             return assets.FirstOrDefault();
         }
 
-        public TA[] GetAssets<TA>(bool throwIfEmpty = false) where TA : UnityEngine.Object
+        public TA[] GetAssets<TA>(bool throwIfEmpty = false) where TA : Object
         {
             return GetAssets(typeof(TA), throwIfEmpty).Cast<TA>().ToArray();
         }
 
-        public UnityEngine.Object[] GetAssets(Type type, bool throwIfEmpty = false)
+        public Object[] GetAssets(Type type, bool throwIfEmpty = false)
         {
             if (!_assets.ContainsKey(type))
             {
                 if (throwIfEmpty)
                     throw new InvalidOperationException("No asset of type " + type.FullName + " was found");
 
-                return new UnityEngine.Object[0];
+                return new Object[0];
             }
 
             return _assets[type];
         }
 
-        protected abstract IDictionary<Type, UnityEngine.Object[]> LoadFrom(Type[] types, string path);
+        protected abstract IDictionary<Type, Object[]> LoadFrom(Type[] types, string path);
 
         protected abstract void LoadFromAsync(Type[] types, string path, AsyncAnswer answer);
 
-        protected delegate void AsyncAnswer(IDictionary<Type, UnityEngine.Object[]> answer);
+        protected delegate void AsyncAnswer(IDictionary<Type, Object[]> answer);
 
         private void WriteObjectsToDictionary(Type[] types, string path, bool throwIfEmpty, IDictionary<Type, Object[]> objects)
         {

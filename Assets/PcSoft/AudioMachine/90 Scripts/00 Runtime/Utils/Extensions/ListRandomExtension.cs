@@ -31,7 +31,7 @@ namespace PcSoft.AudioMachine._90_Scripts._00_Runtime.Utils.Extensions
             do
             {
                 item = list.ElementAt(Random.Range(0, list.Count()));
-            } while (Object.Equals(item, currentItem));
+            } while (Equals(item, currentItem));
 
             return item;
         }

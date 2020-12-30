@@ -1,7 +1,5 @@
-﻿using System.Collections;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using PcSoft.UnityCommons._90_Scripts._00_Runtime.Utils.Extensions;
-using UnityEngine.TestTools;
 
 namespace PcSoft.UnityCommons._90_Scripts._10_Test.Utils.Extensions
 {

@@ -69,7 +69,7 @@ namespace PcSoft.ExtendedUnity._90_Scripts._90_Editor.EditorActions
             Process.Start(folder);
         }
         
-        private static List<T> FindAssetsByType<T>() where T : UnityEngine.Object
+        private static List<T> FindAssetsByType<T>() where T : Object
         {
             var guids = AssetDatabase.FindAssets($"t:{typeof(T)}");
             return guids

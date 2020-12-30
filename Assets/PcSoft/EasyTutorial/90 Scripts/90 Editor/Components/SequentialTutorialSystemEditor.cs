@@ -1,7 +1,4 @@
 using System;
-using System.Linq;
-using PcSoft.ExtendedEditor._90_Scripts._90_Editor;
-using PcSoft.ExtendedEditor._90_Scripts._90_Editor.Utils.Extensions;
 using UnityEditor;
 using UnityEngine;
 

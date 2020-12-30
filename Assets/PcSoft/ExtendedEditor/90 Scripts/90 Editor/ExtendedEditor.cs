@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -8,11 +7,10 @@ using PcSoft.ExtendedEditor._90_Scripts._90_Editor.Utils.Extensions;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
-using Object = System.Object;
 
 namespace PcSoft.ExtendedEditor._90_Scripts._90_Editor
 {
-    public abstract class ExtendedEditor : UnityEditor.Editor
+    public abstract class ExtendedEditor : Editor
     {
         private readonly IDictionary<string, bool> _showMap = new Dictionary<string, bool>();
         private readonly IDictionary<string, int> _showTab = new Dictionary<string, int>();

@@ -1,18 +1,12 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using PcSoft.ExtendedEditor._90_Scripts._00_Runtime.Types;
-using PcSoft.ExtendedEditor._90_Scripts._00_Runtime.Utils;
-using PcSoft.ExtendedUnity._90_Scripts._00_Runtime.Utils.Extensions;
-using PcSoft.ExtendedUnity._90_Scripts._90_Editor.EditorEvents;
-#if UNITY_EDITOR
-#endif
-using PcSoft.UnityBlending._90_Scripts;
 using PcSoft.UnityScene._90_Scripts._00_Runtime.Components;
 using PcSoft.UnityWorld._90_Scripts._00_Runtime.Assets;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+#if UNITY_EDITOR
+#endif
 
 namespace PcSoft.UnityWorld._90_Scripts._00_Runtime.Components
 {
