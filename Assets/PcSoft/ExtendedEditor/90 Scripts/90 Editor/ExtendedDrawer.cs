@@ -9,6 +9,8 @@ namespace PcSoft.ExtendedEditor._90_Scripts._90_Editor
 {
     public abstract class ExtendedDrawer : PropertyDrawer
     {
+        protected static readonly float lineHeight = EditorGUIUtility.singleLineHeight + 3f; 
+        
         private readonly IDictionary<string, bool> _showMap = new Dictionary<string, bool>();
         private readonly IDictionary<string, int> _showTab = new Dictionary<string, int>();
 
@@ -78,6 +80,11 @@ namespace PcSoft.ExtendedEditor._90_Scripts._90_Editor
                 _showTab[title] = GUILayout.Toolbar(_showTab[title], items.Select(x => x.Title).ToArray());
                 items[_showTab[title]]?.OnGUI?.Invoke();
             });
+        }
+        
+        protected static Rect CalculateNext(Rect rect, uint lines = 1)
+        {
+            return new Rect(rect.x, rect.y + lineHeight * lines, rect.width, lineHeight);
         }
     }
 }
