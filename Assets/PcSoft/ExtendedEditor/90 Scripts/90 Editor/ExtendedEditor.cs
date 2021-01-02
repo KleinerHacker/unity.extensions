@@ -268,6 +268,18 @@ namespace PcSoft.ExtendedEditor._90_Scripts._90_Editor
                 var attribute = field.GetCustomAttribute<SerializedPropertyRepresentationAttribute>();
                 if (attribute == null)
                     continue;
+                
+                var condition = field.GetCustomAttribute<SerializedPropertyConditionAttribute>();
+                if (condition != null)
+                {
+                    var methodInfos = condition.MethodNames
+                        .Select(x => GetType().GetMethod(x, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public))
+                        .Where(x => x != null)
+                        .ToArray();
+                    var success = methodInfos.All(x => (bool) x.Invoke(this, new object[0]));
+                    if (!success)
+                        continue;
+                }
 
                 if (attribute.PreSpace > 0f)
                 {

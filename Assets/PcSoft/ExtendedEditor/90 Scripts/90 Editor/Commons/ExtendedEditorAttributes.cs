@@ -12,6 +12,17 @@ namespace PcSoft.ExtendedEditor._90_Scripts._90_Editor.Commons
             Name = name;
         }
     }
+    
+    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
+    public class SerializedPropertyConditionAttribute : Attribute
+    {
+        public string[] MethodNames { get; }
+
+        public SerializedPropertyConditionAttribute(params string[] methodNames)
+        {
+            MethodNames = methodNames;
+        }
+    }
 
     #region Representation
 
