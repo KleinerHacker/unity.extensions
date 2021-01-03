@@ -22,5 +22,26 @@ namespace PcSoft.ExtendedEditor._90_Scripts._00_Runtime.Utils
 
             return list.ToArray();
         }
+        
+        public static T[] UpdateIdentifierArray<T,TE>(params T[] existing) where T : IIdentifiedObject<TE> where TE : Enum
+        {
+            var sceneStates = Enum.GetValues(typeof(TE)).Cast<TE>().ToArray();
+            var list = new List<T>();
+
+            foreach (var state in sceneStates)
+            {
+                var element = existing.FirstOrDefault(x => Equals(x.Identifier, state));
+                if (element != null)
+                {
+                    list.Add(element);
+                }
+                else
+                {
+                    list.Add((T) typeof(T).GetConstructor(new[] {typeof(TE)}).Invoke(new object[] {state}));
+                }
+            }
+
+            return list.ToArray();
+        }
     }
 }
