@@ -1,0 +1,33 @@
+{
+    "name": "UnityInput.Demo",
+    "rootNamespace": "",
+    "references": [
+        "GUID:7418b08143fd9ce4b9c5a07853bac92f"
+    ],
+    "includePlatforms": [
+        "Android",
+        "CloudRendering",
+        "Editor",
+        "iOS",
+        "LinuxStandalone64",
+        "Lumin",
+        "macOSStandalone",
+        "PS4",
+        "Stadia",
+        "Switch",
+        "tvOS",
+        "WSA",
+        "WebGL",
+        "WindowsStandalone32",
+        "WindowsStandalone64",
+        "XboxOne"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
