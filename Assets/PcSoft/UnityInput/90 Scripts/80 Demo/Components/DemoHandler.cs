@@ -18,10 +18,14 @@ namespace PcSoft.UnityInput._90_Scripts._80_Demo.Components
         [SerializeField]
         private InputActionReference mouseMoveReference;
 
+        [SerializeField]
+        private InputActionReference cheatKeyReference;
+
         #endregion
 
         private InputAction _mouseClick;
         private InputAction _mouseMove;
+        private InputAction _cheatKey;
 
         #region Builtin Methods
 
@@ -29,18 +33,21 @@ namespace PcSoft.UnityInput._90_Scripts._80_Demo.Components
         {
             _mouseClick = mouseClickRreference.ToInputAction();
             _mouseMove = mouseMoveReference.ToInputAction();
+            _cheatKey = cheatKeyReference.ToInputAction();
         }
 
         private void OnEnable()
         {
             _mouseMove.Performed += MouseMoveOnPerformed;
             _mouseClick.Performed += MouseClickOnPerformed;
+            _cheatKey.Performed += CheatKeyOnPerformed;
         }
 
         private void OnDisable()
         {
             _mouseMove.Performed -= MouseMoveOnPerformed;
             _mouseClick.Performed -= MouseClickOnPerformed;
+            _cheatKey.Performed -= CheatKeyOnPerformed;
         }
 
         #endregion
@@ -53,6 +60,11 @@ namespace PcSoft.UnityInput._90_Scripts._80_Demo.Components
         private void MouseClickOnPerformed(InputActionContext obj)
         {
             Debug.Log("Mouse Click: " + obj.ReadValue<bool>());
+        }
+
+        private void CheatKeyOnPerformed(InputActionContext obj)
+        {
+            Debug.Log("Cheat Key pressed");
         }
     }
 }

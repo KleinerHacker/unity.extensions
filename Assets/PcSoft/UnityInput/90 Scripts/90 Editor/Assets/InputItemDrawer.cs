@@ -1,24 +1,47 @@
 using System;
 using System.Linq;
 using System.Reflection;
+using PcSoft.ExtendedEditor._90_Scripts._90_Editor;
+using PcSoft.ExtendedEditor._90_Scripts._90_Editor.Utils.Extensions;
 using PcSoft.UnityInput._90_Scripts._00_Runtime.Assets;
 using PcSoft.UnityInput._90_Scripts._00_Runtime.Utils.Extensions;
 using PcSoft.UnityInput._90_Scripts._90_Editor.Utils.Extensions;
 using UnityEditor;
+using UnityEditor.Graphs;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using InputValue = PcSoft.UnityInput._90_Scripts._00_Runtime.Assets.InputValue;
-using Pointer = System.Reflection.Pointer;
 
 namespace PcSoft.UnityInput._90_Scripts._90_Editor.Assets
 {
     [CustomPropertyDrawer(typeof(InputItem))]
-    public sealed class InputItemDrawer : ExtendedEditor._90_Scripts._90_Editor.ExtendedDrawer
+    public sealed class InputItemDrawer : ExtendedDrawer
     {
+        private bool _s;
+        
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
+            var height = 0f;
+            CalculateNextHeight(property, ref height);
+
+            return height;
+        }
+
+        private void CalculateNextHeight(SerializedProperty property, ref float currentHeight)
+        {
             var actionsProperty = property.FindPropertyRelative("actions");
-            return lineHeight * 6f + Math.Max(1, actionsProperty.arraySize) * lineHeight + 4f * 3f;
+            var subItemsProperties = property.FindPropertiesRelative("subItems");
+            
+            currentHeight += CalculateRequiredHeight(actionsProperty.arraySize);
+            foreach (var subItemsProperty in subItemsProperties)
+            {
+                CalculateNextHeight(subItemsProperty, ref currentHeight);
+            }
+        }
+
+        private float CalculateRequiredHeight(int actionSize)
+        {
+            return lineHeight * 11f + Math.Max(1, actionSize) * lineHeight + 4f * 3f;
         }
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
@@ -28,6 +51,7 @@ namespace PcSoft.UnityInput._90_Scripts._90_Editor.Assets
             var behaviorProperty = property.FindPropertyRelative("behavior");
             var fieldProperty = property.FindPropertyRelative("field");
             var actionsProperty = property.FindPropertyRelative("actions");
+            var subItemsProperty = property.FindPropertyRelative("subItems");
 
             var rect = new Rect(position.x, position.y + 3f, position.width, lineHeight);
             EditorGUI.PropertyField(rect, typeProperty, new GUIContent("Type"));
@@ -49,6 +73,8 @@ namespace PcSoft.UnityInput._90_Scripts._90_Editor.Assets
             rect = CalculateNext(rect);
 
             EditorGUI.PropertyField(rect, actionsProperty, new GUIContent("Actions"));
+            rect = CalculateNext(rect, 5U);
+            EditorGUI.PropertyField(rect, subItemsProperty, new GUIContent("Sub Items"), true);
             rect = CalculateNext(rect);
         }
 

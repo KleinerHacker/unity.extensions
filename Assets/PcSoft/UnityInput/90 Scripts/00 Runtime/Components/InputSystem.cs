@@ -7,9 +7,10 @@ using PcSoft.UnityInput._90_Scripts._00_Runtime.Utils.Extensions;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
-using UnityEngine.UIElements;
-using InputAction = UnityEngine.InputSystem.InputAction;
+using InputAction = PcSoft.UnityInput._90_Scripts._00_Runtime.Types.InputAction;
 using InputValue = PcSoft.UnityInput._90_Scripts._00_Runtime.Assets.InputValue;
+
+// ReSharper disable HeapView.BoxingAllocation
 
 namespace PcSoft.UnityInput._90_Scripts._00_Runtime.Components
 {
@@ -45,8 +46,17 @@ namespace PcSoft.UnityInput._90_Scripts._00_Runtime.Components
         }
 
         #endregion
-
+ 
         private void HandleItem(InputItem item)
+        {
+            var runtimeControl = CreateControlFromItem(item);
+            if (runtimeControl == null)
+                return;
+            
+            _runtimeControlList.Add(runtimeControl);
+        }
+
+        private RuntimeControl CreateControlFromItem(InputItem item)
         {
             InputDevice inputDevice = item.Type switch
             {
@@ -58,127 +68,109 @@ namespace PcSoft.UnityInput._90_Scripts._00_Runtime.Components
                 _ => throw new NotImplementedException()
             };
             if (inputDevice.deviceId == InputDevice.InvalidDeviceId)
-                return;
+                return null;
 
             var inputElementPI = inputDevice.GetType().GetProperty(item.Field);
             var inputElement = (InputControl) inputElementPI.GetValue(inputDevice);
 
-            switch (item.Value)
+
+            (object defValue, TryGetValueDelegate getter) value = item.Value switch
             {
-                case InputValue.Button:
-                    var getters = new List<TryGetValue>();
-                    if (item.Behavior.HasFlag(InputBehavior.Press))
+                InputValue.Button =>
+                    item.Behavior switch
                     {
-                        getters.Add((ref object oldValue, out object value) =>
+                        InputBehavior.Press => (false, (ref object oldValue, out object value) =>
                         {
                             var success = ((ButtonControl) inputElement).wasPressedThisFrame;
                             value = success;
 
                             return success;
-                        });
-                    }
-
-                    if (item.Behavior.HasFlag(InputBehavior.Release))
-                    {
-                        getters.Add((ref object oldValue, out object value) =>
+                        }),
+                        InputBehavior.Release => (false, (ref object oldValue, out object value) =>
                         {
                             var success = ((ButtonControl) inputElement).wasReleasedThisFrame;
                             value = success;
 
                             return success;
-                        });
-                    }
-
-                    if (item.Behavior.HasFlag(InputBehavior.Hold))
-                    {
-                        getters.Add((ref object oldValue, out object value) =>
+                        }),
+                        InputBehavior.Hold => (false, (ref object oldValue, out object value) =>
                         {
                             var success = ((ButtonControl) inputElement).isPressed;
                             value = success;
 
                             return success;
-                        });
-                    }
+                        }),
+                        _ => throw new NotImplementedException(),
+                    },
+                InputValue.Float => (0f, (ref object oldValue, out object value) =>
+                {
+                    value = ((AxisControl) inputElement).ReadValue();
+                    var success = !Equals(value, oldValue);
+                    oldValue = value;
 
-                    _runtimeControlList.Add(new RuntimeControl(getters.ToArray(), false, item.Actions.Select(x => x.ToInputAction()).ToArray()));
+                    return success;
+                }),
+                InputValue.Integer => (0, (ref object oldValue, out object value) =>
+                {
+                    value = ((IntegerControl) inputElement).ReadValue();
+                    var success = !Equals(value, oldValue);
+                    oldValue = value;
 
-                    break;
-                case InputValue.Float:
-                    _runtimeControlList.Add(new RuntimeControl((ref object oldValue, out object value) =>
-                    {
-                        value = ((AxisControl) inputElement).ReadValue();
-                        var success = !Equals(value, oldValue);
-                        oldValue = value;
+                    return success;
+                }),
+                InputValue.Vector2 => (Vector2.zero, (ref object oldValue, out object value) =>
+                {
+                    value = ((Vector2Control) inputElement).ReadValue();
+                    var success = !Equals(value, oldValue);
+                    oldValue = value;
 
-                        return success;
-                    }, 0f, item.Actions.Select(x => x.ToInputAction()).ToArray()));
-                    break;
-                case InputValue.Integer:
-                    _runtimeControlList.Add(new RuntimeControl((ref object oldValue, out object value) =>
-                    {
-                        value = ((IntegerControl) inputElement).ReadValue();
-                        var success = !Equals(value, oldValue);
-                        oldValue = value;
+                    return success;
+                }),
+                _ => throw new NotImplementedException(),
+            };
 
-                        return success;
-                    }, 0, item.Actions.Select(x => x.ToInputAction()).ToArray()));
-                    break;
-                case InputValue.Vector2:
-                    _runtimeControlList.Add(new RuntimeControl((ref object oldValue, out object value) =>
-                    {
-                        value = ((Vector2Control) inputElement).ReadValue();
-                        var success = !Equals(value, oldValue);
-                        oldValue = value;
-
-                        return success;
-                    }, Vector2.zero, item.Actions.Select(x => x.ToInputAction()).ToArray()));
-                    break;
-                default:
-                    throw new NotImplementedException();
-            }
+            var inputActions = item.Actions.Select(x => x.ToInputAction()).ToArray();
+            var subControls = item.SubItems.Select(CreateControlFromItem).ToArray();
+            
+            return new RuntimeControl(value.getter, value.defValue, inputActions, subControls);
         }
 
         private sealed class RuntimeControl
         {
-            private readonly TryGetValue[] _getters;
-            private readonly PcSoft.UnityInput._90_Scripts._00_Runtime.Types.InputAction[] _inputActions;
+            private readonly TryGetValueDelegate _getter;
+            private readonly InputAction[] _inputActions;
+            private readonly RuntimeControl[] _subControls;
 
-            private readonly object[] _oldValues;
+            private object _oldValue;
 
-            public RuntimeControl(TryGetValue getter, object oldValue, PcSoft.UnityInput._90_Scripts._00_Runtime.Types.InputAction[] inputActions)
-                : this(new[] {getter}, oldValue, inputActions)
+            public RuntimeControl(TryGetValueDelegate getter, object oldValue, InputAction[] inputActions, RuntimeControl[] subControls)
             {
-            }
-
-            public RuntimeControl(TryGetValue[] getters, object oldValue, PcSoft.UnityInput._90_Scripts._00_Runtime.Types.InputAction[] inputActions)
-            {
-                if (getters.Length <= 0)
-                    throw new ArgumentException("Minimum one getter must exists");
-
-                _getters = getters;
-                _oldValues = new object[getters.Length];
-                for (var i = 0; i < _oldValues.Length; i++)
-                {
-                    _oldValues[i] = oldValue;
-                }
-
+                _getter = getter;
+                _oldValue = oldValue;
                 _inputActions = inputActions;
+                _subControls = subControls;
             }
 
-            public void Run()
+            public bool Run()
             {
-                object value = null;
-                var success = _getters.Where((getter, i) => getter(ref _oldValues[i], out value)).Any();
+                var success = _getter(ref _oldValue, out var value);
                 if (success)
                 {
+                    if (_subControls.Any(x => x.Run()))
+                        return true; //Break recursion if sub control hits (priority for sub controls)
+                    
                     foreach (var inputAction in _inputActions)
                     {
-                        inputAction.RaisePerform(new InputActionContext(_getters.Length > 1 ? success : value));
+                        inputAction.RaisePerform(new InputActionContext(value));
                     }
+
+                    return true;
                 }
+
+                return false;
             }
         }
 
-        private delegate bool TryGetValue(ref object oldValue, out object value);
+        private delegate bool TryGetValueDelegate(ref object oldValue, out object value);
     }
 }

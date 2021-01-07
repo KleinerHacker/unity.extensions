@@ -252,6 +252,7 @@ MonoBehaviour:
   mouseClickRreference: {fileID: 11400000, guid: 40f3d574228af6b4f8d7688fc9593ce1,
     type: 2}
   mouseMoveReference: {fileID: 11400000, guid: a875aa2a6a99b474385781eacf174438, type: 2}
+  cheatKeyReference: {fileID: 11400000, guid: af2d0a8b5a4cd9541a65998d7b47c622, type: 2}
 --- !u!1 &1466747630
 GameObject:
   m_ObjectHideFlags: 0

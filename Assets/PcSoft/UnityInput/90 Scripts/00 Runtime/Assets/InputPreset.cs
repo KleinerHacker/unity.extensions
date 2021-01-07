@@ -42,6 +42,9 @@ namespace PcSoft.UnityInput._90_Scripts._00_Runtime.Assets
         [SerializeField]
         private InputActionReference[] actions;
 
+        [SerializeField]
+        private InputItem[] subItems;
+
         #endregion
 
         #region Properties
@@ -55,6 +58,8 @@ namespace PcSoft.UnityInput._90_Scripts._00_Runtime.Assets
         public string Field => field;
 
         public InputActionReference[] Actions => actions;
+
+        public InputItem[] SubItems => subItems;
 
         #endregion
     }
@@ -76,11 +81,10 @@ namespace PcSoft.UnityInput._90_Scripts._00_Runtime.Assets
         Vector2,
     }
 
-    [Flags]
     public enum InputBehavior
     {
-        Press = 0x01,
-        Release = 0x02,
-        Hold = 0x04,
+        Press,
+        Release,
+        Hold,
     }
 }
