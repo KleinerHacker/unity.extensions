@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using PcSoft.UnityInput._90_Scripts._00_Runtime;
 using PcSoft.UnityInput._90_Scripts._00_Runtime.Assets;
 using PcSoft.UnityInput._90_Scripts._00_Runtime.Types;
@@ -13,58 +15,68 @@ namespace PcSoft.UnityInput._90_Scripts._80_Demo.Components
         #region Inspector Data
 
         [SerializeField]
-        private InputActionReference mouseClickRreference;
-
-        [SerializeField]
-        private InputActionReference mouseMoveReference;
-
-        [SerializeField]
-        private InputActionReference cheatKeyReference;
+        private InputDemoItem[] items;
 
         #endregion
 
-        private InputAction _mouseClick;
-        private InputAction _mouseMove;
-        private InputAction _cheatKey;
+        private readonly IDictionary<InputAction, string> _dictionary = new Dictionary<InputAction, string>();
 
         #region Builtin Methods
 
         private void Awake()
         {
-            _mouseClick = mouseClickRreference.ToInputAction();
-            _mouseMove = mouseMoveReference.ToInputAction();
-            _cheatKey = cheatKeyReference.ToInputAction();
+            foreach (var item in items)
+            {
+                _dictionary.Add(item.InputActionReference.ToInputAction(), item.Output);
+            }
         }
 
         private void OnEnable()
         {
-            _mouseMove.Performed += MouseMoveOnPerformed;
-            _mouseClick.Performed += MouseClickOnPerformed;
-            _cheatKey.Performed += CheatKeyOnPerformed;
+            foreach (var inputAction in _dictionary.Keys)
+            {
+                inputAction.Performed += InputActionOnPerformed;
+            }
         }
 
         private void OnDisable()
         {
-            _mouseMove.Performed -= MouseMoveOnPerformed;
-            _mouseClick.Performed -= MouseClickOnPerformed;
-            _cheatKey.Performed -= CheatKeyOnPerformed;
+            foreach (var inputAction in _dictionary.Keys)
+            {
+                inputAction.Performed -= InputActionOnPerformed;
+            }
         }
 
         #endregion
 
-        private void MouseMoveOnPerformed(InputActionContext obj)
+        private void InputActionOnPerformed(InputActionContext obj)
         {
-            Debug.Log("Mouse Move: " + obj.ReadValue<Vector2>());
+            if (!_dictionary.ContainsKey(obj.InputAction))
+                return;
+            
+            Debug.Log(_dictionary[obj.InputAction]);
         }
+    }
 
-        private void MouseClickOnPerformed(InputActionContext obj)
-        {
-            Debug.Log("Mouse Click: " + obj.ReadValue<bool>());
-        }
+    [Serializable]
+    public sealed class InputDemoItem
+    {
+        #region Inspector Data
 
-        private void CheatKeyOnPerformed(InputActionContext obj)
-        {
-            Debug.Log("Cheat Key pressed");
-        }
+        [SerializeField]
+        private InputActionReference inputActionReference;
+
+        [SerializeField]
+        private string output;
+
+        #endregion
+
+        #region Properties
+
+        public InputActionReference InputActionReference => inputActionReference;
+
+        public string Output => output;
+
+        #endregion
     }
 }

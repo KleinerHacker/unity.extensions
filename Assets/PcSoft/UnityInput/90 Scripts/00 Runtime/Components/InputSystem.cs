@@ -83,6 +83,7 @@ namespace PcSoft.UnityInput._90_Scripts._00_Runtime.Components
                         {
                             var success = ((ButtonControl) inputElement).wasPressedThisFrame;
                             value = success;
+                            //Debug.Log("*** " + success + " / " + value);
 
                             return success;
                         }),
@@ -161,7 +162,7 @@ namespace PcSoft.UnityInput._90_Scripts._00_Runtime.Components
                     
                     foreach (var inputAction in _inputActions)
                     {
-                        inputAction.RaisePerform(new InputActionContext(value));
+                        inputAction.RaisePerform(new InputActionContext(inputAction, value));
                     }
 
                     return true;

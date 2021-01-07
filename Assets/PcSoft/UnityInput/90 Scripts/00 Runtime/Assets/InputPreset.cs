@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem.Controls;
+using Random = UnityEngine.Random;
 
 namespace PcSoft.UnityInput._90_Scripts._00_Runtime.Assets
 {
@@ -28,6 +29,9 @@ namespace PcSoft.UnityInput._90_Scripts._00_Runtime.Assets
         #region Inspector Data
 
         [SerializeField]
+        private string name;
+
+        [SerializeField]
         private InputType type;
 
         [SerializeField]
@@ -49,6 +53,8 @@ namespace PcSoft.UnityInput._90_Scripts._00_Runtime.Assets
 
         #region Properties
 
+        public string Name => name;
+
         public InputType Type => type;
 
         public InputValue Value => value;
@@ -62,6 +68,14 @@ namespace PcSoft.UnityInput._90_Scripts._00_Runtime.Assets
         public InputItem[] SubItems => subItems;
 
         #endregion
+
+        public override string ToString()
+        {
+            if (!string.IsNullOrWhiteSpace(name))
+                return name;
+            
+            return $"{type} / {value} {(value == InputValue.Button ? " / " + behavior : "")}";
+        }
     }
 
     public enum InputType

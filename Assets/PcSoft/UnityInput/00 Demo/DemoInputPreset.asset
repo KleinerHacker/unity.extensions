@@ -13,42 +13,64 @@ MonoBehaviour:
   m_Name: DemoInputPreset
   m_EditorClassIdentifier: 
   items:
-  - type: 0
+  - name: 
+    type: 0
     value: 0
     behavior: 0
     field: leftButton
     actions:
     - {fileID: 11400000, guid: 40f3d574228af6b4f8d7688fc9593ce1, type: 2}
     subItems: []
-  - type: 0
+  - name: 
+    type: 0
     value: 3
     behavior: 0
     field: delta
     actions:
     - {fileID: 11400000, guid: a875aa2a6a99b474385781eacf174438, type: 2}
-    subItems: []
-  - type: 1
+    subItems:
+    - name: 
+      type: 0
+      value: 0
+      behavior: 2
+      field: rightButton
+      actions:
+      - {fileID: 11400000, guid: 2fe52664277727d408061274119728b6, type: 2}
+      subItems: []
+  - name: 
+    type: 1
     value: 0
     behavior: 2
     field: ctrlKey
     actions: []
     subItems:
-    - type: 1
+    - name: 
+      type: 1
       value: 0
       behavior: 2
       field: shiftKey
       actions: []
       subItems:
-      - type: 1
+      - name: 
+        type: 1
         value: 0
         behavior: 2
         field: altKey
         actions: []
         subItems:
-        - type: 1
+        - name: 
+          type: 1
           value: 0
           behavior: 0
           field: cKey
           actions:
           - {fileID: 11400000, guid: af2d0a8b5a4cd9541a65998d7b47c622, type: 2}
           subItems: []
+  - name: 
+    type: 1
+    value: 0
+    behavior: 0
+    field: bKey
+    actions:
+    - {fileID: 11400000, guid: 04978a4591395c14ab9879974599caea, type: 2}
+    subItems: []

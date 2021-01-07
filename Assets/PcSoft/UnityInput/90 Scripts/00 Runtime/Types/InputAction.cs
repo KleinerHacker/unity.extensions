@@ -19,11 +19,14 @@ namespace PcSoft.UnityInput._90_Scripts._00_Runtime.Types
 
     public sealed class InputActionContext
     {
-        private object _value;
+        private readonly object _value;
+        
+        public InputAction InputAction { get; }
 
-        public InputActionContext(object value)
+        public InputActionContext(InputAction inputAction, object value)
         {
             _value = value;
+            InputAction = inputAction;
         }
 
         public T ReadValue<T>()
