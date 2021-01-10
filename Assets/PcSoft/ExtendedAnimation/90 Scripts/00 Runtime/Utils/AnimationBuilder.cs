@@ -23,6 +23,12 @@ namespace PcSoft.ExtendedAnimation._90_Scripts._00_Runtime.Utils
             _behaviour = behaviour;
             _type = type;
         }
+        
+        public AnimationBuilder SubAnimation(Action<Action> runSubAnimation, Action onFinished = null)
+        {
+            _steps.Add(new SubAnimationStep(runSubAnimation, onFinished));
+            return this;
+        }
 
         public AnimationBuilder Animate(AnimationCurve curve, float speed, Action<float> handler, Action onFinished = null)
         {
