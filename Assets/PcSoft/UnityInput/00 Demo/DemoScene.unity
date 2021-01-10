@@ -265,6 +265,9 @@ MonoBehaviour:
   - inputActionReference: {fileID: 11400000, guid: a875aa2a6a99b474385781eacf174438,
       type: 2}
     output: Mouse Move
+  - inputActionReference: {fileID: 11400000, guid: af2d0a8b5a4cd9541a65998d7b47c622,
+      type: 2}
+    output: Cheat Key
 --- !u!1 &1466747630
 GameObject:
   m_ObjectHideFlags: 0
