@@ -58,6 +58,12 @@ namespace PcSoft.UnityGameTooling._90_Scripts._00_Runtime.Components.Cameras
         [Space]
         [SerializeField]
         private LayerMask colliderLayerMask;
+        
+        [SerializeField]
+        private bool useColliderTag;
+
+        [SerializeField]
+        private string colliderTag;
 
         [Header("Animation")]
         [SerializeField]
@@ -202,8 +208,13 @@ namespace PcSoft.UnityGameTooling._90_Scripts._00_Runtime.Components.Cameras
             if (!useHighDetection)
                 return 0f;
             
-            if (Physics.Raycast(new Vector3(pos.x, 1000f, pos.z), Vector3.down, out var hit, float.MaxValue, colliderLayerMask) && hit.collider.CompareTag("Terrain"))
+            if (Physics.Raycast(new Vector3(pos.x, 1000f, pos.z), Vector3.down, out var hit, float.MaxValue, colliderLayerMask))
+            {
+                if (useColliderTag && !hit.collider.CompareTag(colliderTag))
+                    return null;
+                
                 return hit.point.y;
+            }
 
             return null;
         }

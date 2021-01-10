@@ -71,6 +71,8 @@ namespace PcSoft.UnityInput._90_Scripts._00_Runtime.Components
                 return null;
 
             var inputElementPI = inputDevice.GetType().GetProperty(item.Field);
+            if (inputElementPI == null)
+                throw new InvalidOperationException("Unable to find property " + item.Field + " in " + item.Type);
             var inputElement = (InputControl) inputElementPI.GetValue(inputDevice);
 
 
