@@ -1,8 +1,10 @@
 using PcSoft.ExtendedAnimation._90_Scripts._00_Runtime.Utils;
+using PcSoft.UnityInput._90_Scripts._00_Runtime.Utils.Extensions;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
+using PcSoft.UnityInput._90_Scripts._00_Runtime.Types;
+using PcSoft.UnityInput._90_Scripts._00_Runtime.Assets;
 
 namespace PcSoft.UnityGameTooling._90_Scripts._00_Runtime.Components.Cameras
 {
@@ -67,14 +69,18 @@ namespace PcSoft.UnityGameTooling._90_Scripts._00_Runtime.Components.Cameras
 
         [Header("Input")]
         [SerializeField]
-        private InputActionReference movementInputRef;
+        private InputActionInfo movementInputRef;
+        
+        [SerializeField]
+        private InputActionInfo rotationInputRef;
 
         [SerializeField]
-        private InputActionReference scrollingInputRef;
+        private InputActionInfo scrollingInputRef;
 
         #endregion
 
         private InputAction _movementInput;
+        private InputAction _rotationInput;
         private InputAction _scrollingInput;
 
         private byte _currentHighLevel;
@@ -84,6 +90,7 @@ namespace PcSoft.UnityGameTooling._90_Scripts._00_Runtime.Components.Cameras
         private void Awake()
         {
             _movementInput = movementInputRef.ToInputAction();
+            _rotationInput = rotationInputRef.ToInputAction();
             _scrollingInput = scrollingInputRef.ToInputAction();
 
             _currentHighLevel = startHighLevel;
@@ -92,47 +99,26 @@ namespace PcSoft.UnityGameTooling._90_Scripts._00_Runtime.Components.Cameras
 
         private void OnEnable()
         {
-            _movementInput.performed += MovementInputPerformed;
-            _movementInput.Enable();
-
-            _scrollingInput.performed += ScrollingInputPerformed;
-            _scrollingInput.Enable();
+            _movementInput.Performed += MovementInputPerformed;
+            _rotationInput.Performed += RotationInputPerformed;
+            _scrollingInput.Performed += ScrollingInputPerformed;
         }
 
         private void OnDisable()
         {
-            _movementInput.Disable();
-            _movementInput.performed -= MovementInputPerformed;
-
-            _scrollingInput.Disable();
-            _scrollingInput.performed -= ScrollingInputPerformed;
+            _movementInput.Performed -= MovementInputPerformed;
+            _rotationInput.Performed -= RotationInputPerformed;
+            _scrollingInput.Performed -= ScrollingInputPerformed;
         }
 
         #endregion
 
-        private void MovementInputPerformed(InputAction.CallbackContext e)
+        private void MovementInputPerformed(InputActionContext e)
         {
             if (EventSystem.current.IsPointerOverGameObject())
                 return;
 
-            var delta = -e.ReadValue<Vector2>();
-
-            if (Equals(e.control.device, Mouse.current))
-            {
-                if (Mouse.current.leftButton.isPressed)
-                {
-                    DoMovement(delta.x, delta.y);
-                    return;
-                }
-                else if (Mouse.current.rightButton.isPressed)
-                {
-                    DoRotation(delta.x, delta.y);
-                    return;
-                }
-
-                return;
-            }
-
+            var delta = -e.ReadValue<Vector2>(movementInputRef.ValueKey);
             DoMovement(delta.x, delta.y);
         }
 
@@ -145,6 +131,15 @@ namespace PcSoft.UnityGameTooling._90_Scripts._00_Runtime.Components.Cameras
             transform.position = new Vector3(newPos.x, CalculateCameraHeight(newPos) ?? newPos.y, newPos.z);
         }
 
+        private void RotationInputPerformed(InputActionContext e)
+        {
+            if (EventSystem.current.IsPointerOverGameObject())
+                return;
+
+            var delta = -e.ReadValue<Vector2>(rotationInputRef.ValueKey);
+            DoRotation(delta.x, delta.y);
+        }
+
         private void DoRotation(float deltaX, float deltaY)
         {
             if (!allowFreeMoving)
@@ -154,12 +149,12 @@ namespace PcSoft.UnityGameTooling._90_Scripts._00_Runtime.Components.Cameras
             transform.rotation = Quaternion.Euler(rot.x, rot.y - deltaX, rot.z);
         }
 
-        private void ScrollingInputPerformed(InputAction.CallbackContext e)
+        private void ScrollingInputPerformed(InputActionContext e)
         {
             if (EventSystem.current.IsPointerOverGameObject())
                 return;
 
-            var value = e.ReadValue<float>();
+            var value = e.ReadValue<float>(scrollingInputRef.ValueKey);
             if (value < 0f && _currentHighLevel > 0)
             {
                 _currentHighLevel--;

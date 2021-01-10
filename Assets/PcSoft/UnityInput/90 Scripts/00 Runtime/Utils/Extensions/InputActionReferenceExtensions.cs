@@ -19,5 +19,10 @@ namespace PcSoft.UnityInput._90_Scripts._00_Runtime.Utils.Extensions
 
             return _actionCache[reference];
         }
+
+        public static InputAction ToInputAction(this InputActionInfo info)
+        {
+            return info.Reference.ToInputAction();
+        }
     }
 }

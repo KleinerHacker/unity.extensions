@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: DemoInputPreset
   m_EditorClassIdentifier: 
   items:
-  - name: 
+  - name: a0b8b8e7-950c-42ac-8334-dee449ce7c77
     type: 0
     value: 0
     behavior: 0
@@ -21,7 +21,7 @@ MonoBehaviour:
     actions:
     - {fileID: 11400000, guid: 40f3d574228af6b4f8d7688fc9593ce1, type: 2}
     subItems: []
-  - name: 
+  - name: mouse-move
     type: 0
     value: 3
     behavior: 0
@@ -29,7 +29,7 @@ MonoBehaviour:
     actions:
     - {fileID: 11400000, guid: a875aa2a6a99b474385781eacf174438, type: 2}
     subItems:
-    - name: 
+    - name: mouse-hold
       type: 0
       value: 0
       behavior: 2
@@ -37,28 +37,28 @@ MonoBehaviour:
       actions:
       - {fileID: 11400000, guid: 2fe52664277727d408061274119728b6, type: 2}
       subItems: []
-  - name: 
+  - name: 44005602-1796-481e-8b69-ef02813375cf
     type: 1
     value: 0
     behavior: 2
     field: ctrlKey
     actions: []
     subItems:
-    - name: 
+    - name: 9fefc51a-c63b-4465-999a-15d0b7a9ba8b
       type: 1
       value: 0
       behavior: 2
       field: shiftKey
       actions: []
       subItems:
-      - name: 
+      - name: 3e5a5001-0915-4f81-912c-7bcb6e7a2d00
         type: 1
         value: 0
         behavior: 2
         field: altKey
         actions: []
         subItems:
-        - name: 
+        - name: fde29d0f-d7af-46be-8859-ce4eb0818c17
           type: 1
           value: 0
           behavior: 0
@@ -66,7 +66,7 @@ MonoBehaviour:
           actions:
           - {fileID: 11400000, guid: af2d0a8b5a4cd9541a65998d7b47c622, type: 2}
           subItems: []
-  - name: 
+  - name: 4611f0e5-1406-4db2-95b0-8246591b0059
     type: 1
     value: 0
     behavior: 0
