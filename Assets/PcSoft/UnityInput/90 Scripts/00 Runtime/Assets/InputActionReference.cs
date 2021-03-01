@@ -1,3 +1,4 @@
+using System;
 using PcSoft.ExtendedEditor._90_Scripts._00_Runtime.Extra;
 using UnityEngine;
 
@@ -37,5 +38,27 @@ namespace PcSoft.UnityInput._90_Scripts._00_Runtime.Assets
                 return (base.GetHashCode() * 397) ^ (guid != null ? guid.GetHashCode() : 0);
             }
         }
+    }
+
+    [Serializable]
+    public sealed class InputActionInfo
+    {
+        #region Inspector Data
+
+        [SerializeField]
+        private InputActionReference reference;
+
+        [SerializeField]
+        private string valueKey;
+
+        #endregion
+
+        #region Properties
+
+        public InputActionReference Reference => reference;
+
+        public string ValueKey => valueKey;
+
+        #endregion
     }
 }

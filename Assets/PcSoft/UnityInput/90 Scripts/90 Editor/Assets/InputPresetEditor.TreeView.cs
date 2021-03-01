@@ -63,15 +63,12 @@ namespace PcSoft.UnityInput._90_Scripts._90_Editor.Assets
         private string BuildString(SerializedProperty property)
         {
             var name = property.FindPropertyRelative("name").stringValue;
-            if (!string.IsNullOrWhiteSpace(name))
-                return name;
-
             var type = (InputType) property.FindPropertyRelative("type").intValue;
             var value = (InputValue) property.FindPropertyRelative("value").intValue;
             var behavior = (InputBehavior) property.FindPropertyRelative("behavior").intValue;
             var field = property.FindPropertyRelative("field").stringValue;
 
-            return $"{type} / {value} {(value == InputValue.Button ? " / " + behavior : "")} ({field})";
+            return $"{type} / {value} {(value == InputValue.Button ? " / " + behavior : "")} ({field}) {(string.IsNullOrWhiteSpace(name) ? "" : " / " + name)}";
         }
     }
 

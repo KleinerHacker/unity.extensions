@@ -71,6 +71,8 @@ namespace PcSoft.UnityInput._90_Scripts._00_Runtime.Components
                 return null;
 
             var inputElementPI = inputDevice.GetType().GetProperty(item.Field);
+            if (inputElementPI == null)
+                throw new InvalidOperationException("Unable to find property " + item.Field + " in " + item.Type);
             var inputElement = (InputControl) inputElementPI.GetValue(inputDevice);
 
 
@@ -106,7 +108,7 @@ namespace PcSoft.UnityInput._90_Scripts._00_Runtime.Components
                 InputValue.Float => (0f, (ref object oldValue, out object value) =>
                 {
                     value = ((AxisControl) inputElement).ReadValue();
-                    var success = !Equals(value, oldValue);
+                    var success = value.GetHashCode() != oldValue.GetHashCode();
                     oldValue = value;
 
                     return success;
@@ -114,7 +116,7 @@ namespace PcSoft.UnityInput._90_Scripts._00_Runtime.Components
                 InputValue.Integer => (0, (ref object oldValue, out object value) =>
                 {
                     value = ((IntegerControl) inputElement).ReadValue();
-                    var success = !Equals(value, oldValue);
+                    var success = value.GetHashCode() != oldValue.GetHashCode();
                     oldValue = value;
 
                     return success;
@@ -122,7 +124,7 @@ namespace PcSoft.UnityInput._90_Scripts._00_Runtime.Components
                 InputValue.Vector2 => (Vector2.zero, (ref object oldValue, out object value) =>
                 {
                     value = ((Vector2Control) inputElement).ReadValue();
-                    var success = !Equals(value, oldValue);
+                    var success = value.GetHashCode() != oldValue.GetHashCode();
                     oldValue = value;
 
                     return success;
@@ -133,19 +135,21 @@ namespace PcSoft.UnityInput._90_Scripts._00_Runtime.Components
             var inputActions = item.Actions.Select(x => x.ToInputAction()).ToArray();
             var subControls = item.SubItems.Select(CreateControlFromItem).ToArray();
             
-            return new RuntimeControl(value.getter, value.defValue, inputActions, subControls);
+            return new RuntimeControl(item.Name, value.getter, value.defValue, inputActions, subControls);
         }
 
         private sealed class RuntimeControl
         {
+            private readonly string _name;
             private readonly TryGetValueDelegate _getter;
             private readonly InputAction[] _inputActions;
             private readonly RuntimeControl[] _subControls;
 
             private object _oldValue;
 
-            public RuntimeControl(TryGetValueDelegate getter, object oldValue, InputAction[] inputActions, RuntimeControl[] subControls)
+            public RuntimeControl(string name, TryGetValueDelegate getter, object oldValue, InputAction[] inputActions, RuntimeControl[] subControls)
             {
+                _name = name;
                 _getter = getter;
                 _oldValue = oldValue;
                 _inputActions = inputActions;
@@ -154,15 +158,22 @@ namespace PcSoft.UnityInput._90_Scripts._00_Runtime.Components
 
             public bool Run()
             {
+                return Run(new Dictionary<string, object>());
+            }
+
+            private bool Run(IDictionary<string, object> values)
+            {
                 var success = _getter(ref _oldValue, out var value);
                 if (success)
                 {
-                    if (_subControls.Any(x => x.Run()))
+                    values.Add(_name, value);
+                    
+                    if (_subControls.Any(x => x.Run(values)))
                         return true; //Break recursion if sub control hits (priority for sub controls)
                     
                     foreach (var inputAction in _inputActions)
                     {
-                        inputAction.RaisePerform(new InputActionContext(inputAction, value));
+                        inputAction.RaisePerform(new InputActionContext(inputAction, values));
                     }
 
                     return true;

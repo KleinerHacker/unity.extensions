@@ -14,6 +14,16 @@ namespace PcSoft.ExtendedAnimation._90_Scripts._00_Runtime.Utils
                 OnFinished = onFinished;
             }
         }
+        
+        private sealed class SubAnimationStep : AnimationStep
+        {
+            public Action<Action> RunSubAnimation { get; }
+
+            public SubAnimationStep(Action<Action> runSubAnimation, Action onFinished) : base(onFinished)
+            {
+                RunSubAnimation = runSubAnimation;
+            }
+        }
 
         private sealed class AnimateConstantAnimationStep : AnimationStep
         {

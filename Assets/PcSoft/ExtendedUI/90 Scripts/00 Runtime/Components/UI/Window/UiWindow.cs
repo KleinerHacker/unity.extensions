@@ -2,9 +2,9 @@ using System;
 using PcSoft.ExtendedUnity._90_Scripts._00_Runtime.Utils;
 using UnityEngine;
 using UnityEngine.Audio;
-#if ENABLE_INPUT_SYSTEM
-using UnityEngine.InputSystem;
-#endif
+using PcSoft.UnityInput._90_Scripts._00_Runtime.Assets;
+using PcSoft.UnityInput._90_Scripts._00_Runtime.Types;
+using PcSoft.UnityInput._90_Scripts._00_Runtime.Utils.Extensions;
 
 namespace PcSoft.ExtendedUI._90_Scripts._00_Runtime.Components.UI.Window
 {
@@ -63,14 +63,12 @@ namespace PcSoft.ExtendedUI._90_Scripts._00_Runtime.Components.UI.Window
 
         protected override void OnEnable()
         {
-            _togglerAction.performed += PlayerInputOnActionTriggered;
-            _togglerAction.Enable();
+            _togglerAction.Performed += PlayerInputOnActionTriggered;
         }
 
         protected override void OnDisable()
         {
-            _togglerAction.Disable();
-            _togglerAction.performed -= PlayerInputOnActionTriggered;
+            _togglerAction.Performed -= PlayerInputOnActionTriggered;
         }
 
         #endregion
@@ -101,7 +99,7 @@ namespace PcSoft.ExtendedUI._90_Scripts._00_Runtime.Components.UI.Window
             }
         }
 
-        private void PlayerInputOnActionTriggered(InputAction.CallbackContext obj)
+        private void PlayerInputOnActionTriggered(InputActionContext obj)
         {
             HandleToggle();
         }

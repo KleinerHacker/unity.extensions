@@ -21,6 +21,28 @@ namespace PcSoft.UnityInput._90_Scripts._00_Runtime.Assets
         public InputItem[] Items => items;
 
         #endregion
+
+        #region Builtin Methods
+
+        private void OnValidate()
+        {
+            ValidateNextItems(items);
+        }
+
+        #endregion
+
+        private void ValidateNextItems(InputItem[] items)
+        {
+            foreach (var item in items)
+            {
+                if (string.IsNullOrWhiteSpace(item.Name))
+                {
+                    item.Name = Guid.NewGuid().ToString();
+                }
+                
+                ValidateNextItems(item.SubItems);
+            }
+        }
     }
 
     [Serializable]
@@ -53,7 +75,11 @@ namespace PcSoft.UnityInput._90_Scripts._00_Runtime.Assets
 
         #region Properties
 
-        public string Name => name;
+        public string Name
+        {
+            get => name;
+            internal set => name = value;
+        }
 
         public InputType Type => type;
 
@@ -71,10 +97,7 @@ namespace PcSoft.UnityInput._90_Scripts._00_Runtime.Assets
 
         public override string ToString()
         {
-            if (!string.IsNullOrWhiteSpace(name))
-                return name;
-            
-            return $"{type} / {value} {(value == InputValue.Button ? " / " + behavior : "")}";
+            return $"{type} / {value} {(value == InputValue.Button ? " / " + behavior : "")} {(string.IsNullOrWhiteSpace(name) ? "" : " / " + name)}";
         }
     }
 

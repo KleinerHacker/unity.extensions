@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace PcSoft.UnityInput._90_Scripts._00_Runtime.Types
@@ -19,25 +20,35 @@ namespace PcSoft.UnityInput._90_Scripts._00_Runtime.Types
 
     public sealed class InputActionContext
     {
-        private readonly object _value;
+        private readonly IDictionary<string, object> _values;
         
         public InputAction InputAction { get; }
 
-        public InputActionContext(InputAction inputAction, object value)
+        public InputActionContext(InputAction inputAction, IDictionary<string, object> values)
         {
-            _value = value;
+            _values = values;
             InputAction = inputAction;
         }
 
-        public T ReadValue<T>()
+        public T ReadValue<T>(string key)
         {
+            object value;
             try
             {
-                return (T) _value;
+                value = _values[key];
             }
-            catch (InvalidCastException e)
+            catch (Exception)
             {
-                throw new InvalidCastException("Unable to cast value of type " + _value.GetType().FullName + " to type " + typeof(T).FullName);
+                throw new ArgumentException("Unable to find key " + key + " in values!");
+            }
+            
+            try
+            {
+                return (T) value;
+            }
+            catch (InvalidCastException)
+            {
+                throw new InvalidCastException("Unable to cast value of type " + value.GetType().FullName + " to type " + typeof(T).FullName);
             }
         }
     }

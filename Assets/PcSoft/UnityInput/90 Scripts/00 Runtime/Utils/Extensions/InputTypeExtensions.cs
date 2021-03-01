@@ -18,5 +18,18 @@ namespace PcSoft.UnityInput._90_Scripts._00_Runtime.Utils.Extensions
                 _ => throw new NotImplementedException()
             };
         }
+        
+        public static Type GetFitType(this InputType type)
+        {
+            return type switch
+            {
+                InputType.Keyboard => typeof(Keyboard),
+                InputType.Mouse => typeof(Mouse),
+                InputType.Pointer => typeof(Pointer),
+                InputType.Touchscreen => typeof(Touchscreen),
+                InputType.Gamepad => typeof(Gamepad),
+                _ => throw new NotImplementedException()
+            };
+        }
     }
 }

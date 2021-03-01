@@ -55,7 +55,17 @@ namespace PcSoft.ExtendedAnimation._90_Scripts._00_Runtime.Utils
             }
 
             var step = _steps[stepIndex];
-            if (step is AnimateAnimationStep animStep)
+            if (step is SubAnimationStep subAnimStep)
+            {
+                subAnimStep.RunSubAnimation.Invoke(() =>
+                {
+                    subAnimStep.OnFinished?.Invoke();
+                    if (animationRunner.IsStopped)
+                        return;
+                    StartNext(stepIndex + 1, animationRunner);
+                });
+            }
+            else if (step is AnimateAnimationStep animStep)
             {
                 animationRunner.Coroutine = Run(AnimationUtils.RunAnimation(_type, animStep.Curve, animStep.Speed, animStep.Handler, () =>
                 {
