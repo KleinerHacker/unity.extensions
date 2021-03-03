@@ -5,42 +5,20 @@ using UnityEngine;
 namespace PcSoft.ExtendedUnity._90_Scripts._00_Runtime.Components
 {
     [AddComponentMenu(ExtendedUnityConstants.Root + "/Unity Dispatcher")]
-    public class UnityDispatcher : SearchingSingletonBehavior<UnityDispatcher>
+    public sealed class UnityDispatcher : ObserverSingletonBehavior<UnityDispatcher>
     {
-        private readonly IList<Action> _runUpdateList = new List<Action>();
-        private readonly IList<Action> _runLateUpdateList = new List<Action>();
-        private readonly IList<Action> _runFixedUpdateList = new List<Action>();
+        private readonly IList<Action> _runList = new List<Action>();
 
-        public void RunLaterInUpdate(Action action)
+        public void RunLater(Action action)
         {
-            AddAction(action, _runUpdateList);
-        }
-        
-        public void RunLaterInLateUpdate(Action action)
-        {
-            AddAction(action, _runLateUpdateList);
-        }
-        
-        public void RunLaterInFixedUpdate(Action action)
-        {
-            AddAction(action, _runFixedUpdateList);
+            AddAction(action, _runList);
         }
 
         #region Builtin Methods
 
-        private void Update()
-        {
-            RunActions(_runUpdateList);
-        }
-
         private void LateUpdate()
         {
-            RunActions(_runLateUpdateList);
-        }
-
-        private void FixedUpdate()
-        {
-            RunActions(_runFixedUpdateList);
+            RunActions(_runList);
         }
 
         #endregion
