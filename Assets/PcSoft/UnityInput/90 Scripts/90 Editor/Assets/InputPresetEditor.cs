@@ -126,15 +126,15 @@ namespace PcSoft.UnityInput._90_Scripts._90_Editor.Assets
         
         private static (string, string)[] ExtractFields(InputType type, InputValue value)
         {
-            var deviceType = type.GetFitType();
-            return deviceType.GetProperties(BindingFlags.Public | BindingFlags.Instance)
+            var device = type.GetFitDevice();
+            return device.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance)
                 .Where(x => value.GetFitType().IsAssignableFrom(x.PropertyType))
                 .Where(x => x.GetMethod.GetParameters().Length == 0)
                 .Select(x =>
                 {
                     try
                     {
-                        return (x.Name, ((InputControl) x.GetValue(deviceType)).displayName);
+                        return (x.Name, ((InputControl) x.GetValue(device)).displayName);
                     }
                     catch (Exception e)
                     {
