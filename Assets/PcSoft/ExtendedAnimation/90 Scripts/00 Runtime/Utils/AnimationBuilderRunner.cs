@@ -67,7 +67,7 @@ namespace PcSoft.ExtendedAnimation._90_Scripts._00_Runtime.Utils
             }
             else if (step is AnimateAnimationStep animStep)
             {
-                animationRunner.Coroutine = Run(AnimationUtils.RunAnimation(_type, animStep.Curve, animStep.Speed, animStep.Handler, () =>
+                animationRunner.Coroutine = Run(AnimationUtils.RunAnimation(_type, animStep.Curves, animStep.Speed, animStep.Handler, () =>
                 {
                     animStep.OnFinished?.Invoke();
                     if (animationRunner.IsStopped)

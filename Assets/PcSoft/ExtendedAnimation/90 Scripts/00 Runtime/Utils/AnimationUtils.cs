@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
+using System.Linq;
 using PcSoft.ExtendedAnimation._90_Scripts._00_Runtime.Types;
+using UnityEditor;
 using UnityEngine;
 
 namespace PcSoft.ExtendedAnimation._90_Scripts._00_Runtime.Utils
@@ -14,15 +16,30 @@ namespace PcSoft.ExtendedAnimation._90_Scripts._00_Runtime.Utils
         
         public static IEnumerator RunAnimation(float preDelay, AnimationCurve curve, float speed, Action<float> handler, Action onFinished)
         {
-            return RunAnimation(AnimationType.Scaled, preDelay, curve, speed, handler, onFinished);
+            return RunAnimation(AnimationType.Scaled, preDelay, new []{curve}, speed, values => handler(values[0]), onFinished);
         }
         
         public static IEnumerator RunAnimation(AnimationType type, AnimationCurve curve, float speed, Action<float> handler, Action onFinished = null)
         {
-            return RunAnimation(type, 0f, curve, speed, handler, onFinished);
+            return RunAnimation(type, 0f, new [] {curve}, speed, values => handler(values[0]), onFinished);
         }
         
-        public static IEnumerator RunAnimation(AnimationType type, float preDelay, AnimationCurve curve, float speed, Action<float> handler, Action onFinished)
+        public static IEnumerator RunAnimation(AnimationCurve[] curves, float speed, Action<float[]> handler, Action onFinished = null)
+        {
+            return RunAnimation(AnimationType.Scaled, curves, speed, handler, onFinished);
+        }
+        
+        public static IEnumerator RunAnimation(float preDelay, AnimationCurve[] curves, float speed, Action<float[]> handler, Action onFinished)
+        {
+            return RunAnimation(AnimationType.Scaled, preDelay, curves, speed, handler, onFinished);
+        }
+        
+        public static IEnumerator RunAnimation(AnimationType type, AnimationCurve[] curves, float speed, Action<float[]> handler, Action onFinished = null)
+        {
+            return RunAnimation(type, 0f, curves, speed, handler, onFinished);
+        }
+        
+        public static IEnumerator RunAnimation(AnimationType type, float preDelay, AnimationCurve[] curves, float speed, Action<float[]> handler, Action onFinished)
         {
             if (preDelay > 0f)
             {
@@ -41,13 +58,18 @@ namespace PcSoft.ExtendedAnimation._90_Scripts._00_Runtime.Utils
 
             for (var i = 0f; i < speed; i += GetDelta(type))
             {
-                var value = curve.Evaluate(i / speed);
-                handler(value);
+                var values = curves.Select(x => x.Evaluate(i / speed)).ToArray();
+                handler(values);
 
                 yield return null;
             }
 
-            handler(curve.Evaluate(1f));
+            var oneArray = new float[curves.Length];
+            for (var i = 0; i < oneArray.Length; i++)
+            {
+                oneArray[i] = 1f;
+            }
+            handler(oneArray);
             onFinished?.Invoke();
         }
         

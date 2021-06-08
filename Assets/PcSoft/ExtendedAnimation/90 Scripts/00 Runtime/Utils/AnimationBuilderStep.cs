@@ -14,16 +14,6 @@ namespace PcSoft.ExtendedAnimation._90_Scripts._00_Runtime.Utils
                 OnFinished = onFinished;
             }
         }
-        
-        private sealed class SubAnimationStep : AnimationStep
-        {
-            public Action<Action> RunSubAnimation { get; }
-
-            public SubAnimationStep(Action<Action> runSubAnimation, Action onFinished) : base(onFinished)
-            {
-                RunSubAnimation = runSubAnimation;
-            }
-        }
 
         private sealed class AnimateConstantAnimationStep : AnimationStep
         {
@@ -37,15 +27,30 @@ namespace PcSoft.ExtendedAnimation._90_Scripts._00_Runtime.Utils
             }
         }
 
+        private sealed class SubAnimationStep : AnimationStep
+        {
+            public Action<Action> RunSubAnimation { get; }
+
+            public SubAnimationStep(Action<Action> runSubAnimation, Action onFinished) : base(onFinished)
+            {
+                RunSubAnimation = runSubAnimation;
+            }
+        }
+
         private sealed class AnimateAnimationStep : AnimationStep
         {
-            public AnimationCurve Curve { get; }
+            public AnimationCurve[] Curves { get; }
             public float Speed { get; }
-            public Action<float> Handler { get; }
+            public Action<float[]> Handler { get; }
 
-            public AnimateAnimationStep(AnimationCurve curve, float speed, Action<float> handler, Action onFinished) : base(onFinished)
+            public AnimateAnimationStep(AnimationCurve curve, float speed, Action<float> handler, Action onFinished) 
+                : this(new []{curve}, speed, values => handler(values[0]), onFinished)
             {
-                Curve = curve;
+            }
+
+            public AnimateAnimationStep(AnimationCurve[] curves, float speed, Action<float[]> handler, Action onFinished) : base(onFinished)
+            {
+                Curves = curves;
                 Speed = speed;
                 Handler = handler;
             }
