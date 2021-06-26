@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using System.Linq;
+using NUnit.Framework;
 using PcSoft.UnityCommons._90_Scripts._00_Runtime.Utils.Extensions;
 
 namespace PcSoft.UnityCommons._90_Scripts._10_Test.Utils.Extensions
@@ -20,6 +21,17 @@ namespace PcSoft.UnityCommons._90_Scripts._10_Test.Utils.Extensions
                 var random = array.GetRandom("Unity");
                 Assert.AreNotEqual("Unity", random);
             }
+        }
+
+        [Test]
+        public void Remove()
+        {
+            var array = new [] {"Hello", "World", "Unity"};
+            array = array.Remove("World").ToArray();
+            
+            Assert.AreEqual(2, array.Length);
+            Assert.AreEqual("Hello", array[0]);
+            Assert.AreEqual("Unity", array[1]);
         }
     }
 }

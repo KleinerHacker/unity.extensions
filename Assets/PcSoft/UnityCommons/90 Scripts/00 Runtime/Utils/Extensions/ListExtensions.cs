@@ -72,5 +72,10 @@ namespace PcSoft.UnityCommons._90_Scripts._00_Runtime.Utils.Extensions
 
             return tmpList;
         }
+
+        public static IEnumerable<T> Remove<T>(this IEnumerable<T> list, T item)
+        {
+            return list.Where(x => !Equals(x, item));
+        }
     }
 }
