@@ -99,7 +99,7 @@ namespace PcSoft.ExtendedUnity._90_Scripts._00_Runtime.Components
     {
         #region Static Area
 
-        public static CursorSystem Singleton => Resources.FindObjectsOfTypeAll<CursorSystem>()[0];
+        public static CursorSystem Singleton => FindObjectsOfType<CursorSystem>()[0];
 
         #endregion
     } 

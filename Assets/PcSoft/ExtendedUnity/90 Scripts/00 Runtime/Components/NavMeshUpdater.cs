@@ -36,7 +36,7 @@ namespace PcSoft.ExtendedUnity._90_Scripts._00_Runtime.Components
             
             var list = new List<NavMeshBuildSource>();
             list.AddRange(
-                Resources.FindObjectsOfTypeAll<MeshFilter>()
+                FindObjectsOfType<MeshFilter>()
                     .Where(x => x != null && x.sharedMesh != null)
                     .Select(x => new NavMeshBuildSource
                         {
@@ -48,7 +48,7 @@ namespace PcSoft.ExtendedUnity._90_Scripts._00_Runtime.Components
                     )
             );
             list.AddRange(
-                Resources.FindObjectsOfTypeAll<Terrain>()
+                FindObjectsOfType<Terrain>()
                     .Where(x => x != null)
                     .Select(x => new NavMeshBuildSource
                         {
