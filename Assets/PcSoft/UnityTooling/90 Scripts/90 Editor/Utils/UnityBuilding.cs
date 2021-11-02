@@ -62,20 +62,7 @@ namespace PcSoft.UnityTooling._90_Scripts._90_Editor.Utils
             }
         }
 
-        private static string[] KnownScenes
-        {
-            get
-            {
-                var scenes = new List<string>();
-                for (var i = 0; i < SceneManager.sceneCount; i++)
-                {
-                    var scene = SceneManager.GetSceneAt(i);
-                    scenes.Add(scene.path);
-                }
-
-                return scenes.ToArray();
-            }
-        }
+        private static string[] KnownScenes => EditorBuildSettings.scenes.Select(x => x.path).ToArray();
 
         private static BuildOptions CalculateOptions(BuildingTypeItem buildingType, BuildingToolbar.BuildExtras buildExtras, bool autoRun, bool clean)
         {

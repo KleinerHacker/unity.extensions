@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using PcSoft.UnityTooling._90_Scripts._90_Editor.Toolbar;
 using PcSoft.UnityTooling._90_Scripts._90_Editor.Utils;
 using UnityEditor;
@@ -34,6 +35,8 @@ namespace PcSoft.UnityTooling._90_Scripts._90_Editor.Provider
         public override void OnActivate(string searchContext, VisualElement rootElement)
         {
             _settings = BuildingSettings.SerializedSingleton;
+            if (_settings == null)
+                return;
             _appNameProperty = _settings.FindProperty("appName");
             _typeItemsProperty = _settings.FindProperty("typeItems");
             if (_typeItemsProperty == null)
@@ -42,7 +45,7 @@ namespace PcSoft.UnityTooling._90_Scripts._90_Editor.Provider
 
         public override void OnGUI(string searchContext)
         {
-            if (_settings == null)
+            if (_settings == null || _appNameProperty == null || _typeItemsProperty == null)
                 return;
             
             _settings.Update();
@@ -64,8 +67,8 @@ namespace PcSoft.UnityTooling._90_Scripts._90_Editor.Provider
             EditorGUILayout.Space(25f);
             EditorGUILayout.LabelField("Common Build Data", EditorStyles.boldLabel);
 
-            EditorGUILayout.LabelField("Current Defines:");
-            EditorGUILayout.TextArea(string.Join(',', EditorUserBuildSettings.activeScriptCompilationDefines), EditorStyles.wordWrappedLabel);
+            EditorGUILayout.LabelField("Scenes:");
+            EditorGUILayout.LabelField(string.Join(Environment.NewLine, EditorBuildSettings.scenes.Select(x => x.path).ToArray()), EditorStyles.wordWrappedLabel);
             EditorGUI.EndDisabledGroup();
         }
 
