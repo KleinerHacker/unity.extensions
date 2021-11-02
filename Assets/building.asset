@@ -11,7 +11,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 0}
   m_Name: building
-  m_EditorClassIdentifier: UnityTooling.Editor:PcSoft.UnityTooling._90_Scripts._90_Editor.Provider:BuildingSettings
+  m_EditorClassIdentifier: UnityBuildTooling.Editor:PcSoft.Scripts.Provider:BuildingSettings
   buildTargetOverwritten: 0
   buildTarget: 0
   buildType: 0
