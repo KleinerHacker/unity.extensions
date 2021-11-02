@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 
-namespace PcSoft.ExtendedUnity._90_Scripts._90_Editor
+namespace PcSoft.UnityTooling._90_Scripts._90_Editor
 {
-    internal sealed class ExtendedUnityConstants : MonoBehaviour
+    internal sealed class UnityToolingConstants : MonoBehaviour
     {
         public static class Menu
         {

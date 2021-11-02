@@ -1,7 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace PcSoft.ExtendedUnity._90_Scripts._90_Editor.EditorActions
+namespace PcSoft.UnityTooling._90_Scripts._90_Editor.Actions
 {
     public static class TransformAction
     {

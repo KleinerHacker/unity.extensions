@@ -2,12 +2,12 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using PcSoft.ExtendedUnity._90_Scripts._90_Editor.Assets.Misc;
+using PcSoft.UnityTooling._90_Scripts._90_Editor.Assets.Misc;
 using UnityEditor;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 
-namespace PcSoft.ExtendedUnity._90_Scripts._90_Editor.EditorActions
+namespace PcSoft.UnityTooling._90_Scripts._90_Editor.Actions
 {
     public static class ToolingAction
     {

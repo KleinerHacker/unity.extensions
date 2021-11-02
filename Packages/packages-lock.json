@@ -1,5 +1,12 @@
 {
   "dependencies": {
+    "com.marijnzwemmer.unity-toolbar-extender": {
+      "version": "https://github.com/marijnz/unity-toolbar-extender.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "df8031d46275ab1e0efc1225c33f58cda2f74872"
+    },
     "com.unity.collab-proxy": {
       "version": "1.13.5",
       "depth": 0,
@@ -104,7 +111,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.timeline": {
-      "version": "1.6.2",
+      "version": "1.6.3",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -116,7 +123,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.toolchain.win-x86_64-linux-x86_64": {
-      "version": "0.1.19-preview",
+      "version": "0.1.21-preview",
       "depth": 0,
       "source": "registry",
       "dependencies": {

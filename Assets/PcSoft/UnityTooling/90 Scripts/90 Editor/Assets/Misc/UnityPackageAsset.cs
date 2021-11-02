@@ -1,8 +1,8 @@
 using UnityEngine;
 
-namespace PcSoft.ExtendedUnity._90_Scripts._90_Editor.Assets.Misc
+namespace PcSoft.UnityTooling._90_Scripts._90_Editor.Assets.Misc
 {
-    [CreateAssetMenu(menuName = ExtendedUnityConstants.Menu.Asset.MiscMenu + "/Unity Package")]
+    [CreateAssetMenu(menuName = UnityToolingConstants.Menu.Asset.MiscMenu + "/Unity Package")]
     public sealed class UnityPackageAsset : ScriptableObject
     {
         #region Inspector Data
