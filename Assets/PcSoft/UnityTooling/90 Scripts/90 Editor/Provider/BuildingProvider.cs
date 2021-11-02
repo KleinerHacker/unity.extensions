@@ -1,4 +1,5 @@
 using System;
+using PcSoft.UnityTooling._90_Scripts._90_Editor.Toolbar;
 using PcSoft.UnityTooling._90_Scripts._90_Editor.Utils;
 using UnityEditor;
 using UnityEngine;
@@ -20,6 +21,7 @@ namespace PcSoft.UnityTooling._90_Scripts._90_Editor.Provider
         #endregion
 
         private SerializedObject _settings;
+        private SerializedProperty _appNameProperty;
         private SerializedProperty _typeItemsProperty;
 
         public BuildingProvider()
@@ -32,6 +34,7 @@ namespace PcSoft.UnityTooling._90_Scripts._90_Editor.Provider
         public override void OnActivate(string searchContext, VisualElement rootElement)
         {
             _settings = BuildingSettings.SerializedSingleton;
+            _appNameProperty = _settings.FindProperty("appName");
             _typeItemsProperty = _settings.FindProperty("typeItems");
             if (_typeItemsProperty == null)
                 throw new InvalidOperationException("Items not found");
@@ -39,8 +42,20 @@ namespace PcSoft.UnityTooling._90_Scripts._90_Editor.Provider
 
         public override void OnGUI(string searchContext)
         {
+            if (_settings == null)
+                return;
+            
             _settings.Update();
 
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.PropertyField(_appNameProperty, new GUIContent("Name of application"), GUILayout.ExpandWidth(true));
+            GUILayout.Space(15f);
+            if (GUILayout.Button("Reset", GUILayout.Width(100f)))
+            {
+                _appNameProperty.stringValue = Application.productName;
+            }
+            EditorGUILayout.EndHorizontal();
+            EditorGUILayout.Space(15f);
             EditorGUILayout.PropertyField(_typeItemsProperty, new GUIContent("Building Types"));
 
             _settings.ApplyModifiedProperties();
@@ -103,6 +118,17 @@ namespace PcSoft.UnityTooling._90_Scripts._90_Editor.Provider
                             Compress = true,
                             AllowDebugging = false,
                             Defines = new[] { "RELEASE" },
+                            CPPSettings = IL2CPPSettings.Deactivated,
+                            StrippingLevel = ManagedStrippingLevel.Low,
+                        },
+                        new BuildingTypeItem
+                        {
+                            Name = "Release Native",
+                            TargetPath = "ReleaseNative",
+                            DevelopmentBuild = false,
+                            Compress = true,
+                            AllowDebugging = false,
+                            Defines = new[] { "RELEASE" },
                             CPPSettings = IL2CPPSettings.Master,
                             StrippingLevel = ManagedStrippingLevel.Low,
                         }
@@ -120,6 +146,21 @@ namespace PcSoft.UnityTooling._90_Scripts._90_Editor.Provider
 
         #region Inspector Data
 
+        [SerializeField]
+        private bool buildTargetOverwritten;
+        [SerializeField]
+        private BuildTarget buildTarget;
+        [SerializeField]
+        private int buildType;
+        [SerializeField]
+        private BuildingToolbar.BuildExtras buildExtras = BuildingToolbar.BuildExtras.OpenFolder;
+        [SerializeField]
+        private bool clean = true;
+
+        [FormerlySerializedAs("targetName")]
+        [SerializeField]
+        private string appName;
+
         [FormerlySerializedAs("items")]
         [SerializeField]
         private BuildingTypeItem[] typeItems = Array.Empty<BuildingTypeItem>();
@@ -128,9 +169,59 @@ namespace PcSoft.UnityTooling._90_Scripts._90_Editor.Provider
 
         #region Properties
 
+        public string AppName => appName;
+
         public BuildingTypeItem[] TypeItems => typeItems;
 
+        public BuildTarget BuildTarget
+        {
+            get => buildTargetOverwritten ? buildTarget : EditorUserBuildSettings.activeBuildTarget;
+            internal set
+            {
+                if (buildTarget == value)
+                    return;
+                
+                buildTarget = value;
+                buildTargetOverwritten = true;
+            }
+        }
+
+        public int BuildType
+        {
+            get => buildType;
+            internal set => buildType = value;
+        }
+
+        public BuildingToolbar.BuildExtras BuildExtras
+        {
+            get => buildExtras;
+            internal set => buildExtras = value;
+        }
+
+        public bool Clean
+        {
+            get => clean;
+            internal set => clean = value;
+        }
+
         #endregion
+
+        #region Builtin Methods
+
+        private void OnEnable()
+        {
+            if (string.IsNullOrWhiteSpace(appName))
+            {
+                appName = Application.productName;
+            }
+        }
+
+        #endregion
+
+        internal void ResetBuildTarget()
+        {
+            buildTargetOverwritten = false;
+        }
     }
 
     [Serializable]

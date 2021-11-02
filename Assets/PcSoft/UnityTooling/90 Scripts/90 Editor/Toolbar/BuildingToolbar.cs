@@ -11,62 +11,59 @@ namespace PcSoft.UnityTooling._90_Scripts._90_Editor.Toolbar
     [InitializeOnLoad]
     public static class BuildingToolbar
     {
-        private static BuildTarget _buildTarget;
-        private static int _buildType;
-        private static BuildExtras _buildExtras;
-        private static bool _clean;
-
         static BuildingToolbar()
         {
             ToolbarExtender.LeftToolbarGUI.Add(OnToolbarGUI);
-            _buildTarget = EditorUserBuildSettings.activeBuildTarget;
         }
 
         static void OnToolbarGUI()
         {
+            var buildingSettings = BuildingSettings.Singleton;
+            var serializedObject = BuildingSettings.SerializedSingleton;
+            serializedObject.Update();
+            
             GUILayout.FlexibleSpace();
 
             GUILayout.Space(15f);
 
             GUILayout.Label("Target: ", ToolbarStyles.labelStyle);
-            _buildTarget = (BuildTarget)EditorGUILayout.EnumPopup(null, _buildTarget, v => UnityHelper.IsBuildTargetSupported((BuildTarget)v), false,   
-                ToolbarStyles.popupStyle, ToolbarLayouts.popupLayout);
+            buildingSettings.BuildTarget = (BuildTarget)EditorGUILayout.EnumPopup(null, buildingSettings.BuildTarget, 
+                v => UnityHelper.IsBuildTargetSupported((BuildTarget)v), false, ToolbarStyles.popupStyle, ToolbarLayouts.popupLayout);
             if (GUILayout.Button("Reset", ToolbarStyles.commandButtonStyle))
             {
-                _buildTarget = EditorUserBuildSettings.activeBuildTarget;
+                buildingSettings.ResetBuildTarget();
             }
-
+ 
             GUILayout.Space(5f);
 
             GUILayout.Label("Type: ", ToolbarStyles.labelStyle);
-            _buildType = EditorGUILayout.Popup(_buildType, BuildingSettings.Singleton.TypeItems.Select(x => x.Name).ToArray(),
+            buildingSettings.BuildType = EditorGUILayout.Popup(buildingSettings.BuildType, buildingSettings.TypeItems.Select(x => x.Name).ToArray(),
                 ToolbarStyles.popupStyle, ToolbarLayouts.popupSmallLayout);
 
             GUILayout.Space(5f);
             
             GUILayout.Label("Extras: ", ToolbarStyles.labelStyle);
-            _buildExtras = (BuildExtras)EditorGUILayout.EnumFlagsField(_buildExtras, ToolbarStyles.popupStyle, ToolbarLayouts.popupSmallLayout);
+            buildingSettings.BuildExtras = (BuildExtras)EditorGUILayout.EnumFlagsField(buildingSettings.BuildExtras, ToolbarStyles.popupStyle, ToolbarLayouts.popupSmallLayout);
             
             GUILayout.Space(5f);
 
-            _clean = GUILayout.Toggle(_clean, new GUIContent("Clean", "Clean complete build cache"), ToolbarStyles.toggleStyle);
+            buildingSettings.Clean = GUILayout.Toggle(buildingSettings.Clean, new GUIContent("Clean", "Clean complete build cache"), ToolbarStyles.toggleStyle);
             
             GUILayout.Space(5f);
 
             if (GUILayout.Button(new GUIContent("Build", "Build Project"), ToolbarStyles.commandButtonStyle))
             {
-                Build(false);
+                AssetDatabase.SaveAssets();
+                UnityBuilding.Build(false);
             }
 
             if (GUILayout.Button(new GUIContent("Run", "Build and Run project"), ToolbarStyles.commandButtonStyle))
             {
-                Build(true);
+                AssetDatabase.SaveAssets();
+                UnityBuilding.Build(true);
             }
-        }
 
-        private static void Build(bool run)
-        {
-            UnityBuilding.Build(_buildTarget, _buildType, _buildExtras, run, _clean);
+            serializedObject.ApplyModifiedProperties();
         }
 
         private static class ToolbarLayouts
@@ -141,6 +138,7 @@ namespace PcSoft.UnityTooling._90_Scripts._90_Editor.Toolbar
             CodeCoverage = 0x01,
             UseProfiler = 0x02,
             StrictMode = 0x04,
+            OpenFolder = 0x08,
         }
     }
 }

@@ -1,9 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using PcSoft.UnityTooling._90_Scripts._90_Editor.Provider;
 using PcSoft.UnityTooling._90_Scripts._90_Editor.Toolbar;
 using UnityEditor;
+using UnityEditor.Build;
+using UnityEditor.Build.Reporting;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace PcSoft.UnityTooling._90_Scripts._90_Editor.Utils
@@ -13,12 +17,12 @@ namespace PcSoft.UnityTooling._90_Scripts._90_Editor.Utils
         private const string TargetKey = "${TARGET}";
         internal const string DefaultTargetPath = "Builds/" + TargetKey;
 
-        public static void Build(BuildTarget buildTarget, int buildTypeIndex, BuildingToolbar.BuildExtras buildExtras, bool run, bool clean)
+        public static void Build(bool run)
         {
             var buildingSettings = BuildingSettings.Singleton;
-            var buildingType = buildingSettings.TypeItems[buildTypeIndex];
+            var buildingType = buildingSettings.TypeItems[buildingSettings.BuildType];
 
-            var buildTargetGroup = BuildPipeline.GetBuildTargetGroup(buildTarget);
+            var buildTargetGroup = BuildPipeline.GetBuildTargetGroup(buildingSettings.BuildTarget);
             var cppCompilerConfiguration = CalculateConfiguration(buildingType);
             if (cppCompilerConfiguration.HasValue)
             {
@@ -26,16 +30,36 @@ namespace PcSoft.UnityTooling._90_Scripts._90_Editor.Utils
             }
             PlayerSettings.SetManagedStrippingLevel(buildTargetGroup, buildingType.StrippingLevel);
 
+            var targetPath = DefaultTargetPath.Replace(TargetKey, buildingSettings.BuildTarget.ToString()) + "/" + buildingType.TargetPath;
+            var appName = buildingSettings.AppName + GetExtension(buildingSettings.BuildTarget);
             var options = new BuildPlayerOptions
             {
                 scenes = KnownScenes,
-                target = buildTarget,
-                locationPathName = DefaultTargetPath.Replace(TargetKey, buildTarget.ToString()) + buildingType.TargetPath,
-                options = CalculateOptions(buildingType, buildExtras, run, clean),
-                extraScriptingDefines = EditorUserBuildSettings.activeScriptCompilationDefines.Concat(buildingType.Defines).ToArray()
+                target = buildingSettings.BuildTarget,
+                locationPathName = targetPath + "/" + appName,
+                options = CalculateOptions(buildingType, buildingSettings.BuildExtras, run, buildingSettings.Clean),
+                extraScriptingDefines = PlayerSettings.GetScriptingDefineSymbolsForGroup(buildTargetGroup).Split(',', StringSplitOptions.RemoveEmptyEntries).Concat(buildingType.Defines).ToArray()
             };
 
-            var buildReport = BuildPipeline.BuildPlayer(options);
+            if (buildingSettings.Clean && Directory.Exists(targetPath))
+            {
+                Directory.Delete(targetPath, true);
+            }
+
+            var oldBuildTarget = EditorUserBuildSettings.activeBuildTarget;
+            var oldBuildGroup = EditorUserBuildSettings.selectedBuildTargetGroup;
+            try
+            {
+                var buildReport = BuildPipeline.BuildPlayer(options);
+                if (buildReport.summary.result != BuildResult.Succeeded)
+                {
+                    EditorUtility.DisplayDialog("Build", "Build has failed", "OK");
+                }
+            }
+            finally
+            {
+                EditorUserBuildSettings.SwitchActiveBuildTarget(NamedBuildTarget.FromBuildTargetGroup(oldBuildGroup), oldBuildTarget);
+            }
         }
 
         private static string[] KnownScenes
@@ -87,6 +111,11 @@ namespace PcSoft.UnityTooling._90_Scripts._90_Editor.Utils
                 options |= BuildOptions.EnableDeepProfilingSupport;
             }
 
+            if (buildExtras.HasFlag(BuildingToolbar.BuildExtras.OpenFolder))
+            {
+                options |= BuildOptions.ShowBuiltPlayer;
+            }
+
             if (autoRun)
             {
                 options |= BuildOptions.AutoRunPlayer;
@@ -110,6 +139,37 @@ namespace PcSoft.UnityTooling._90_Scripts._90_Editor.Utils
                 IL2CPPSettings.Release => Il2CppCompilerConfiguration.Release,
                 _ => throw new NotImplementedException()
             };
+        }
+
+        private static string GetExtension(BuildTarget buildTarget)
+        {
+            switch (buildTarget)
+            {
+                case BuildTarget.StandaloneOSX:
+                case BuildTarget.iOS:
+                case BuildTarget.WebGL:
+                case BuildTarget.WSAPlayer:
+                case BuildTarget.StandaloneLinux64:
+                case BuildTarget.PS4:
+                case BuildTarget.XboxOne:
+                case BuildTarget.tvOS:
+                case BuildTarget.Switch:
+                case BuildTarget.Lumin:
+                case BuildTarget.Stadia:
+                case BuildTarget.CloudRendering:
+                case BuildTarget.GameCoreXboxOne:
+                case BuildTarget.PS5:
+                case BuildTarget.EmbeddedLinux:
+                case BuildTarget.NoTarget:
+                    return "";
+                case BuildTarget.StandaloneWindows:
+                case BuildTarget.StandaloneWindows64:
+                    return ".exe";
+                case BuildTarget.Android:
+                    return ".apk";
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(buildTarget), buildTarget, null);
+            }
         }
     }
 }

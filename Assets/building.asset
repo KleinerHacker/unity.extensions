@@ -12,6 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: building
   m_EditorClassIdentifier: UnityTooling.Editor:PcSoft.UnityTooling._90_Scripts._90_Editor.Provider:BuildingSettings
+  buildTargetOverwritten: 0
+  buildTarget: 0
+  buildType: 0
+  buildExtras: 8
+  clean: 1
+  appName: Extensions
   typeItems:
   - name: Debug
     targetPath: Debug
@@ -37,6 +43,17 @@ MonoBehaviour:
     - DEBUG
   - name: Release
     targetPath: Release
+    developmentBuild: 0
+    allowDebugging: 0
+    compress: 1
+    cppSettings: 0
+    strippingLevel: 1
+    androidArchitecture: 4294967295
+    appleMobileArchitecture: 2
+    defines:
+    - RELEASE
+  - name: Release Native
+    targetPath: ReleaseNative
     developmentBuild: 0
     allowDebugging: 0
     compress: 1
