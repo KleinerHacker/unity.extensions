@@ -1,5 +1,5 @@
 using System;
-using PcSoft.ExtendedAnimation._90_Scripts._00_Runtime.Utils;
+using UnityAnimation.Runtime.animation.Scripts.Utils;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -47,11 +47,13 @@ namespace PcSoft.EasyTutorial._90_Scripts._00_Runtime.Components
             
             if (_active)
             {
-                StartCoroutine(AnimationUtils.WaitAndRun(autoStartDelay, () =>
-                {
-                    current.SetActive(true);
-                    ShowNextStep(true);
-                }));
+                AnimationBuilder.Create(this)
+                    .Wait(autoStartDelay, () =>
+                    {
+                        current.SetActive(true);
+                        ShowNextStep(true);
+                    })
+                    .Start();
             }
         }
 

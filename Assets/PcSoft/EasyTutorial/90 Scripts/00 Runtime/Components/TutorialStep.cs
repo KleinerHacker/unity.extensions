@@ -1,6 +1,6 @@
 using System;
-using PcSoft.ExtendedAnimation._90_Scripts._00_Runtime.Types;
-using PcSoft.ExtendedAnimation._90_Scripts._00_Runtime.Utils;
+using UnityAnimation.Runtime.animation.Scripts.Types;
+using UnityAnimation.Runtime.animation.Scripts.Utils;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -58,8 +58,10 @@ namespace PcSoft.EasyTutorial._90_Scripts._00_Runtime.Components
             if (allowFading)
             {
                 StopAllCoroutines();
-                StartCoroutine(AnimationUtils.RunAnimation(AnimationType.Unscaled, fadingCurve, fadingSpeed, v => _canvasGroup.alpha = v,
-                    () => _canvasGroup.interactable = _canvasGroup.blocksRaycasts = true));
+                AnimationBuilder.Create(this, AnimationType.Unscaled)
+                    .Animate(fadingCurve, fadingSpeed, v => _canvasGroup.alpha = v,
+                        () => _canvasGroup.interactable = _canvasGroup.blocksRaycasts = true)
+                    .Start();
             }
 
             onShowStep.Invoke();
@@ -75,8 +77,10 @@ namespace PcSoft.EasyTutorial._90_Scripts._00_Runtime.Components
             if (allowFading)
             {
                 StopAllCoroutines();
-                StartCoroutine(AnimationUtils.RunAnimation(AnimationType.Unscaled, fadingCurve, fadingSpeed, v => _canvasGroup.alpha = 1f - v,
-                    () => _canvasGroup.interactable = _canvasGroup.blocksRaycasts = false));
+                AnimationBuilder.Create(this, AnimationType.Unscaled)
+                    .Animate(fadingCurve, fadingSpeed, v => _canvasGroup.alpha = 1f - v,
+                        () => _canvasGroup.interactable = _canvasGroup.blocksRaycasts = false)
+                    .Start();
             }
 
             onHideStep.Invoke();

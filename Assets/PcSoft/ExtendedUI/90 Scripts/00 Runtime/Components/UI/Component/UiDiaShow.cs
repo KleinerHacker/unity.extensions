@@ -1,6 +1,6 @@
 using System;
-using PcSoft.ExtendedAnimation._90_Scripts._00_Runtime.Types;
-using PcSoft.ExtendedAnimation._90_Scripts._00_Runtime.Utils;
+using UnityAnimation.Runtime.animation.Scripts.Types;
+using UnityAnimation.Runtime.animation.Scripts.Utils;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -106,9 +106,9 @@ namespace PcSoft.ExtendedUI._90_Scripts._00_Runtime.Components.UI.Component
         {
             if (Images == null || Images.Length <= 0)
                 return;
-            
+
             Debug.Log("Change Image");
-            
+
             _state = State.Fade;
 
             UpdateIndex();
@@ -128,7 +128,7 @@ namespace PcSoft.ExtendedUI._90_Scripts._00_Runtime.Components.UI.Component
                 {
                     do
                     {
-                        newIndex = (uint) Random.Range(0, _images.Length);
+                        newIndex = (uint)Random.Range(0, _images.Length);
                     } while (newIndex == _imageIndex);
                 }
 
@@ -159,9 +159,8 @@ namespace PcSoft.ExtendedUI._90_Scripts._00_Runtime.Components.UI.Component
                     throw new NotImplementedException();
             }
 
-            StartCoroutine(AnimationUtils.RunAnimation(
-                AnimationType.Unscaled, fadingCurve, fadingSpeed,
-                v =>
+            AnimationBuilder.Create(this, AnimationType.Unscaled)
+                .Animate(fadingCurve, fadingSpeed, v =>
                 {
                     switch (_activeImage)
                     {
@@ -179,12 +178,13 @@ namespace PcSoft.ExtendedUI._90_Scripts._00_Runtime.Components.UI.Component
                         default:
                             throw new NotImplementedException();
                     }
-                },
-                () =>
+                })
+                .WithFinisher(() =>
                 {
                     _activeImage = _activeImage == ActiveImage.One ? ActiveImage.Two : ActiveImage.One;
                     onFinished?.Invoke();
-                }));
+                })
+                .Start();
         }
 
         private void OnImagesUpdated()

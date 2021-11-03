@@ -6,7 +6,7 @@ using PcSoft.AudioMachine._90_Scripts._00_Runtime.Assets.Sfx;
 using PcSoft.AudioMachine._90_Scripts._00_Runtime.Assets.Sfx.Base;
 using PcSoft.AudioMachine._90_Scripts._00_Runtime.Utils;
 using PcSoft.AudioMachine._90_Scripts._00_Runtime.Utils.Extensions;
-using PcSoft.ExtendedAnimation._90_Scripts._00_Runtime.Utils;
+using UnityAnimation.Runtime.animation.Scripts.Utils;
 using UnityEngine;
 using UnityEngine.Audio;
 
@@ -101,7 +101,9 @@ namespace PcSoft.AudioMachine._90_Scripts._00_Runtime.Components.Sfx
                     }
                     else
                     {
-                        StartCoroutine(AnimationUtils.WaitAndRun(track.StartDelay, () => _audioSource.PlayOneShot(track.Clip)));
+                        AnimationBuilder.Create(this)
+                            .Wait(track.StartDelay, () => _audioSource.PlayOneShot(track.Clip))
+                            .Start();
                     }
                 }
             }

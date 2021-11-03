@@ -1,7 +1,7 @@
 using System;
-using PcSoft.ExtendedAnimation._90_Scripts._00_Runtime.Types;
-using PcSoft.ExtendedAnimation._90_Scripts._00_Runtime.Utils;
 using PcSoft.ExtendedUI._90_Scripts._00_Runtime.Utils.Extensions;
+using UnityAnimation.Runtime.animation.Scripts.Types;
+using UnityAnimation.Runtime.animation.Scripts.Utils;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -93,14 +93,16 @@ namespace PcSoft.ExtendedUI._90_Scripts._00_Runtime.Components.UI.Window
             Showing?.Invoke(this, EventArgs.Empty);
 
             _canvasGroup.Hide();
-            StartCoroutine(AnimationUtils.RunAnimation(AnimationType.Unscaled, fadingCurve, fadingSpeed, 
-                v => _canvasGroup.alpha = v, () =>
+            AnimationBuilder.Create(this, AnimationType.Unscaled)
+                .Animate(fadingCurve, fadingSpeed, v => _canvasGroup.alpha = v)
+                .WithFinisher(() =>
                 {
                     _canvasGroup.Show();
                     OnShown();
                     Shown?.Invoke(this, EventArgs.Empty);
                     onFinished?.Invoke();
-                }));
+                })
+                .Start();
         }
 
         public void Hide()
@@ -124,13 +126,15 @@ namespace PcSoft.ExtendedUI._90_Scripts._00_Runtime.Components.UI.Window
 
             _canvasGroup.Hide();
             _canvasGroup.alpha = 1f;
-            StartCoroutine(AnimationUtils.RunAnimation(AnimationType.Unscaled, fadingCurve, fadingSpeed, 
-                v => _canvasGroup.alpha = 1f - v, () =>
+            AnimationBuilder.Create(this, AnimationType.Unscaled)
+                .Animate(fadingCurve, fadingSpeed, v => _canvasGroup.alpha = 1f - v)
+                .WithFinisher(() =>
                 {
                     OnHidden();
                     Hidden?.Invoke(this, EventArgs.Empty);
                     onFinished?.Invoke();
-                }));
+                })
+                .Start();
         }
         
         protected virtual void OnShowing() {}

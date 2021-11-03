@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
-using PcSoft.ExtendedAnimation._90_Scripts._00_Runtime.Utils;
 using PcSoft.TrafficLight._90_Scripts._00_Runtime.Assets;
+using UnityAnimation.Runtime.animation.Scripts.Utils;
 using UnityEngine;
 
 namespace PcSoft.TrafficLight._90_Scripts._00_Runtime.Components
@@ -65,10 +65,13 @@ namespace PcSoft.TrafficLight._90_Scripts._00_Runtime.Components
                 {
                     case TrafficLightBlinkState.On:
                         _blinkState = TrafficLightBlinkState.Switch;
-                        StartCoroutine(AnimationUtils.RunAnimation(lightSwitchCurve, lightSwitchSpeed,
-                            v => HandleLightItem(State == TrafficLightState.GreenFinish ? greenLight : yellowLight, TrafficLightBehavior.TurnOff, v),
-                            () => _blinkState = TrafficLightBlinkState.Off));
-                        
+                        AnimationBuilder.Create(this)
+                            .Animate(lightSwitchCurve, lightSwitchSpeed,
+                                v => HandleLightItem(State == TrafficLightState.GreenFinish ? greenLight : yellowLight, TrafficLightBehavior.TurnOff, v),
+                                () => _blinkState = TrafficLightBlinkState.Off
+                            )
+                            .Start();
+
                         _blinkCounter++;
                         if (State == TrafficLightState.GreenFinish && _blinkCounter >= trafficLightSwitch.BlinkGreenOnFinishCount)
                         {
@@ -79,12 +82,15 @@ namespace PcSoft.TrafficLight._90_Scripts._00_Runtime.Components
                                 _blinkState = TrafficLightBlinkState.On;
                             });
                         }
+
                         break;
                     case TrafficLightBlinkState.Off:
                         _blinkState = TrafficLightBlinkState.Switch;
-                        StartCoroutine(AnimationUtils.RunAnimation(lightSwitchCurve, lightSwitchSpeed,
-                            v => HandleLightItem(State == TrafficLightState.GreenFinish ? greenLight : yellowLight, TrafficLightBehavior.TurnOn, v),
-                            () => _blinkState = TrafficLightBlinkState.On));
+                        AnimationBuilder.Create(this)
+                            .Animate(lightSwitchCurve, lightSwitchSpeed,
+                                v => HandleLightItem(State == TrafficLightState.GreenFinish ? greenLight : yellowLight, TrafficLightBehavior.TurnOn, v),
+                                () => _blinkState = TrafficLightBlinkState.On
+                            ).Start();
                         break;
                     case TrafficLightBlinkState.Switch:
                         throw new NotSupportedException();
@@ -115,7 +121,7 @@ namespace PcSoft.TrafficLight._90_Scripts._00_Runtime.Components
             if (immediately)
             {
                 Debug.Log("Switch to red immediately", this);
-                
+
                 SwitchOn(redLight);
                 SwitchOff(yellowLight);
                 SwitchOff(greenLight);
@@ -155,7 +161,7 @@ namespace PcSoft.TrafficLight._90_Scripts._00_Runtime.Components
             if (immediately)
             {
                 Debug.Log("Switch to green immediately", this);
-                
+
                 SwitchOff(redLight);
                 SwitchOff(yellowLight);
                 SwitchOn(greenLight);
@@ -166,7 +172,7 @@ namespace PcSoft.TrafficLight._90_Scripts._00_Runtime.Components
             else
             {
                 Debug.Log("Switch to green", this);
-                
+
                 State = TrafficLightState.Switching;
                 SwitchDynamic(trafficLightSwitch.SwitchToGreen, () =>
                 {
@@ -193,7 +199,7 @@ namespace PcSoft.TrafficLight._90_Scripts._00_Runtime.Components
             if (immediately)
             {
                 Debug.Log("Switch to out of order immediately", this);
-                
+
                 SwitchOff(redLight);
                 SwitchOn(yellowLight);
                 SwitchOff(greenLight);
@@ -243,23 +249,23 @@ namespace PcSoft.TrafficLight._90_Scripts._00_Runtime.Components
             if (State != TrafficLightState.Green)
             {
                 Debug.Log("Switch to green (for finishing)", this);
-                
+
                 State = TrafficLightState.Switching;
                 SwitchDynamic(trafficLightSwitch.SwitchToGreen, () =>
                 {
                     _blinkCounter = 0;
                     _blinkFinished = onFinished;
-                    
+
                     State = TrafficLightState.GreenFinish;
                 });
             }
             else
             {
                 Debug.Log("Green Finishing set", this);
-                
+
                 _blinkCounter = 0;
                 _blinkFinished = onFinished;
-                
+
                 State = TrafficLightState.GreenFinish;
             }
         }
@@ -353,7 +359,7 @@ namespace PcSoft.TrafficLight._90_Scripts._00_Runtime.Components
                     throw new NotImplementedException();
             }
         }
-        
+
         internal void Initialize()
         {
             switch (initialState)

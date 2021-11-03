@@ -1,5 +1,5 @@
-using PcSoft.ExtendedAnimation._90_Scripts._00_Runtime.Types;
-using PcSoft.ExtendedAnimation._90_Scripts._00_Runtime.Utils;
+using UnityAnimation.Runtime.animation.Scripts.Types;
+using UnityAnimation.Runtime.animation.Scripts.Utils;
 using UnityEngine;
 
 namespace PcSoft.ExtendedUI._90_Scripts._00_Runtime.Components.UI.Window
@@ -39,7 +39,9 @@ namespace PcSoft.ExtendedUI._90_Scripts._00_Runtime.Components.UI.Window
 
         private void AutoHide()
         {
-            StartCoroutine(AnimationUtils.WaitAndRun(AnimationType.Unscaled, showTime, () => Hide()));
+            AnimationBuilder.Create(this, AnimationType.Unscaled)
+                .Wait(showTime, Hide)
+                .Start();
         }
     }
 }

@@ -1,6 +1,6 @@
 using System;
-using PcSoft.ExtendedAnimation._90_Scripts._00_Runtime.Types;
-using PcSoft.ExtendedAnimation._90_Scripts._00_Runtime.Utils;
+using UnityAnimation.Runtime.animation.Scripts.Types;
+using UnityAnimation.Runtime.animation.Scripts.Utils;
 using UnityEngine;
 
 namespace PcSoft.ExtendedUnity._90_Scripts._00_Runtime.Utils
@@ -39,13 +39,14 @@ namespace PcSoft.ExtendedUnity._90_Scripts._00_Runtime.Utils
                 return;
             }
 
-            mb.StartCoroutine(AnimationUtils.RunAnimation(curve, speed,
-                v => Time.timeScale = Mathf.Lerp(Scaling, scaling, v),
-                () =>
+            AnimationBuilder.Create(mb)
+                .Animate(curve, speed, v => Time.timeScale = Mathf.Lerp(Scaling, scaling, v))
+                .WithFinisher(() =>
                 {
                     Scaling = scaling;
                     finished?.Invoke();
-                }));
+                })
+                .Start();
         }
 
         public static void Pause()
@@ -74,8 +75,9 @@ namespace PcSoft.ExtendedUnity._90_Scripts._00_Runtime.Utils
             }
 
             IsPlaying = false;
-            mb.StartCoroutine(AnimationUtils.RunAnimation(AnimationType.Unscaled, curve, speed,
-                v => Time.timeScale = Scaling * (1f - v), finished));
+            AnimationBuilder.Create(mb, AnimationType.Unscaled)
+                .Animate(curve, speed, v => Time.timeScale = Scaling * (1f - v), finished)
+                .Start();
         }
 
         public static void Resume()
@@ -104,8 +106,9 @@ namespace PcSoft.ExtendedUnity._90_Scripts._00_Runtime.Utils
             }
 
             IsPlaying = true;
-            mb.StartCoroutine(AnimationUtils.RunAnimation(AnimationType.Unscaled, curve, speed,
-                v => Time.timeScale = Scaling * v, finished));
+            AnimationBuilder.Create(mb, AnimationType.Unscaled)
+                .Animate(curve, speed, v => Time.timeScale = Scaling * v, finished)
+                .Start();
         }
     }
 }

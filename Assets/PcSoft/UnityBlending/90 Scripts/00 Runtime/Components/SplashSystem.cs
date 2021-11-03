@@ -1,6 +1,6 @@
 using System;
-using PcSoft.ExtendedAnimation._90_Scripts._00_Runtime.Types;
-using PcSoft.ExtendedAnimation._90_Scripts._00_Runtime.Utils;
+using UnityAnimation.Runtime.animation.Scripts.Types;
+using UnityAnimation.Runtime.animation.Scripts.Utils;
 using UnityEngine;
 
 namespace PcSoft.UnityBlending._90_Scripts._00_Runtime.Components
@@ -18,7 +18,11 @@ namespace PcSoft.UnityBlending._90_Scripts._00_Runtime.Components
 
         private void Start()
         {
-            OnShow(() => StartCoroutine(AnimationUtils.WaitAndRun(AnimationType.Unscaled, showTime, OnClose)));
+            OnShow(() =>
+                AnimationBuilder.Create(this, AnimationType.Unscaled)
+                    .Wait(showTime, OnClose)
+                    .Start()
+            );
         }
 
         #endregion

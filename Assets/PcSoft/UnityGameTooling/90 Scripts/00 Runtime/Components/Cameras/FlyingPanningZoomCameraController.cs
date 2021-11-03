@@ -1,10 +1,10 @@
-using PcSoft.ExtendedAnimation._90_Scripts._00_Runtime.Utils;
+using PcSoft.UnityInput._90_Scripts._00_Runtime.Assets;
+using PcSoft.UnityInput._90_Scripts._00_Runtime.Types;
 using PcSoft.UnityInput._90_Scripts._00_Runtime.Utils.Extensions;
+using UnityAnimation.Runtime.animation.Scripts.Utils;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.Serialization;
-using PcSoft.UnityInput._90_Scripts._00_Runtime.Types;
-using PcSoft.UnityInput._90_Scripts._00_Runtime.Assets;
 
 namespace PcSoft.UnityGameTooling._90_Scripts._00_Runtime.Components.Cameras
 {
@@ -58,7 +58,7 @@ namespace PcSoft.UnityGameTooling._90_Scripts._00_Runtime.Components.Cameras
         [Space]
         [SerializeField]
         private LayerMask colliderLayerMask;
-        
+
         [SerializeField]
         private bool useColliderTag;
 
@@ -76,7 +76,7 @@ namespace PcSoft.UnityGameTooling._90_Scripts._00_Runtime.Components.Cameras
         [Header("Input")]
         [SerializeField]
         private InputActionInfo movementInputRef;
-        
+
         [SerializeField]
         private InputActionInfo rotationInputRef;
 
@@ -88,6 +88,8 @@ namespace PcSoft.UnityGameTooling._90_Scripts._00_Runtime.Components.Cameras
         private InputAction _movementInput;
         private InputAction _rotationInput;
         private InputAction _scrollingInput;
+
+        private AnimationRunner _cameraHeightRunner;
 
         private byte _currentHighLevel;
 
@@ -150,7 +152,7 @@ namespace PcSoft.UnityGameTooling._90_Scripts._00_Runtime.Components.Cameras
         {
             if (!allowFreeMoving)
                 return;
-            
+
             var rot = transform.rotation.eulerAngles;
             transform.rotation = Quaternion.Euler(rot.x, rot.y - deltaX, rot.z);
         }
@@ -194,25 +196,27 @@ namespace PcSoft.UnityGameTooling._90_Scripts._00_Runtime.Components.Cameras
                 return;
             }
 
-            StopAllCoroutines();
-            StartCoroutine(AnimationUtils.RunAnimation(highChangeCurve, highChangeSpeed,
-                v =>
+            _cameraHeightRunner?.Stop();
+            _cameraHeightRunner = AnimationBuilder.Create(this)
+                .Animate(highChangeCurve, highChangeSpeed, v =>
                 {
                     transform.position = Vector3.Lerp(startPosition, targetPosition, v);
                     transform.rotation = Quaternion.Lerp(startRotation, targetRotation, v);
-                }));
+                })
+                .WithFinisher(() => _cameraHeightRunner = null)
+                .Start();
         }
 
         private float? RaycastCollisionHeight(Vector3 pos)
         {
             if (!useHighDetection)
                 return 0f;
-            
+
             if (Physics.Raycast(new Vector3(pos.x, 1000f, pos.z), Vector3.down, out var hit, float.MaxValue, colliderLayerMask))
             {
                 if (useColliderTag && !hit.collider.CompareTag(colliderTag))
                     return null;
-                
+
                 return hit.point.y;
             }
 

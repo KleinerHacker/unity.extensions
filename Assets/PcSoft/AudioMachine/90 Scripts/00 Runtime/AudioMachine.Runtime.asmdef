@@ -2,7 +2,7 @@
     "name": "AudioMachine.Runtime",
     "rootNamespace": "",
     "references": [
-        "GUID:9b0196a642edb924fa62483599f44a4c"
+        "GUID:6753ff2140978d34db1d9899e49b3857"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

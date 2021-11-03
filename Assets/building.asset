@@ -11,12 +11,13 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 0}
   m_Name: building
-  m_EditorClassIdentifier: UnityBuildTooling.Editor:PcSoft.Scripts.Provider:BuildingSettings
+  m_EditorClassIdentifier: UnityBuildTooling.Editor:UnityBuildTooling.Editor.build_tooling.Scripts.Provider:BuildingSettings
   buildTargetOverwritten: 0
   buildTarget: 0
   buildType: 0
-  buildExtras: 8
+  buildExtras: 0
   clean: 1
+  showFolder: 1
   appName: Extensions
   typeItems:
   - name: Debug
@@ -27,6 +28,7 @@ MonoBehaviour:
     cppSettings: 0
     strippingLevel: 0
     androidArchitecture: 4294967295
+    buildAppBundle: 0
     appleMobileArchitecture: 2
     defines:
     - DEBUG
@@ -38,6 +40,7 @@ MonoBehaviour:
     cppSettings: 1
     strippingLevel: 0
     androidArchitecture: 4294967295
+    buildAppBundle: 0
     appleMobileArchitecture: 2
     defines:
     - DEBUG
@@ -49,6 +52,7 @@ MonoBehaviour:
     cppSettings: 0
     strippingLevel: 1
     androidArchitecture: 4294967295
+    buildAppBundle: 1
     appleMobileArchitecture: 2
     defines:
     - RELEASE
@@ -60,6 +64,7 @@ MonoBehaviour:
     cppSettings: 3
     strippingLevel: 1
     androidArchitecture: 4294967295
+    buildAppBundle: 1
     appleMobileArchitecture: 2
     defines:
     - RELEASE

@@ -141,12 +141,19 @@
         "com.unity.modules.imgui": "1.0.0"
       }
     },
+    "org.pcsoft.unity.animation": {
+      "version": "https://github.com/KleinerHacker/unity-animation.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "a33244d54be8c16d35298ac0ad6779b810f142ac"
+    },
     "org.pcsoft.unity.build-tooling": {
       "version": "https://github.com/KleinerHacker/unity-build-tooling.git",
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "bfe86e115143b82182fbf179a8dd0a56bbf0c7a2"
+      "hash": "7935fff43237f35b42c96f93ea3257e59bdf36fb"
     },
     "com.unity.modules.ai": {
       "version": "1.0.0",
