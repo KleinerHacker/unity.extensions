@@ -1,6 +1,5 @@
 {
   "dependencies": {
-    "com.marijnzwemmer.unity-toolbar-extender": "https://github.com/marijnz/unity-toolbar-extender.git",
     "com.unity.collab-proxy": "1.13.5",
     "com.unity.ide.rider": "3.0.7",
     "com.unity.ide.visualstudio": "2.0.11",
@@ -11,8 +10,17 @@
     "com.unity.timeline": "1.6.3",
     "com.unity.toolchain.win-x86_64-linux-x86_64": "0.1.21-preview",
     "com.unity.ugui": "1.0.0",
-    "org.pcsoft.unity.animation": "https://github.com/KleinerHacker/unity-animation.git",
-    "org.pcsoft.unity.build-tooling": "https://github.com/KleinerHacker/unity-build-tooling.git",
+    "org.pcsoft.animation": "1.0.1",
+    "org.pcsoft.asset-loader": "1.0.1",
+    "org.pcsoft.blending": "1.0.1",
+    "org.pcsoft.build-tooling": "1.1.4",
+    "org.pcsoft.common-ex": "1.0.1",
+    "org.pcsoft.game-tooling": "1.0.0",
+    "org.pcsoft.input-ex": "1.0.1",
+    "org.pcsoft.prefs-ex": "1.0.1",
+    "org.pcsoft.scene-ex": "1.0.0",
+    "org.pcsoft.ui-ex": "1.0.1",
+    "org.pcsoft.world-ex": "1.0.1",
     "com.unity.modules.ai": "1.0.0",
     "com.unity.modules.androidjni": "1.0.0",
     "com.unity.modules.animation": "1.0.0",
@@ -44,5 +52,15 @@
     "com.unity.modules.vr": "1.0.0",
     "com.unity.modules.wind": "1.0.0",
     "com.unity.modules.xr": "1.0.0"
-  }
+  },
+  "scopedRegistries": [
+    {
+      "name": "PC Soft",
+      "url": "https://package.openupm.com",
+      "scopes": [
+        "org.pcsoft",
+        "com.marijnzwemmer"
+      ]
+    }
+  ]
 }

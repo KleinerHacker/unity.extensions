@@ -2,9 +2,9 @@
     "name": "EasyTutorial.Runtime",
     "rootNamespace": "",
     "references": [
-        "GUID:508b848fbbe43f344a7cba068d4976c1",
-        "GUID:0a2bb24fe6e00bc4d9d0749895d11921",
-        "GUID:6753ff2140978d34db1d9899e49b3857"
+        "GUID:6753ff2140978d34db1d9899e49b3857",
+        "GUID:2d2720d0130e5544893a1385f03c38f9",
+        "GUID:86c5ae22b787083498226e9faa99731d"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

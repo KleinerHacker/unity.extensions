@@ -1,11 +1,11 @@
 {
   "dependencies": {
     "com.marijnzwemmer.unity-toolbar-extender": {
-      "version": "https://github.com/marijnz/unity-toolbar-extender.git",
-      "depth": 0,
-      "source": "git",
+      "version": "1.4.1",
+      "depth": 1,
+      "source": "registry",
       "dependencies": {},
-      "hash": "df8031d46275ab1e0efc1225c33f58cda2f74872"
+      "url": "https://package.openupm.com"
     },
     "com.unity.collab-proxy": {
       "version": "1.13.5",
@@ -141,19 +141,121 @@
         "com.unity.modules.imgui": "1.0.0"
       }
     },
-    "org.pcsoft.unity.animation": {
-      "version": "https://github.com/KleinerHacker/unity-animation.git",
+    "org.pcsoft.animation": {
+      "version": "1.0.1",
       "depth": 0,
-      "source": "git",
+      "source": "registry",
       "dependencies": {},
-      "hash": "a33244d54be8c16d35298ac0ad6779b810f142ac"
+      "url": "https://package.openupm.com"
     },
-    "org.pcsoft.unity.build-tooling": {
-      "version": "https://github.com/KleinerHacker/unity-build-tooling.git",
+    "org.pcsoft.asset-loader": {
+      "version": "1.0.1",
       "depth": 0,
-      "source": "git",
+      "source": "registry",
       "dependencies": {},
-      "hash": "7935fff43237f35b42c96f93ea3257e59bdf36fb"
+      "url": "https://package.openupm.com"
+    },
+    "org.pcsoft.blending": {
+      "version": "1.0.1",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "org.pcsoft.animation": "1.0.1"
+      },
+      "url": "https://package.openupm.com"
+    },
+    "org.pcsoft.build-tooling": {
+      "version": "1.1.4",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.marijnzwemmer.unity-toolbar-extender": "1.4.1"
+      },
+      "url": "https://package.openupm.com"
+    },
+    "org.pcsoft.common-ex": {
+      "version": "1.0.1",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {},
+      "url": "https://package.openupm.com"
+    },
+    "org.pcsoft.editor-ex": {
+      "version": "1.0.1",
+      "depth": 1,
+      "source": "registry",
+      "dependencies": {},
+      "url": "https://package.openupm.com"
+    },
+    "org.pcsoft.extension": {
+      "version": "1.0.1",
+      "depth": 1,
+      "source": "registry",
+      "dependencies": {
+        "org.pcsoft.animation": "1.0.1",
+        "org.pcsoft.editor-ex": "1.0.1",
+        "com.unity.inputsystem": "1.1.1"
+      },
+      "url": "https://package.openupm.com"
+    },
+    "org.pcsoft.game-tooling": {
+      "version": "1.0.0",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "org.pcsoft.common-ex": "1.0.1",
+        "org.pcsoft.animation": "1.0.1"
+      },
+      "url": "https://package.openupm.com"
+    },
+    "org.pcsoft.input-ex": {
+      "version": "1.0.1",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "org.pcsoft.editor-ex": "1.0.1",
+        "com.unity.inputsystem": "1.1.1"
+      },
+      "url": "https://package.openupm.com"
+    },
+    "org.pcsoft.prefs-ex": {
+      "version": "1.0.1",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {},
+      "url": "https://package.openupm.com"
+    },
+    "org.pcsoft.scene-ex": {
+      "version": "1.0.0",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "org.pcsoft.extension": "1.0.1",
+        "org.pcsoft.editor-ex": "1.0.1",
+        "org.pcsoft.blending": "1.0.1"
+      },
+      "url": "https://package.openupm.com"
+    },
+    "org.pcsoft.ui-ex": {
+      "version": "1.0.1",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "org.pcsoft.extension": "1.0.1",
+        "org.pcsoft.animation": "1.0.1"
+      },
+      "url": "https://package.openupm.com"
+    },
+    "org.pcsoft.world-ex": {
+      "version": "1.0.1",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "org.pcsoft.blending": "1.0.1",
+        "org.pcsoft.scene-ex": "1.0.0",
+        "org.pcsoft.editor-ex": "1.0.1"
+      },
+      "url": "https://package.openupm.com"
     },
     "com.unity.modules.ai": {
       "version": "1.0.0",

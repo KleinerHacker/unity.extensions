@@ -1,11 +1,12 @@
 using System;
 using System.Linq;
-using PcSoft.ExtendedEditor._90_Scripts._90_Editor.Utils.Extensions;
 using UnityEditor;
+using UnityEditorEx.Editor.editor_ex.Scripts._90_Editor;
+using UnityEditorEx.Editor.editor_ex.Scripts._90_Editor.Utils.Extensions;
 
 namespace PcSoft.EasyTutorial._90_Scripts._90_Editor.Components
 {
-    public abstract class TutorialSystemEditor<T> : ExtendedEditor._90_Scripts._90_Editor.ExtendedEditor where T : Enum
+    public abstract class TutorialSystemEditor<T> : ExtendedEditor where T : Enum
     {
         private readonly T _noneValue;
         

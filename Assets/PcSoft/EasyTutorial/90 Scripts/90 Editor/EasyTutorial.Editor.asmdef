@@ -1,8 +1,9 @@
 {
     "name": "EasyTutorial.Editor",
+    "rootNamespace": "",
     "references": [
         "GUID:84f10193bde18574aaf15efccb59450d",
-        "GUID:c9d126c2870517046b89a075139e6ed7"
+        "GUID:5d0595cabca3f65418ec01a472735d07"
     ],
     "includePlatforms": [
         "Editor"

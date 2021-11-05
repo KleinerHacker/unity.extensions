@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using PcSoft.SavePrefs._90_Scripts._00_Runtime.Utils;
+using UnityPrefsEx.Runtime.prefs_ex.Scripts.Utils;
 
 namespace PcSoft.EasyTutorial._90_Scripts._00_Runtime.Components
 {

@@ -15,5 +15,3 @@ MonoBehaviour:
   packageName: TrafficLight
   assetPaths:
   - Assets/PcSoft/TrafficLight
-  - Assets/PcSoft/ExtendedAnimation
-  - Assets/ThirdParty/ArrayDrawer
