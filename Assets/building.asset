@@ -9,13 +9,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: 8fd014041f084d3786ff73ac0941f971, type: 3}
   m_Name: building
-  m_EditorClassIdentifier: UnityBuildTooling.Editor:UnityBuildTooling.Editor.build_tooling.Scripts.Provider:BuildingSettings
-  buildTargetOverwritten: 0
-  buildTarget: 0
-  buildType: 0
-  buildExtras: 0
+  m_EditorClassIdentifier: 
+  buildingData:
+    buildTarget: 0
+    buildType: 0
+    buildExtras: 0
+    buildTargetOverwritten: 0
   clean: 1
   showFolder: 1
   appName: Extensions
@@ -26,6 +27,7 @@ MonoBehaviour:
     allowDebugging: 1
     compress: 0
     cppSettings: 0
+    cppIncrementalBuild: 0
     strippingLevel: 0
     androidArchitecture: 4294967295
     buildAppBundle: 0
@@ -38,6 +40,7 @@ MonoBehaviour:
     allowDebugging: 1
     compress: 0
     cppSettings: 1
+    cppIncrementalBuild: 1
     strippingLevel: 0
     androidArchitecture: 4294967295
     buildAppBundle: 0
@@ -50,6 +53,7 @@ MonoBehaviour:
     allowDebugging: 0
     compress: 1
     cppSettings: 0
+    cppIncrementalBuild: 0
     strippingLevel: 1
     androidArchitecture: 4294967295
     buildAppBundle: 1
@@ -62,9 +66,43 @@ MonoBehaviour:
     allowDebugging: 0
     compress: 1
     cppSettings: 3
+    cppIncrementalBuild: 0
     strippingLevel: 1
     androidArchitecture: 4294967295
     buildAppBundle: 1
     appleMobileArchitecture: 2
     defines:
     - RELEASE
+  groupItems:
+  - name: Debug
+    items:
+    - buildTarget: 19
+      buildType: 0
+      buildExtras: 0
+    - buildTarget: 19
+      buildType: 1
+      buildExtras: 0
+  - name: Release
+    items:
+    - buildTarget: 19
+      buildType: 2
+      buildExtras: 0
+    - buildTarget: 19
+      buildType: 3
+      buildExtras: 0
+  - name: Mono
+    items:
+    - buildTarget: 19
+      buildType: 0
+      buildExtras: 0
+    - buildTarget: 19
+      buildType: 2
+      buildExtras: 0
+  - name: IL2CPP
+    items:
+    - buildTarget: 19
+      buildType: 1
+      buildExtras: 0
+    - buildTarget: 19
+      buildType: 3
+      buildExtras: 0
