@@ -165,7 +165,7 @@
       "url": "https://package.openupm.com"
     },
     "org.pcsoft.build-tooling": {
-      "version": "1.2.0",
+      "version": "1.2.1",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -189,7 +189,7 @@
       "url": "https://package.openupm.com"
     },
     "org.pcsoft.extension": {
-      "version": "1.0.1",
+      "version": "1.1.0",
       "depth": 1,
       "source": "registry",
       "dependencies": {
@@ -227,22 +227,22 @@
       "url": "https://package.openupm.com"
     },
     "org.pcsoft.scene-ex": {
-      "version": "1.0.0",
+      "version": "1.0.1",
       "depth": 0,
       "source": "registry",
       "dependencies": {
-        "org.pcsoft.extension": "1.0.1",
+        "org.pcsoft.extension": "1.1.0",
         "org.pcsoft.editor-ex": "1.0.1",
         "org.pcsoft.blending": "1.0.1"
       },
       "url": "https://package.openupm.com"
     },
     "org.pcsoft.ui-ex": {
-      "version": "1.0.1",
+      "version": "1.0.2",
       "depth": 0,
       "source": "registry",
       "dependencies": {
-        "org.pcsoft.extension": "1.0.1",
+        "org.pcsoft.extension": "1.1.0",
         "org.pcsoft.animation": "1.0.1"
       },
       "url": "https://package.openupm.com"
