@@ -1,8 +1,8 @@
 using System;
-using UnityEditorEx.Runtime.editor_ex.Scripts._00_Runtime.Types;
-using UnityEditorEx.Runtime.editor_ex.Scripts._00_Runtime.Utils;
+using UnityEditorEx.Runtime.editor_ex.Scripts.Runtime.Types;
+using UnityEditorEx.Runtime.editor_ex.Scripts.Runtime.Utils;
 using UnityEngine;
-using UnityPrefsEx.Runtime.prefs_ex.Scripts.Utils;
+using UnityPrefsEx.Runtime.prefs_ex.Scripts.Runtime.Utils;
 
 namespace PcSoft.EasyTutorial._90_Scripts._00_Runtime.Components
 {

@@ -1,5 +1,5 @@
 using System;
-using UnityAnimation.Runtime.animation.Scripts.Utils;
+using UnityAnimation.Runtime.animation.Scripts.Runtime.Utils;
 using UnityEngine;
 using UnityEngine.UI;
 

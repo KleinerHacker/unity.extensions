@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 using PcSoft.TrafficLight._90_Scripts._00_Runtime.Assets;
-using UnityAnimation.Runtime.animation.Scripts.Utils;
+using UnityAnimation.Runtime.animation.Scripts.Runtime.Utils;
 using UnityEngine;
 
 namespace PcSoft.TrafficLight._90_Scripts._00_Runtime.Components

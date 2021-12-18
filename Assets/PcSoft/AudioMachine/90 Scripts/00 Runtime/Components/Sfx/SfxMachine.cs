@@ -6,7 +6,7 @@ using PcSoft.AudioMachine._90_Scripts._00_Runtime.Assets.Sfx;
 using PcSoft.AudioMachine._90_Scripts._00_Runtime.Assets.Sfx.Base;
 using PcSoft.AudioMachine._90_Scripts._00_Runtime.Utils;
 using PcSoft.AudioMachine._90_Scripts._00_Runtime.Utils.Extensions;
-using UnityAnimation.Runtime.animation.Scripts.Utils;
+using UnityAnimation.Runtime.animation.Scripts.Runtime.Utils;
 using UnityEngine;
 using UnityEngine.Audio;
 
