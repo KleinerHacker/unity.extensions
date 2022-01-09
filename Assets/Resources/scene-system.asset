@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9723b8a5bfa943eeb8e25912240374f7, type: 3}
+  m_Name: scene-system
+  m_EditorClassIdentifier: 
+  useSystem: 1
+  items: []
+  createEventSystem: 1
+  esUseNavigation: 1
+  esFirstSelection: {fileID: 0}
+  esDragThreshold: 10
+  esMoveRepeatDelay: 0.5
+  esMoveRepeatRate: 0.1
+  esDeselectOnBackground: 1
+  esPointerBehavior: 0
+  esActionAsset: {fileID: 0}
+  esXROrigin: {fileID: 0}
+  blendingSystem: {fileID: 0}
+  startupBlendState: 0
+  useBlendCallbacks: 0
+  useSwitchCallbacks: 1
+  additionalGameObjects: []
