@@ -12,8 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86adbadf6a614363aa7079f90f350411, type: 3}
   m_Name: localization
   m_EditorClassIdentifier: 
-  supportedLanguages: 0a000000
+  supportedLanguages: 0a0000000f000000
   fallbackLanguage: 10
   textRows: []
   spriteRows: []
   materialRows: []
+  defaultPackage:
+    name: 
+    textRows: []
+    spriteRows: []
+    materialRows: []
+  packages: []
+  transliterations: []
+  textEditing: 0
