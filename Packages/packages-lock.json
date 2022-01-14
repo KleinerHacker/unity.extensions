@@ -261,20 +261,25 @@
       "url": "https://package.openupm.com"
     },
     "org.pcsoft.editor-ex": {
-      "version": "1.1.3",
+      "version": "1.1.5",
       "depth": 1,
       "source": "registry",
-      "dependencies": {},
+      "dependencies": {
+        "com.unity.inputsystem": "1.2.0",
+        "org.pcsoft.common-ex": "1.1.2"
+      },
       "url": "https://package.openupm.com"
     },
     "org.pcsoft.extension": {
-      "version": "1.5.0",
-      "depth": 0,
+      "version": "1.6.2",
+      "depth": 1,
       "source": "registry",
       "dependencies": {
         "org.pcsoft.animation": "1.2.3",
-        "org.pcsoft.editor-ex": "1.1.3",
-        "com.unity.inputsystem": "1.1.1",
+        "org.pcsoft.common-ex": "1.1.2",
+        "org.pcsoft.editor-ex": "1.1.5",
+        "org.pcsoft.android-ex": "1.0.1",
+        "com.unity.inputsystem": "1.2.0",
         "org.pcsoft.asset-loader": "1.1.0"
       },
       "url": "https://package.openupm.com"
@@ -290,19 +295,19 @@
       "url": "https://package.openupm.com"
     },
     "org.pcsoft.input-ex": {
-      "version": "1.1.3",
-      "depth": 0,
+      "version": "1.1.5",
+      "depth": 1,
       "source": "registry",
       "dependencies": {
-        "org.pcsoft.editor-ex": "1.1.0",
-        "org.pcsoft.extension": "1.4.1",
+        "org.pcsoft.editor-ex": "1.1.4",
+        "org.pcsoft.extension": "1.6.2",
         "org.pcsoft.common-ex": "1.1.2",
-        "com.unity.inputsystem": "1.1.1"
+        "com.unity.inputsystem": "1.2.0"
       },
       "url": "https://package.openupm.com"
     },
     "org.pcsoft.localization": {
-      "version": "1.3.1",
+      "version": "1.3.2",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -362,16 +367,16 @@
       "url": "https://package.openupm.com"
     },
     "org.pcsoft.ui-ex": {
-      "version": "1.5.3",
+      "version": "1.6.1",
       "depth": 0,
       "source": "registry",
       "dependencies": {
-        "org.pcsoft.extension": "1.4.1",
+        "org.pcsoft.extension": "1.6.2",
         "org.pcsoft.animation": "1.2.3",
         "org.pcsoft.asset-loader": "1.1.0",
-        "org.pcsoft.editor-ex": "1.1.0",
-        "org.pcsoft.input-ex": "1.1.2",
-        "org.pcsoft.common-ex": "1.1.1",
+        "org.pcsoft.editor-ex": "1.1.5",
+        "org.pcsoft.input-ex": "1.1.5",
+        "org.pcsoft.common-ex": "1.1.2",
         "org.pcsoft.android-ex": "1.0.1",
         "org.pcsoft.analytics-ex": "1.0.1",
         "org.pcsoft.sfx-system": "1.0.1"
